@@ -5,10 +5,14 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,16 +32,35 @@ public class OSMUtils {
     private static final String OVERPASS_API_URL = "https://overpass-api.de/api/interpreter";
     private static final GeometryFactory geometryFactory = new GeometryFactory();
     private static final WKTReader wktReader = new WKTReader();
+    private static final int BATCH_SIZE = 1000; // Process nodes in batches
 
     public static Map<String, Object> downloadRoadNetwork(Envelope bbox) throws Exception {
         LOGGER.info("Starting road network download for bbox: " + bbox);
         
-        // Create Overpass QL query
+        // Create Overpass QL query with all relevant road types
         String query = String.format(
-                "[out:xml][timeout:25];" +
-                "way[\"highway\"](%f,%f,%f,%f);" +
+                "[out:xml][timeout:90];" +
+                "(" +
+                "  way[\"highway\"=\"motorway\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"trunk\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"primary\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"secondary\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"tertiary\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"unclassified\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"residential\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"service\"](%f,%f,%f,%f);" +
+                "  way[\"highway\"=\"living_street\"](%f,%f,%f,%f);" +
+                ");" +
                 "(._;>;);" +
                 "out body;",
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
+                bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX(),
                 bbox.getMinY(), bbox.getMinX(), bbox.getMaxY(), bbox.getMaxX()
         );
         LOGGER.info("Generated Overpass query: " + query);
@@ -59,37 +82,40 @@ public class OSMUtils {
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(conn.getInputStream());
 
-        // Extract nodes
+        // Extract nodes using parallel processing
         LOGGER.info("Extracting nodes from response...");
-        Map<String, Point> nodes = new HashMap<>();
+        Map<String, Point> nodes = new ConcurrentHashMap<>();
         NodeList nodeElements = doc.getElementsByTagName("node");
         int totalNodes = nodeElements.getLength();
         LOGGER.info("Found " + totalNodes + " nodes");
         
-        for (int i = 0; i < nodeElements.getLength(); i++) {
-            if (i % 1000 == 0) {
-                LOGGER.info(String.format("Processing nodes: %.1f%% complete", (i * 100.0) / totalNodes));
-            }
-            Element node = (Element) nodeElements.item(i);
-            String id = node.getAttribute("id");
-            double lat = Double.parseDouble(node.getAttribute("lat"));
-            double lon = Double.parseDouble(node.getAttribute("lon"));
+        AtomicInteger processedNodes = new AtomicInteger(0);
+        
+        IntStream.range(0, totalNodes).parallel().forEach(i -> {
+            Element nodeElement = (Element) nodeElements.item(i);
+            String id = nodeElement.getAttribute("id");
+            double lat = Double.parseDouble(nodeElement.getAttribute("lat"));
+            double lon = Double.parseDouble(nodeElement.getAttribute("lon"));
             nodes.put(id, geometryFactory.createPoint(new Coordinate(lon, lat)));
-        }
+            
+            int processed = processedNodes.incrementAndGet();
+            if (processed % BATCH_SIZE == 0) {
+                LOGGER.info(String.format("Processing nodes: %.1f%% complete", (processed * 100.0) / totalNodes));
+            }
+        });
 
-        // Extract ways
+        // Extract ways using parallel processing
         LOGGER.info("Extracting ways from response...");
-        List<LineString> ways = new ArrayList<>();
+        List<LineString> ways = Collections.synchronizedList(new ArrayList<>());
         NodeList wayElements = doc.getElementsByTagName("way");
         int totalWays = wayElements.getLength();
         LOGGER.info("Found " + totalWays + " ways");
         
-        for (int i = 0; i < wayElements.getLength(); i++) {
-            if (i % 100 == 0) {
-                LOGGER.info(String.format("Processing ways: %.1f%% complete", (i * 100.0) / totalWays));
-            }
-            Element way = (Element) wayElements.item(i);
-            NodeList ndRefs = way.getElementsByTagName("nd");
+        AtomicInteger processedWays = new AtomicInteger(0);
+        
+        IntStream.range(0, totalWays).parallel().forEach(i -> {
+            Element wayElement = (Element) wayElements.item(i);
+            NodeList ndRefs = wayElement.getElementsByTagName("nd");
             List<Coordinate> coordinates = new ArrayList<>();
             
             for (int j = 0; j < ndRefs.getLength(); j++) {
@@ -102,11 +128,18 @@ public class OSMUtils {
             }
 
             if (coordinates.size() >= 2) {
-                ways.add(geometryFactory.createLineString(
-                    coordinates.toArray(new Coordinate[0])
-                ));
+                synchronized(ways) {
+                    ways.add(geometryFactory.createLineString(
+                        coordinates.toArray(new Coordinate[0])
+                    ));
+                }
             }
-        }
+            
+            int processed = processedWays.incrementAndGet();
+            if (processed % (BATCH_SIZE/10) == 0) {
+                LOGGER.info(String.format("Processing ways: %.1f%% complete", (processed * 100.0) / totalWays));
+            }
+        });
 
         LOGGER.info("Road network download complete. Created " + ways.size() + " valid ways from " + nodes.size() + " nodes");
         Map<String, Object> result = new HashMap<>();

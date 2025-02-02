@@ -101,20 +101,36 @@ public class CreateRoadNetwork {
     }
 
     private static Envelope getBoundingBox(List<Point> points) {
+        // First get the basic bounding box from points
         Envelope bbox = new Envelope();
         for (Point point : points) {
             bbox.expandToInclude(point.getCoordinate());
         }
-        return bbox;
+        
+        // Add a significant buffer (about 20% of the width/height) to ensure we get connecting roads
+        double widthBuffer = bbox.getWidth() * 0.2;
+        double heightBuffer = bbox.getHeight() * 0.2;
+        
+        // Create a new envelope with the buffer
+        return new Envelope(
+            bbox.getMinX() - widthBuffer,
+            bbox.getMaxX() + widthBuffer,
+            bbox.getMinY() - heightBuffer,
+            bbox.getMaxY() + heightBuffer
+        );
     }
 
     private static Graph<Point, DefaultWeightedEdge> loadRoadNetwork(Envelope bbox) throws Exception {
         // Create a weighted graph
         Graph<Point, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
 
+        // Add a small additional buffer for the OSM query to ensure we get complete roads
+        Envelope queryBbox = new Envelope(bbox);
+        queryBbox.expandBy(0.01); // Add 0.01 degrees buffer (roughly 1km)
+
         // Download or load from cache OSM data
         System.out.println("Loading OpenStreetMap data...");
-        Map<String, Object> osmData = OSMDataCache.getOrDownloadData(bbox);
+        Map<String, Object> osmData = OSMDataCache.getOrDownloadData(queryBbox);
         
         // Add nodes to graph
         @SuppressWarnings("unchecked")
@@ -186,7 +202,9 @@ public class CreateRoadNetwork {
         DijkstraShortestPath<Point, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<>(network);
 
         // Connect each point to its k nearest neighbors
-        int k = 3;
+        int k = 3;  // Number of nearest neighbors to connect to
+        int maxAttempts = 5;  // Maximum number of attempts to find valid neighbors
+        
         for (int i = 0; i < points.size(); i++) {
             Point p1 = points.get(i);
             Point node1 = pointToNode.get(p1);
@@ -201,18 +219,21 @@ public class CreateRoadNetwork {
                 }
             }
 
-            // Sort by distance and get k nearest neighbors
+            // Sort by distance and try to connect to k nearest neighbors
             distances.sort(Comparator.comparingDouble(pd -> pd.distance));
-            for (int j = 0; j < Math.min(k, distances.size()); j++) {
-                Point p2 = points.get(distances.get(j).index);
+            int connectedPaths = 0;
+            int attemptIndex = 0;
+            
+            while (connectedPaths < k && attemptIndex < Math.min(maxAttempts * k, distances.size())) {
+                Point p2 = points.get(distances.get(attemptIndex).index);
                 Point node2 = pointToNode.get(p2);
 
                 GraphPath<Point, DefaultWeightedEdge> path = dijkstra.getPath(node1, node2);
                 if (path != null) {
                     paths.add(new ArrayList<>(path.getVertexList()));
-                } else {
-                    System.out.printf("No path found between points %d and %d%n", i, distances.get(j).index);
+                    connectedPaths++;
                 }
+                attemptIndex++;
             }
         }
 
@@ -222,56 +243,57 @@ public class CreateRoadNetwork {
     private static void visualizeNetwork(Graph<Point, DefaultWeightedEdge> network, List<Point> points,
                                        List<List<Point>> paths) throws Exception {
         // Create feature types
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("Network");
-        builder.setCRS(DefaultGeographicCRS.WGS84);
-        builder.add("geometry", LineString.class);
-        SimpleFeatureType networkType = builder.buildFeatureType();
+        SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
+        pointBuilder.setName("Points");
+        pointBuilder.setCRS(DefaultGeographicCRS.WGS84);
+        pointBuilder.add("geometry", Point.class);
+        SimpleFeatureType pointType = pointBuilder.buildFeatureType();
 
-        builder = new SimpleFeatureTypeBuilder();
-        builder.setName("Points");
-        builder.setCRS(DefaultGeographicCRS.WGS84);
-        builder.add("geometry", Point.class);
-        SimpleFeatureType pointType = builder.buildFeatureType();
+        SimpleFeatureTypeBuilder networkBuilder = new SimpleFeatureTypeBuilder();
+        networkBuilder.setName("Network");
+        networkBuilder.setCRS(DefaultGeographicCRS.WGS84);
+        networkBuilder.add("geometry", LineString.class);
+        SimpleFeatureType networkType = networkBuilder.buildFeatureType();
 
-        // Create features
-        DefaultFeatureCollection networkCollection = new DefaultFeatureCollection();
+        // Create features collections
         DefaultFeatureCollection pointCollection = new DefaultFeatureCollection();
+        DefaultFeatureCollection networkCollection = new DefaultFeatureCollection();
         DefaultFeatureCollection pathCollection = new DefaultFeatureCollection();
 
-        SimpleFeatureBuilder networkFeatureBuilder = new SimpleFeatureBuilder(networkType);
-        SimpleFeatureBuilder pointFeatureBuilder = new SimpleFeatureBuilder(pointType);
-
-        // Add network edges
-        for (DefaultWeightedEdge edge : network.edgeSet()) {
-            Point source = network.getEdgeSource(edge);
-            Point target = network.getEdgeTarget(edge);
-            LineString line = geometryFactory.createLineString(new Coordinate[]{
-                    source.getCoordinate(),
-                    target.getCoordinate()
-            });
-            networkFeatureBuilder.add(line);
-            networkCollection.add(networkFeatureBuilder.buildFeature(null));
-        }
-
         // Add points
+        SimpleFeatureBuilder pointFeatureBuilder = new SimpleFeatureBuilder(pointType);
         for (Point point : points) {
             pointFeatureBuilder.add(point);
             pointCollection.add(pointFeatureBuilder.buildFeature(null));
         }
 
-        // Add paths
-        for (List<Point> path : paths) {
-            Coordinate[] coords = path.stream()
-                    .map(Point::getCoordinate)
-                    .toArray(Coordinate[]::new);
-            LineString line = geometryFactory.createLineString(coords);
+        // Add network edges
+        SimpleFeatureBuilder networkFeatureBuilder = new SimpleFeatureBuilder(networkType);
+        for (DefaultWeightedEdge edge : network.edgeSet()) {
+            Point source = network.getEdgeSource(edge);
+            Point target = network.getEdgeTarget(edge);
+            LineString line = geometryFactory.createLineString(new Coordinate[]{
+                source.getCoordinate(),
+                target.getCoordinate()
+            });
             networkFeatureBuilder.add(line);
-            pathCollection.add(networkFeatureBuilder.buildFeature(null));
+            networkCollection.add(networkFeatureBuilder.buildFeature(null));
+        }
+
+        // Add paths (only if they have at least 2 points)
+        for (List<Point> path : paths) {
+            if (path.size() >= 2) {  // Only create LineString if we have at least 2 points
+                Coordinate[] coords = path.stream()
+                        .map(Point::getCoordinate)
+                        .toArray(Coordinate[]::new);
+                LineString line = geometryFactory.createLineString(coords);
+                networkFeatureBuilder.add(line);
+                pathCollection.add(networkFeatureBuilder.buildFeature(null));
+            }
         }
 
         // Create styles
-        Style networkStyle = SLD.createLineStyle(Color.GRAY, 1);
+        Style networkStyle = SLD.createLineStyle(Color.LIGHT_GRAY, 0.5f);  // Make base network lighter
         Style pointStyle = SLD.createPointStyle("circle", Color.RED, Color.RED, 1, 5);
         Style pathStyle = SLD.createLineStyle(Color.BLUE, 2);
 
