@@ -1,0 +1,358 @@
+package com.izmir.transportation;
+
+import java.awt.Color;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.geotools.data.DefaultTransaction;
+import org.geotools.data.Transaction;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.map.FeatureLayer;
+import org.geotools.map.MapContent;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
+import org.geotools.swing.JMapFrame;
+import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.index.strtree.ItemBoundable;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.opengis.feature.simple.SimpleFeatureType;
+
+public class CreateRoadNetwork {
+    private static final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+
+    public static void main(String[] args) {
+        try {
+            // Read the random points
+            System.out.println("Loading points...");
+            List<Point> points = loadPoints("random_izmir_points.csv");
+
+            // Get bounding box
+            Envelope bbox = getBoundingBox(points);
+            double padding = 0.02;
+            bbox.expandBy(padding);
+
+            // Download road network (using OpenStreetMap data)
+            System.out.println("Loading road network...");
+            Graph<Point, DefaultWeightedEdge> roadNetwork = loadRoadNetwork(bbox);
+
+            // Snap points to nearest network nodes
+            System.out.println("Snapping points to nearest network nodes...");
+            Map<Point, Point> pointToNode = snapPointsToNetwork(points, roadNetwork);
+
+            // Create edges between points using shortest paths
+            System.out.println("Creating edges using shortest paths...");
+            List<List<Point>> paths = createPaths(points, pointToNode, roadNetwork);
+
+            // Visualize the results
+            visualizeNetwork(roadNetwork, points, paths);
+
+            // Save the network data
+            System.out.println("Saving network data...");
+            saveNetworkData(roadNetwork, points, pointToNode, paths);
+
+            System.out.println("Done! Network data has been saved.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static List<Point> loadPoints(String csvFile) throws IOException {
+        List<Point> points = new ArrayList<>();
+        try (Reader reader = new FileReader(csvFile);
+             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+            for (CSVRecord record : csvParser) {
+                double longitude = Double.parseDouble(record.get("longitude"));
+                double latitude = Double.parseDouble(record.get("latitude"));
+                points.add(geometryFactory.createPoint(new Coordinate(longitude, latitude)));
+            }
+        }
+        return points;
+    }
+
+    private static Envelope getBoundingBox(List<Point> points) {
+        Envelope bbox = new Envelope();
+        for (Point point : points) {
+            bbox.expandToInclude(point.getCoordinate());
+        }
+        return bbox;
+    }
+
+    private static Graph<Point, DefaultWeightedEdge> loadRoadNetwork(Envelope bbox) throws Exception {
+        // Create a weighted graph
+        Graph<Point, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+
+        // Download or load from cache OSM data
+        System.out.println("Loading OpenStreetMap data...");
+        Map<String, Object> osmData = OSMDataCache.getOrDownloadData(bbox);
+        
+        // Add nodes to graph
+        @SuppressWarnings("unchecked")
+        Map<String, Point> nodes = (Map<String, Point>) osmData.get("nodes");
+        for (Point point : nodes.values()) {
+            graph.addVertex(point);
+        }
+
+        // Add edges to graph
+        @SuppressWarnings("unchecked")
+        List<LineString> ways = (List<LineString>) osmData.get("ways");
+        for (LineString way : ways) {
+            Coordinate[] coords = way.getCoordinates();
+            for (int i = 0; i < coords.length - 1; i++) {
+                Point p1 = geometryFactory.createPoint(coords[i]);
+                Point p2 = geometryFactory.createPoint(coords[i + 1]);
+                
+                if (!graph.containsVertex(p1)) {
+                    graph.addVertex(p1);
+                }
+                if (!graph.containsVertex(p2)) {
+                    graph.addVertex(p2);
+                }
+                
+                DefaultWeightedEdge edge = graph.addEdge(p1, p2);
+                if (edge != null) {
+                    double distance = OSMUtils.calculateLength(
+                        geometryFactory.createLineString(new Coordinate[]{coords[i], coords[i + 1]})
+                    );
+                    graph.setEdgeWeight(edge, distance);
+                }
+            }
+        }
+
+        System.out.println("Road network loaded: " + graph.vertexSet().size() + " nodes, " + 
+                          graph.edgeSet().size() + " edges");
+        return graph;
+    }
+
+    private static Map<Point, Point> snapPointsToNetwork(List<Point> points, Graph<Point, DefaultWeightedEdge> network) {
+        Map<Point, Point> pointToNode = new HashMap<>();
+        STRtree spatialIndex = new STRtree();
+
+        // Build spatial index of network nodes
+        for (Point node : network.vertexSet()) {
+            spatialIndex.insert(node.getEnvelopeInternal(), node);
+        }
+
+        // Find nearest network node for each point
+        for (Point point : points) {
+            Object nearestObj = spatialIndex.nearestNeighbour(
+                    point.getEnvelopeInternal(),
+                    point,
+                    (item1, item2) -> {
+                        Point p1 = (Point) ((ItemBoundable) item1).getItem();
+                        Point p2 = (Point) ((ItemBoundable) item2).getItem();
+                        return p1.distance(p2);
+                    });
+            Point nearestNode = (Point) nearestObj;
+            pointToNode.put(point, nearestNode);
+        }
+
+        return pointToNode;
+    }
+
+    private static List<List<Point>> createPaths(List<Point> points, Map<Point, Point> pointToNode,
+                                               Graph<Point, DefaultWeightedEdge> network) {
+        List<List<Point>> paths = new ArrayList<>();
+        DijkstraShortestPath<Point, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<>(network);
+
+        // Connect each point to its k nearest neighbors
+        int k = 3;
+        for (int i = 0; i < points.size(); i++) {
+            Point p1 = points.get(i);
+            Point node1 = pointToNode.get(p1);
+
+            // Calculate distances to all other points
+            List<PointDistance> distances = new ArrayList<>();
+            for (int j = 0; j < points.size(); j++) {
+                if (i != j) {
+                    Point p2 = points.get(j);
+                    double distance = p1.distance(p2);
+                    distances.add(new PointDistance(j, distance));
+                }
+            }
+
+            // Sort by distance and get k nearest neighbors
+            distances.sort(Comparator.comparingDouble(pd -> pd.distance));
+            for (int j = 0; j < Math.min(k, distances.size()); j++) {
+                Point p2 = points.get(distances.get(j).index);
+                Point node2 = pointToNode.get(p2);
+
+                GraphPath<Point, DefaultWeightedEdge> path = dijkstra.getPath(node1, node2);
+                if (path != null) {
+                    paths.add(new ArrayList<>(path.getVertexList()));
+                } else {
+                    System.out.printf("No path found between points %d and %d%n", i, distances.get(j).index);
+                }
+            }
+        }
+
+        return paths;
+    }
+
+    private static void visualizeNetwork(Graph<Point, DefaultWeightedEdge> network, List<Point> points,
+                                       List<List<Point>> paths) throws Exception {
+        // Create feature types
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("Network");
+        builder.setCRS(DefaultGeographicCRS.WGS84);
+        builder.add("geometry", LineString.class);
+        SimpleFeatureType networkType = builder.buildFeatureType();
+
+        builder = new SimpleFeatureTypeBuilder();
+        builder.setName("Points");
+        builder.setCRS(DefaultGeographicCRS.WGS84);
+        builder.add("geometry", Point.class);
+        SimpleFeatureType pointType = builder.buildFeatureType();
+
+        // Create features
+        DefaultFeatureCollection networkCollection = new DefaultFeatureCollection();
+        DefaultFeatureCollection pointCollection = new DefaultFeatureCollection();
+        DefaultFeatureCollection pathCollection = new DefaultFeatureCollection();
+
+        SimpleFeatureBuilder networkFeatureBuilder = new SimpleFeatureBuilder(networkType);
+        SimpleFeatureBuilder pointFeatureBuilder = new SimpleFeatureBuilder(pointType);
+
+        // Add network edges
+        for (DefaultWeightedEdge edge : network.edgeSet()) {
+            Point source = network.getEdgeSource(edge);
+            Point target = network.getEdgeTarget(edge);
+            LineString line = geometryFactory.createLineString(new Coordinate[]{
+                    source.getCoordinate(),
+                    target.getCoordinate()
+            });
+            networkFeatureBuilder.add(line);
+            networkCollection.add(networkFeatureBuilder.buildFeature(null));
+        }
+
+        // Add points
+        for (Point point : points) {
+            pointFeatureBuilder.add(point);
+            pointCollection.add(pointFeatureBuilder.buildFeature(null));
+        }
+
+        // Add paths
+        for (List<Point> path : paths) {
+            Coordinate[] coords = path.stream()
+                    .map(Point::getCoordinate)
+                    .toArray(Coordinate[]::new);
+            LineString line = geometryFactory.createLineString(coords);
+            networkFeatureBuilder.add(line);
+            pathCollection.add(networkFeatureBuilder.buildFeature(null));
+        }
+
+        // Create styles
+        Style networkStyle = SLD.createLineStyle(Color.GRAY, 1);
+        Style pointStyle = SLD.createPointStyle("circle", Color.RED, Color.RED, 1, 5);
+        Style pathStyle = SLD.createLineStyle(Color.BLUE, 2);
+
+        // Create map
+        MapContent map = new MapContent();
+        map.setTitle("Izmir Transportation Network");
+        map.addLayer(new FeatureLayer(networkCollection, networkStyle));
+        map.addLayer(new FeatureLayer(pathCollection, pathStyle));
+        map.addLayer(new FeatureLayer(pointCollection, pointStyle));
+
+        // Show map
+        JMapFrame.showMap(map);
+    }
+
+    private static void saveNetworkData(Graph<Point, DefaultWeightedEdge> network, List<Point> points,
+                                      Map<Point, Point> pointToNode, List<List<Point>> paths) throws IOException {
+        // Save node locations
+        try (CSVPrinter printer = new CSVPrinter(
+                new FileWriter("izmir_network_nodes.csv", StandardCharsets.UTF_8),
+                CSVFormat.DEFAULT.withHeader("node_id", "network_node_id", "longitude", "latitude"))) {
+            for (int i = 0; i < points.size(); i++) {
+                Point point = points.get(i);
+                Point node = pointToNode.get(point);
+                printer.printRecord(i, node.hashCode(), point.getX(), point.getY());
+            }
+        }
+
+        // Save network as shapefile
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("Roads");
+        builder.setCRS(DefaultGeographicCRS.WGS84);
+        builder.add("geometry", LineString.class);
+        SimpleFeatureType roadType = builder.buildFeatureType();
+
+        DefaultFeatureCollection roads = new DefaultFeatureCollection();
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(roadType);
+
+        for (DefaultWeightedEdge edge : network.edgeSet()) {
+            Point source = network.getEdgeSource(edge);
+            Point target = network.getEdgeTarget(edge);
+            LineString line = geometryFactory.createLineString(new Coordinate[]{
+                    source.getCoordinate(),
+                    target.getCoordinate()
+            });
+            featureBuilder.add(line);
+            roads.add(featureBuilder.buildFeature(null));
+        }
+
+        File file = new File("izmir_road_network.shp");
+        Map<String, Serializable> params = new HashMap<>();
+        params.put("url", file.toURI().toURL());
+        params.put("create spatial index", Boolean.TRUE);
+
+        ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
+        ShapefileDataStore dataStore = (ShapefileDataStore) dataStoreFactory.createDataStore(params);
+        dataStore.createSchema(roadType);
+
+        Transaction transaction = new DefaultTransaction("create");
+        String typeName = dataStore.getTypeNames()[0];
+        SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore.getFeatureSource(typeName);
+        featureStore.setTransaction(transaction);
+
+        try {
+            featureStore.addFeatures(roads);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new IOException("Error saving shapefile", e);
+        } finally {
+            transaction.close();
+            dataStore.dispose();
+        }
+    }
+
+    private static class PointDistance {
+        final int index;
+        final double distance;
+
+        PointDistance(int index, double distance) {
+            this.index = index;
+            this.distance = distance;
+        }
+    }
+} 

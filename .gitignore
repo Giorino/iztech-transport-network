@@ -1,2 +1,6 @@
-myenv
+env
+cache
 .idea
+target
+osm_cache
+.vscode
