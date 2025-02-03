@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -38,11 +40,17 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * A class for generating and visualizing random points within the Izmir bay area.
+ * Points are generated based on population density, ensuring a realistic distribution
+ * of vertices for the transportation network analysis.
+ * 
+ * @author yagizugurveren
+ */
 public class IzmirBayGraph {
     private static final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
     private static Polygon izmirBoundary;
 
-    // Population centers with weights (based on population)
     private static final Map<Point, Double> POPULATION_CENTERS = new HashMap<>();
 
     static {
@@ -50,38 +58,55 @@ public class IzmirBayGraph {
         loadPopulationCenters();
     }
 
+    /**
+     * Loads the Izmir boundary from a GeoJSON file in the resources.
+     * The boundary is used to constrain the generated points within Izmir's limits.
+     */
     private static void loadIzmirBoundary() {
         try {
-            String jsonContent = new String(Files.readAllBytes(Paths.get("src/main/resources/izmir.json")));
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(jsonContent);
-            JsonNode coordinates = root.path("geometry").path("coordinates").get(0);
+            try (InputStream is = IzmirBayGraph.class.getResourceAsStream("/izmir.json")) {
+                if (is == null) {
+                    throw new IOException("Could not find izmir.json in resources");
+                }
+                String jsonContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(jsonContent);
+                JsonNode coordinates = root.path("geometry").path("coordinates").get(0);
 
-            Coordinate[] coords = new Coordinate[coordinates.size()];
-            for (int i = 0; i < coordinates.size(); i++) {
-                JsonNode coord = coordinates.get(i);
-                double lon = coord.get(0).asDouble();
-                double lat = coord.get(1).asDouble();
-                coords[i] = new Coordinate(lon, lat);
-            }
-            // Close the ring by adding the first coordinate again
-            if (!coords[0].equals(coords[coords.length - 1])) {
-                Coordinate[] closedCoords = new Coordinate[coords.length + 1];
-                System.arraycopy(coords, 0, closedCoords, 0, coords.length);
-                closedCoords[coords.length] = coords[0];
-                coords = closedCoords;
-            }
+                Coordinate[] coords = new Coordinate[coordinates.size()];
+                for (int i = 0; i < coordinates.size(); i++) {
+                    JsonNode coord = coordinates.get(i);
+                    double lon = coord.get(0).asDouble();
+                    double lat = coord.get(1).asDouble();
+                    coords[i] = new Coordinate(lon, lat);
+                }
+                // Close the ring by adding the first coordinate again
+                if (!coords[0].equals(coords[coords.length - 1])) {
+                    Coordinate[] closedCoords = new Coordinate[coords.length + 1];
+                    System.arraycopy(coords, 0, closedCoords, 0, coords.length);
+                    closedCoords[coords.length] = coords[0];
+                    coords = closedCoords;
+                }
 
-            LinearRing ring = geometryFactory.createLinearRing(coords);
-            izmirBoundary = geometryFactory.createPolygon(ring);
+                LinearRing ring = geometryFactory.createLinearRing(coords);
+                izmirBoundary = geometryFactory.createPolygon(ring);
+            }
         } catch (IOException e) {
             System.err.println("Error reading Izmir boundary: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    /**
+     * Loads population centers and their weights from a CSV file in the resources.
+     * The weights are normalized based on the population of each center.
+     */
     private static void loadPopulationCenters() {
-        try (Reader reader = new FileReader("src/main/resources/neighborhood_population.csv")) {
+        try (InputStream is = IzmirBayGraph.class.getResourceAsStream("/neighborhood_population.csv")) {
+            if (is == null) {
+                throw new IOException("Could not find neighborhood_population.csv in resources");
+            }
+            Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
             CSVParser csvParser = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .parse(reader);
@@ -96,8 +121,12 @@ public class IzmirBayGraph {
             }
 
             // Reset the reader and parser
-            reader.close();
-            Reader secondReader = new FileReader("src/main/resources/neighborhood_population.csv");
+            is.close();
+            InputStream secondIs = IzmirBayGraph.class.getResourceAsStream("/neighborhood_population.csv");
+            if (secondIs == null) {
+                throw new IOException("Could not find neighborhood_population.csv in resources");
+            }
+            Reader secondReader = new InputStreamReader(secondIs, StandardCharsets.UTF_8);
             csvParser = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .parse(secondReader);
@@ -120,11 +149,16 @@ public class IzmirBayGraph {
         }
     }
 
+    /**
+     * Main method to generate, save, and visualize random points in Izmir.
+     * 
+     * @param args Command line arguments (not used in current implementation)
+     */
     public static void main(String[] args) {
         try {
             // Generate random points
-            System.out.println("Generating random points...");
-            List<Point> points = generateRandomPoints(1000, 0.05);
+            System.out.println("Generating random vertices...");
+            List<Point> points = generateRandomPoints(1000, 0.01);
 
             // Save points to CSV
             System.out.println("Saving points to CSV...");
@@ -141,12 +175,20 @@ public class IzmirBayGraph {
         }
     }
 
+    /**
+     * Generates a specified number of random points within the Izmir boundary.
+     * Points are generated with respect to population centers and their weights.
+     *
+     * @param numPoints The number of points to generate
+     * @param standardDeviation The standard deviation for the Gaussian distribution around population centers
+     * @return List of generated points
+     */
     private static List<Point> generateRandomPoints(int numPoints, double standardDeviation) {
         List<Point> points = new ArrayList<>();
         Random random = new Random();
 
         while (points.size() < numPoints) {
-            // Always generate points relative to population centers, but with varying spread
+            // generate points relative to population centers
             Point point = generatePointWithSpread(random, standardDeviation);
 
             // Only add the point if it's within the Izmir boundary
@@ -158,6 +200,14 @@ public class IzmirBayGraph {
         return points;
     }
 
+    /**
+     * Generates a single point with Gaussian spread around a randomly selected population center.
+     * The selection of the center is weighted by population.
+     *
+     * @param random Random number generator
+     * @param standardDeviation Standard deviation for the Gaussian distribution
+     * @return A new point generated around a population center
+     */
     private static Point generatePointWithSpread(Random random, double standardDeviation) {
         // Select a random population center based on weights
         double totalWeight = POPULATION_CENTERS.values().stream().mapToDouble(Double::doubleValue).sum();
@@ -194,6 +244,13 @@ public class IzmirBayGraph {
         return candidate;
     }
 
+    /**
+     * Saves the generated points to a CSV file.
+     *
+     * @param points List of points to save
+     * @param filename Name of the output CSV file
+     * @throws IOException If there is an error writing to the file
+     */
     private static void savePointsToCSV(List<Point> points, String filename) throws IOException {
         try (CSVPrinter printer = new CSVPrinter(
                 new FileWriter(filename, StandardCharsets.UTF_8),
@@ -204,6 +261,13 @@ public class IzmirBayGraph {
         }
     }
 
+    /**
+     * Visualizes the generated points and the Izmir boundary on a map.
+     * Creates a GUI window showing the points overlaid on the boundary.
+     *
+     * @param points List of points to visualize
+     * @throws Exception If there is an error creating or showing the map
+     */
     private static void visualizePoints(List<Point> points) throws Exception {
         // Create feature types
         SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
