@@ -1,15 +1,12 @@
 package com.izmir.transportation;
 
 import java.awt.Color;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +53,32 @@ public class IzmirBayGraph {
     static {
         loadIzmirBoundary();
         loadPopulationCenters();
+    }
+
+    /**
+     * Main method to generate, save, and visualize random points in Izmir.
+     *
+     * @param args Command line arguments (not used in current implementation)
+     */
+    public static void main(String[] args) {
+        try {
+            // Generate random points
+            System.out.println("Generating random vertices...");
+            List<Point> points = generateRandomPoints(1000, 0.01);
+
+            // Save points to CSV
+            System.out.println("Saving points to CSV...");
+            savePointsToCSV(points, "random_izmir_points.csv");
+
+            // Visualize points
+            System.out.println("Visualizing points...");
+            visualizePoints(points);
+
+            System.out.println("Done! Points have been generated and saved.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -145,32 +168,6 @@ public class IzmirBayGraph {
             }
         } catch (IOException e) {
             System.err.println("Error reading neighborhood population data: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Main method to generate, save, and visualize random points in Izmir.
-     * 
-     * @param args Command line arguments (not used in current implementation)
-     */
-    public static void main(String[] args) {
-        try {
-            // Generate random points
-            System.out.println("Generating random vertices...");
-            List<Point> points = generateRandomPoints(1000, 0.01);
-
-            // Save points to CSV
-            System.out.println("Saving points to CSV...");
-            savePointsToCSV(points, "random_izmir_points.csv");
-
-            // Visualize points
-            System.out.println("Visualizing points...");
-            visualizePoints(points);
-
-            System.out.println("Done! Points have been generated and saved.");
-
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
