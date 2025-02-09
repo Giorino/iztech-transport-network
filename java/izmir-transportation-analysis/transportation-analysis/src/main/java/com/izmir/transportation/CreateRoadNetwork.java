@@ -91,7 +91,7 @@ public class CreateRoadNetwork {
 
             // Save the network data
             System.out.println("Saving network data...");
-            saveNetworkData(roadNetwork, points, pointToNode, paths);
+            saveNetworkData(roadNetwork, points, pointToNode, paths, false);
 
             System.out.println("Done! Network data has been saved.");
 
@@ -249,8 +249,16 @@ public class CreateRoadNetwork {
         List<List<Point>> paths = new ArrayList<>();
         DijkstraShortestPath<Point, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<>(network);
 
+        // Create transportation graph
+        TransportationGraph transportationGraph = new TransportationGraph(points);
+
+        // Update node mappings
+        for (Map.Entry<Point, Point> entry : pointToNode.entrySet()) {
+            transportationGraph.updateNodeMapping(entry.getKey(), entry.getValue());
+        }
+
         // Connect each point to its k nearest neighbors
-        int k = 3;  // Number of nearest neighbors to connect to
+        int k = 25;  // Number of nearest neighbors to connect to
         int maxAttempts = 5;  // Maximum number of attempts to find valid neighbors
         
         for (int i = 0; i < points.size(); i++) {
@@ -278,12 +286,21 @@ public class CreateRoadNetwork {
 
                 GraphPath<Point, DefaultWeightedEdge> path = dijkstra.getPath(node1, node2);
                 if (path != null) {
-                    paths.add(new ArrayList<>(path.getVertexList()));
+                    List<Point> pathPoints = new ArrayList<>(path.getVertexList());
+                    paths.add(pathPoints);
+                    
+                    // Add connection to transportation graph with actual path distance in meters
+                    double pathDistance = path.getWeight(); // Weight is already in meters from OSMUtils.calculateLength
+                    transportationGraph.addConnection(p1, p2, pathDistance);
+                    
                     connectedPaths++;
                 }
                 attemptIndex++;
             }
         }
+
+        // Visualize the transportation graph
+        transportationGraph.visualizeGraph();
 
         return paths;
     }
@@ -350,7 +367,7 @@ public class CreateRoadNetwork {
 
         // Create styles
         Style networkStyle = SLD.createLineStyle(Color.LIGHT_GRAY, 0.5f);  // Make base network lighter
-        Style pointStyle = SLD.createPointStyle("circle", Color.RED, Color.RED, 1, 5);
+        Style pointStyle = SLD.createPointStyle("circle", Color.BLACK, Color.RED, 1, 7);
         Style pathStyle = SLD.createLineStyle(Color.BLUE, 2);
 
         // Create map
@@ -374,7 +391,8 @@ public class CreateRoadNetwork {
      * @throws IOException If there is an error saving the data
      */
     private static void saveNetworkData(Graph<Point, DefaultWeightedEdge> network, List<Point> points,
-                                      Map<Point, Point> pointToNode, List<List<Point>> paths) throws IOException {
+                                      Map<Point, Point> pointToNode, List<List<Point>> paths, boolean buildShapeFile) throws IOException {
+        System.out.println("Saving node locations to CSV...");
         // Save node locations
         try (CSVPrinter printer = new CSVPrinter(
                 new FileWriter("izmir_network_nodes.csv", StandardCharsets.UTF_8),
@@ -386,51 +404,80 @@ public class CreateRoadNetwork {
             }
         }
 
-        // Save network as shapefile
-        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.setName("Roads");
-        builder.setCRS(DefaultGeographicCRS.WGS84);
-        builder.add("geometry", LineString.class);
-        SimpleFeatureType roadType = builder.buildFeatureType();
+        if(buildShapeFile){
+            System.out.println("Setting up shapefile structure...");
+            // Save network as shapefile
+            SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+            builder.setName("Roads");
+            builder.setCRS(DefaultGeographicCRS.WGS84);
+            builder.add("geometry", LineString.class);
+            builder.add("edge_id", Integer.class);
+            SimpleFeatureType roadType = builder.buildFeatureType();
 
-        DefaultFeatureCollection roads = new DefaultFeatureCollection();
-        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(roadType);
+            File file = new File("izmir_road_network.shp");
+            Map<String, Serializable> params = new HashMap<>();
+            params.put("url", file.toURI().toURL());
+            params.put("create spatial index", Boolean.TRUE);
 
-        for (DefaultWeightedEdge edge : network.edgeSet()) {
-            Point source = network.getEdgeSource(edge);
-            Point target = network.getEdgeTarget(edge);
-            LineString line = geometryFactory.createLineString(new Coordinate[]{
-                    source.getCoordinate(),
-                    target.getCoordinate()
-            });
-            featureBuilder.add(line);
-            roads.add(featureBuilder.buildFeature(null));
+            ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
+            ShapefileDataStore dataStore = (ShapefileDataStore) dataStoreFactory.createDataStore(params);
+            dataStore.createSchema(roadType);
+
+            Transaction transaction = new DefaultTransaction("create");
+            String typeName = dataStore.getTypeNames()[0];
+            SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore.getFeatureSource(typeName);
+            featureStore.setTransaction(transaction);
+
+            try {
+                System.out.println("Starting to save edges to shapefile...");
+                int totalEdges = network.edgeSet().size();
+                int batchSize = 10000;
+                int currentBatch = 0;
+                DefaultFeatureCollection roads = new DefaultFeatureCollection();
+                SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(roadType);
+
+                int edgeCounter = 0;
+                for (DefaultWeightedEdge edge : network.edgeSet()) {
+                    Point source = network.getEdgeSource(edge);
+                    Point target = network.getEdgeTarget(edge);
+                    LineString line = geometryFactory.createLineString(new Coordinate[]{
+                            source.getCoordinate(),
+                            target.getCoordinate()
+                    });
+                    featureBuilder.add(line);
+                    featureBuilder.add(edgeCounter);
+                    roads.add(featureBuilder.buildFeature(String.valueOf(edgeCounter)));
+
+                    edgeCounter++;
+
+                    // Process in batches to manage memory
+                    if (roads.size() >= batchSize || edgeCounter == totalEdges) {
+                        currentBatch++;
+                        System.out.printf("Saving batch %d (edges %d-%d of %d)...%n",
+                                currentBatch, (currentBatch-1)*batchSize,
+                                Math.min(currentBatch*batchSize, totalEdges), totalEdges);
+
+                        featureStore.addFeatures(roads);
+                        roads.clear();
+
+                        // Commit each batch
+                        transaction.commit();
+                        System.gc(); // Suggest garbage collection after each batch
+                    }
+                }
+
+                System.out.println("Successfully saved all edges to shapefile.");
+            } catch (Exception e) {
+                System.err.println("Error saving shapefile: " + e.getMessage());
+                transaction.rollback();
+                throw new IOException("Error saving shapefile", e);
+            } finally {
+                transaction.close();
+                dataStore.dispose();
+            }
         }
 
-        File file = new File("izmir_road_network.shp");
-        Map<String, Serializable> params = new HashMap<>();
-        params.put("url", file.toURI().toURL());
-        params.put("create spatial index", Boolean.TRUE);
-
-        ShapefileDataStoreFactory dataStoreFactory = new ShapefileDataStoreFactory();
-        ShapefileDataStore dataStore = (ShapefileDataStore) dataStoreFactory.createDataStore(params);
-        dataStore.createSchema(roadType);
-
-        Transaction transaction = new DefaultTransaction("create");
-        String typeName = dataStore.getTypeNames()[0];
-        SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore.getFeatureSource(typeName);
-        featureStore.setTransaction(transaction);
-
-        try {
-            featureStore.addFeatures(roads);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            throw new IOException("Error saving shapefile", e);
-        } finally {
-            transaction.close();
-            dataStore.dispose();
-        }
+        System.out.println("Network data save completed successfully.");
     }
 
     
