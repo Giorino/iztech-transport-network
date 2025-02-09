@@ -158,7 +158,7 @@ public class OSMUtils {
     }
 
     private static double calculateDistance(Coordinate c1, Coordinate c2) {
-        final int R = 6371; // Earth's radius in kilometers
+        final int R = 6371000; // Earth's radius in meters (changed from kilometers)
 
         double lat1 = Math.toRadians(c1.y);
         double lat2 = Math.toRadians(c2.y);
@@ -170,6 +170,6 @@ public class OSMUtils {
                 Math.sin(dLon/2) * Math.sin(dLon/2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-        return R * c;
+        return R * c; // Returns distance in meters
     }
 } 

@@ -258,7 +258,7 @@ public class CreateRoadNetwork {
         }
 
         // Connect each point to its k nearest neighbors
-        int k = 5;  // Number of nearest neighbors to connect to
+        int k = 25;  // Number of nearest neighbors to connect to
         int maxAttempts = 5;  // Maximum number of attempts to find valid neighbors
         
         for (int i = 0; i < points.size(); i++) {
@@ -289,8 +289,8 @@ public class CreateRoadNetwork {
                     List<Point> pathPoints = new ArrayList<>(path.getVertexList());
                     paths.add(pathPoints);
                     
-                    // Add connection to transportation graph with actual path distance
-                    double pathDistance = path.getWeight();
+                    // Add connection to transportation graph with actual path distance in meters
+                    double pathDistance = path.getWeight(); // Weight is already in meters from OSMUtils.calculateLength
                     transportationGraph.addConnection(p1, p2, pathDistance);
                     
                     connectedPaths++;
