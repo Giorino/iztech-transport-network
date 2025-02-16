@@ -258,7 +258,7 @@ public class CreateRoadNetwork {
         }
 
         // Connect each point to its k nearest neighbors
-        int k = 25;  // Number of nearest neighbors to connect to
+        int k = 5;  // Number of nearest neighbors to connect to
         int maxAttempts = 5;  // Maximum number of attempts to find valid neighbors
         
         for (int i = 0; i < points.size(); i++) {
