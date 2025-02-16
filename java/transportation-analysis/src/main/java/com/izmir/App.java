@@ -3,6 +3,8 @@ package com.izmir;
 import com.izmir.transportation.CreateRoadNetwork;
 import com.izmir.transportation.IzmirBayGraph;
 
+import java.util.logging.Logger;
+
 /**
  * Main application class for the Iztech Transportation Analysis project.
  * This class coordinates the execution of three main processes:
@@ -23,25 +25,27 @@ public class App
      *
      * @param args Command line arguments (not used in current implementation)
      */
+
+    static Logger LOGGER = Logger.getLogger(App.class.getName());
+
     public static void main( String[] args )
     {
         try {
-            System.out.println("Starting Iztech Transportation Analysis...");
-            
+            LOGGER.info("Starting Iztech Transportation Analysis...");
             // Step 1: Generate random points using IzmirBayGraph
-            System.out.println("\nStep 1: Generating random vertices...");
+            LOGGER.info("Step 1: Generating random vertices...");
             IzmirBayGraph.main(args);
             
             // Step 2: Create road network using the generated points
-            System.out.println("\nStep 2: Creating road (edge) network...");
+            LOGGER.info("Step 2: Creating road (edge) network...");
             CreateRoadNetwork.main(args);
             
             // Step 3: The transportation graph visualization is now handled automatically
             // by CreateRoadNetwork when it creates the paths
             
-            System.out.println("\nAnalysis completed successfully!");
+            LOGGER.info("Iztech Transportation Analysis completed successfully.");
         } catch (Exception e) {
-            System.err.println("Error during analysis: " + e.getMessage());
+            LOGGER.severe("Error during analysis: " + e.getMessage());
             e.printStackTrace();
         }
     }
