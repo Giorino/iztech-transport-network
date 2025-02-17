@@ -57,13 +57,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 public class CreateRoadNetwork {
     private static final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 
-    /**
-     * Main method to create and analyze the road network.
-     * Loads points from CSV, creates a network, and visualizes the results.
-     *
-     * @param args Command line arguments (not used in current implementation)
-     */
-    public static void main(String[] args) {
+        public static void main(String[] args) {
         try {
             // Read the random points
             System.out.println("Loading points...");
@@ -127,13 +121,11 @@ public class CreateRoadNetwork {
      * @return Envelope representing the bounding box
      */
     private static Envelope getBoundingBox(List<Point> points) {
-        // First get the basic bounding box from points
         Envelope bbox = new Envelope();
         for (Point point : points) {
             bbox.expandToInclude(point.getCoordinate());
         }
         
-        // Add a significant buffer (about 20% of the width/height) to ensure we get connecting roads
         double widthBuffer = bbox.getWidth() * 0.2;
         double heightBuffer = bbox.getHeight() * 0.2;
         
@@ -249,10 +241,8 @@ public class CreateRoadNetwork {
         List<List<Point>> paths = new ArrayList<>();
         DijkstraShortestPath<Point, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<>(network);
 
-        // Create transportation graph
         TransportationGraph transportationGraph = new TransportationGraph(points);
 
-        // Update node mappings
         for (Map.Entry<Point, Point> entry : pointToNode.entrySet()) {
             transportationGraph.updateNodeMapping(entry.getKey(), entry.getValue());
         }
@@ -275,7 +265,6 @@ public class CreateRoadNetwork {
                 }
             }
 
-            // Sort by distance and try to connect to k nearest neighbors
             distances.sort(Comparator.comparingDouble(PointDistance::getDistance));
             int connectedPaths = 0;
             int attemptIndex = 0;
@@ -289,17 +278,14 @@ public class CreateRoadNetwork {
                     List<Point> pathPoints = new ArrayList<>(path.getVertexList());
                     paths.add(pathPoints);
                     
-                    // Add connection to transportation graph with actual path distance in meters
-                    double pathDistance = path.getWeight(); // Weight is already in meters from OSMUtils.calculateLength
+                    double pathDistance = path.getWeight(); 
                     transportationGraph.addConnection(p1, p2, pathDistance);
-                    
                     connectedPaths++;
                 }
                 attemptIndex++;
             }
         }
 
-        // Visualize the transportation graph
         transportationGraph.visualizeGraph();
 
         return paths;
@@ -315,7 +301,7 @@ public class CreateRoadNetwork {
      */
     private static void visualizeNetwork(Graph<Point, DefaultWeightedEdge> network, List<Point> points,
                                        List<List<Point>> paths) throws Exception {
-        // Create feature types
+        
         SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
         pointBuilder.setName("Points");
         pointBuilder.setCRS(DefaultGeographicCRS.WGS84);
@@ -328,19 +314,16 @@ public class CreateRoadNetwork {
         networkBuilder.add("geometry", LineString.class);
         SimpleFeatureType networkType = networkBuilder.buildFeatureType();
 
-        // Create features collections
         DefaultFeatureCollection pointCollection = new DefaultFeatureCollection();
         DefaultFeatureCollection networkCollection = new DefaultFeatureCollection();
         DefaultFeatureCollection pathCollection = new DefaultFeatureCollection();
 
-        // Add points
         SimpleFeatureBuilder pointFeatureBuilder = new SimpleFeatureBuilder(pointType);
         for (Point point : points) {
             pointFeatureBuilder.add(point);
             pointCollection.add(pointFeatureBuilder.buildFeature(null));
         }
 
-        // Add network edges
         SimpleFeatureBuilder networkFeatureBuilder = new SimpleFeatureBuilder(networkType);
         for (DefaultWeightedEdge edge : network.edgeSet()) {
             Point source = network.getEdgeSource(edge);
@@ -353,9 +336,8 @@ public class CreateRoadNetwork {
             networkCollection.add(networkFeatureBuilder.buildFeature(null));
         }
 
-        // Add paths (only if they have at least 2 points)
         for (List<Point> path : paths) {
-            if (path.size() >= 2) {  // Only create LineString if we have at least 2 points
+            if (path.size() >= 2) {  
                 Coordinate[] coords = path.stream()
                         .map(Point::getCoordinate)
                         .toArray(Coordinate[]::new);
@@ -365,19 +347,16 @@ public class CreateRoadNetwork {
             }
         }
 
-        // Create styles
         Style networkStyle = SLD.createLineStyle(Color.LIGHT_GRAY, 0.5f);  // Make base network lighter
         Style pointStyle = SLD.createPointStyle("circle", Color.BLACK, Color.RED, 1, 7);
         Style pathStyle = SLD.createLineStyle(Color.BLUE, 2);
 
-        // Create map
         MapContent map = new MapContent();
         map.setTitle("Izmir Transportation Network");
         map.addLayer(new FeatureLayer(networkCollection, networkStyle));
         map.addLayer(new FeatureLayer(pathCollection, pathStyle));
         map.addLayer(new FeatureLayer(pointCollection, pointStyle));
 
-        // Show map
         JMapFrame.showMap(map);
     }
 
@@ -450,7 +429,6 @@ public class CreateRoadNetwork {
 
                     edgeCounter++;
 
-                    // Process in batches to manage memory
                     if (roads.size() >= batchSize || edgeCounter == totalEdges) {
                         currentBatch++;
                         System.out.printf("Saving batch %d (edges %d-%d of %d)...%n",
@@ -460,9 +438,8 @@ public class CreateRoadNetwork {
                         featureStore.addFeatures(roads);
                         roads.clear();
 
-                        // Commit each batch
                         transaction.commit();
-                        System.gc(); // Suggest garbage collection after each batch
+                        System.gc(); 
                     }
                 }
 

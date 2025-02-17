@@ -55,16 +55,11 @@ public class IzmirBayGraph {
         loadPopulationCenters();
     }
 
-    /**
-     * Main method to generate, save, and visualize random points in Izmir.
-     *
-     * @param args Command line arguments (not used in current implementation)
-     */
     public static void main(String[] args) {
         try {
             // Generate random points
             System.out.println("Generating random vertices...");
-            List<Point> points = generateRandomPoints(250, 0.01);
+            List<Point> points = generateRandomPoints(2500, 0.01);
 
             // Save points to CSV
             System.out.println("Saving points to CSV...");
@@ -229,10 +224,9 @@ public class IzmirBayGraph {
 
         Point candidate;
         do {
-            double spreadMultiplier = 1.0 + random.nextGaussian(); // Will be negative sometimes, which is good for spread
+            double spreadMultiplier = 1.0 + random.nextGaussian(); 
             double effectiveSpread = standardDeviation * spreadMultiplier;
             
-            // Generate offset from center using the effective spread
             double lonOffset = random.nextGaussian() * effectiveSpread;
             double latOffset = random.nextGaussian() * effectiveSpread;
             

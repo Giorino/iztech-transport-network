@@ -100,7 +100,6 @@ public class TransportationGraph {
      */
     public void visualizeGraph() {
         try {
-            // Create feature types for points and lines
             SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
             pointBuilder.setName("Nodes");
             pointBuilder.setCRS(DefaultGeographicCRS.WGS84);
@@ -116,11 +115,9 @@ public class TransportationGraph {
             lineBuilder.add("label", String.class);  // Add label field for distance text
             SimpleFeatureType lineType = lineBuilder.buildFeatureType();
 
-            // Create feature collections
             DefaultFeatureCollection nodes = new DefaultFeatureCollection();
             DefaultFeatureCollection edges = new DefaultFeatureCollection();
 
-            // Add nodes to feature collection
             SimpleFeatureBuilder pointBuilder2 = new SimpleFeatureBuilder(pointType);
             for (Point point : graph.vertexSet()) {
                 pointBuilder2.add(point);
@@ -129,7 +126,6 @@ public class TransportationGraph {
                 nodes.add(feature);
             }
 
-            // Add edges to feature collection
             SimpleFeatureBuilder lineBuilder2 = new SimpleFeatureBuilder(lineType);
             for (DefaultWeightedEdge edge : graph.edgeSet()) {
                 Point source = graph.getEdgeSource(edge);
@@ -141,7 +137,6 @@ public class TransportationGraph {
                     target.getCoordinate()
                 });
 
-                // Format distance label in kilometers with one decimal place
                 String distanceLabel = String.format("%.1f km", weight * 0.001); // Convert meters to kilometers
 
                 lineBuilder2.add(line);
@@ -151,35 +146,28 @@ public class TransportationGraph {
                 edges.add(feature);
             }
 
-            // Create styles
             Style nodeStyle = SLD.createPointStyle("circle", Color.BLACK, Color.RED, 1.0f, 7);
             
-            // Create map layers
             Layer nodesLayer = new FeatureLayer(nodes, nodeStyle);
             
-            // Create edge layers with varying line thickness based on weight
             MapContent map = new MapContent();
             map.setTitle("Izmir Transportation Network Graph");
             
-            // Add edge layers with different weights and labels
             for (DefaultWeightedEdge edge : graph.edgeSet()) {
                 Point source = graph.getEdgeSource(edge);
                 Point target = graph.getEdgeTarget(edge);
                 double weight = graph.getEdgeWeight(edge);
                 
-                // Calculate line width based on weight
                 double normalizedWeight = Math.log1p(weight * WEIGHT_SCALE_FACTOR);
                 float lineWidth = (float) (MIN_EDGE_WIDTH + 
                     (normalizedWeight / Math.log1p(getMaxWeight() * WEIGHT_SCALE_FACTOR)) * 
                     (MAX_EDGE_WIDTH - MIN_EDGE_WIDTH));
                 
-                // Create line geometry
                 LineString line = geometryFactory.createLineString(new Coordinate[]{
                     source.getCoordinate(),
                     target.getCoordinate()
                 });
                 
-                // Create edge feature with label
                 SimpleFeatureType edgeType = DataUtilities.createType("Edge",
                     "geometry:LineString,weight:Double,label:String");
                 SimpleFeatureBuilder edgeBuilder = new SimpleFeatureBuilder(edgeType);
@@ -190,19 +178,15 @@ public class TransportationGraph {
                 DefaultFeatureCollection edgeCollection = new DefaultFeatureCollection();
                 edgeCollection.add(edgeBuilder.buildFeature(null));
                 
-                // Create style with line and label
                 org.geotools.styling.StyleBuilder styleBuilder = new org.geotools.styling.StyleBuilder();
                 
-                // Create line symbolizer
                 org.geotools.styling.LineSymbolizer lineSymbolizer = styleBuilder.createLineSymbolizer(Color.LIGHT_GRAY, lineWidth);
                 
-                // Create text symbolizer for the label
                 org.geotools.styling.TextSymbolizer textSymbolizer = styleBuilder.createTextSymbolizer();
                 textSymbolizer.setLabel(styleBuilder.attributeExpression("label"));
                 textSymbolizer.setFill(styleBuilder.createFill(Color.BLACK));
                 textSymbolizer.setFont(styleBuilder.createFont("Arial", 12));
                 
-                // Create the final style with both symbolizers
                 org.geotools.styling.Rule rule = styleBuilder.createRule(new org.geotools.styling.Symbolizer[]{
                     lineSymbolizer,
                     textSymbolizer
@@ -217,7 +201,6 @@ public class TransportationGraph {
             
             map.addLayer(nodesLayer);
 
-            // Create and show the map frame
             JMapFrame mapFrame = new JMapFrame(map);
             mapFrame.enableToolBar(true);
             mapFrame.enableStatusBar(true);
