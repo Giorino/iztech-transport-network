@@ -252,6 +252,10 @@ public class CreateRoadNetwork {
 
         List<List<Point>> paths = strategy.createConnections(points, pointToNode, network, transportationGraph);
         
+        // Create and visualize the affinity matrix
+        System.out.println("Creating affinity matrix...");
+        transportationGraph.createAffinityMatrix();
+        
         transportationGraph.visualizeGraph();
 
         return paths;
