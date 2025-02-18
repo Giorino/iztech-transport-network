@@ -102,7 +102,6 @@ public class TransportationGraph {
             return null;
         }
 
-        // Ensure both nodes exist in the graph
         if (!graph.containsVertex(sourceNode)) {
             graph.addVertex(sourceNode);
         }
