@@ -27,6 +27,9 @@ import org.locationtech.jts.geom.Point;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import com.izmir.transportation.helper.Edge;
+import com.izmir.transportation.helper.Node;
+
 /**
  * A class that models the Izmir transportation network as a weighted graph structure.
  * This class integrates with IzmirBayGraph's point generation and CreateRoadNetwork's path calculations
@@ -38,12 +41,13 @@ import org.opengis.feature.simple.SimpleFeatureType;
  * @author yagizugurveren
  */
 public class TransportationGraph {
-    private final Graph<Point, DefaultWeightedEdge> graph;
-    private final Map<Point, Point> nodeMappings;
+    private final Graph<Node, DefaultWeightedEdge> graph;
+    private final Map<Point, Node> pointToNode;
     private final GeometryFactory geometryFactory;
+    private final Map<DefaultWeightedEdge, Edge> edgeMap;
+    private double maxDistance = 0.0;
     private static final double MIN_EDGE_WIDTH = 1.0;
     private static final double MAX_EDGE_WIDTH = 5.0;
-    private static final double WEIGHT_SCALE_FACTOR = 0.001; // Convert meters to kilometers
 
     /**
      * Constructs a new TransportationGraph with the given points.
@@ -52,13 +56,14 @@ public class TransportationGraph {
      */
     public TransportationGraph(List<Point> originalPoints) {
         this.graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
-        this.nodeMappings = new HashMap<>();
+        this.pointToNode = new HashMap<>();
+        this.edgeMap = new HashMap<>();
         this.geometryFactory = JTSFactoryFinder.getGeometryFactory();
 
-        // Initialize graph with original points
         for (Point point : originalPoints) {
-            graph.addVertex(point);
-            nodeMappings.put(point, point); // Initially, map points to themselves
+            Node node = new Node(String.valueOf(point.hashCode()), point);
+            graph.addVertex(node);
+            pointToNode.put(point, node);
         }
     }
 
@@ -66,10 +71,15 @@ public class TransportationGraph {
      * Updates the mapping between an original point and its corresponding network node.
      * 
      * @param originalPoint The original point from IzmirBayGraph
-     * @param networkNode The corresponding node in the road network
+     * @param networkPoint The corresponding point in the road network
      */
-    public void updateNodeMapping(Point originalPoint, Point networkNode) {
-        nodeMappings.put(originalPoint, networkNode);
+    public void updateNodeMapping(Point originalPoint, Point networkPoint) {
+        Node networkNode = new Node(String.valueOf(networkPoint.hashCode()), networkPoint);
+
+        if (!graph.containsVertex(networkNode)) {
+            graph.addVertex(networkNode);
+        }
+        pointToNode.put(originalPoint, networkNode);
     }
 
     /**
@@ -77,20 +87,62 @@ public class TransportationGraph {
      * 
      * @param source The source point
      * @param target The target point
-     * @param weight The weight (distance) of the connection
+     * @param distance The distance of the connection in meters
      * @return The created edge, or null if the connection couldn't be made
      */
-    public DefaultWeightedEdge addConnection(Point source, Point target, double weight) {
-        if (source == null || target == null || weight <= 0) {
+    public DefaultWeightedEdge addConnection(Point source, Point target, double distance) {
+        if (source == null || target == null || distance <= 0) {
             return null;
         }
 
-        DefaultWeightedEdge edge = graph.addEdge(source, target);
-        if (edge != null) {
-            // Store weight in meters
-            graph.setEdgeWeight(edge, weight);
+        Node sourceNode = pointToNode.get(source);
+        Node targetNode = pointToNode.get(target);
+
+        if (sourceNode == null || targetNode == null) {
+            return null;
         }
-        return edge;
+
+        // Ensure both nodes exist in the graph
+        if (!graph.containsVertex(sourceNode)) {
+            graph.addVertex(sourceNode);
+        }
+        if (!graph.containsVertex(targetNode)) {
+            graph.addVertex(targetNode);
+        }
+
+        DefaultWeightedEdge graphEdge = graph.addEdge(sourceNode, targetNode);
+        if (graphEdge != null) {
+            maxDistance = Math.max(maxDistance, distance);
+
+            LineString geometry = geometryFactory.createLineString(new Coordinate[]{
+                source.getCoordinate(),
+                target.getCoordinate()
+            });
+
+            Edge edge = new Edge(
+                String.valueOf(graphEdge.hashCode()),
+                sourceNode,
+                targetNode,
+                geometry,
+                distance
+            );
+
+            edgeMap.put(graphEdge, edge);
+
+            updateEdgeWeights();
+        }
+        return graphEdge;
+    }
+
+    /**
+     * Updates the weights of all edges in the graph based on the current maximum distance.
+     */
+    private void updateEdgeWeights() {
+        for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
+            Edge edge = entry.getValue();
+            edge.normalizeWeight(maxDistance);
+            graph.setEdgeWeight(entry.getKey(), edge.getNormalizedWeight());
+        }
     }
 
     /**
@@ -119,29 +171,21 @@ public class TransportationGraph {
             DefaultFeatureCollection edges = new DefaultFeatureCollection();
 
             SimpleFeatureBuilder pointBuilder2 = new SimpleFeatureBuilder(pointType);
-            for (Point point : graph.vertexSet()) {
-                pointBuilder2.add(point);
-                pointBuilder2.add(String.valueOf(point.hashCode()));
+            for (Node node : graph.vertexSet()) {
+                pointBuilder2.add(node.getLocation());
+                pointBuilder2.add(node.getId());
                 SimpleFeature feature = pointBuilder2.buildFeature(null);
                 nodes.add(feature);
             }
 
             SimpleFeatureBuilder lineBuilder2 = new SimpleFeatureBuilder(lineType);
-            for (DefaultWeightedEdge edge : graph.edgeSet()) {
-                Point source = graph.getEdgeSource(edge);
-                Point target = graph.getEdgeTarget(edge);
-                double weight = graph.getEdgeWeight(edge);
+            for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
+                Edge edge = entry.getValue();
+                double weight = edge.getNormalizedWeight();
 
-                LineString line = geometryFactory.createLineString(new Coordinate[]{
-                    source.getCoordinate(),
-                    target.getCoordinate()
-                });
-
-                String distanceLabel = String.format("%.1f km", weight * 0.001); // Convert meters to kilometers
-
-                lineBuilder2.add(line);
+                lineBuilder2.add(edge.getGeometry());
                 lineBuilder2.add(weight);
-                lineBuilder2.add(distanceLabel);
+                lineBuilder2.add(String.format("%.3f", weight));
                 SimpleFeature feature = lineBuilder2.buildFeature(null);
                 edges.add(feature);
             }
@@ -153,27 +197,19 @@ public class TransportationGraph {
             MapContent map = new MapContent();
             map.setTitle("Izmir Transportation Network Graph");
             
-            for (DefaultWeightedEdge edge : graph.edgeSet()) {
-                Point source = graph.getEdgeSource(edge);
-                Point target = graph.getEdgeTarget(edge);
-                double weight = graph.getEdgeWeight(edge);
+            for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
+                Edge edge = entry.getValue();
+                double weight = edge.getNormalizedWeight();
                 
-                double normalizedWeight = Math.log1p(weight * WEIGHT_SCALE_FACTOR);
                 float lineWidth = (float) (MIN_EDGE_WIDTH + 
-                    (normalizedWeight / Math.log1p(getMaxWeight() * WEIGHT_SCALE_FACTOR)) * 
-                    (MAX_EDGE_WIDTH - MIN_EDGE_WIDTH));
-                
-                LineString line = geometryFactory.createLineString(new Coordinate[]{
-                    source.getCoordinate(),
-                    target.getCoordinate()
-                });
+                    weight * (MAX_EDGE_WIDTH - MIN_EDGE_WIDTH));
                 
                 SimpleFeatureType edgeType = DataUtilities.createType("Edge",
                     "geometry:LineString,weight:Double,label:String");
                 SimpleFeatureBuilder edgeBuilder = new SimpleFeatureBuilder(edgeType);
-                edgeBuilder.add(line);
+                edgeBuilder.add(edge.getGeometry());
                 edgeBuilder.add(weight);
-                edgeBuilder.add(String.format("%.1f km", weight * 0.001)); // Convert meters to kilometers
+                edgeBuilder.add(String.format("%.3f", weight));
                 
                 DefaultFeatureCollection edgeCollection = new DefaultFeatureCollection();
                 edgeCollection.add(edgeBuilder.buildFeature(null));
@@ -213,33 +249,29 @@ public class TransportationGraph {
     }
 
     /**
-     * Gets the maximum edge weight in the graph.
-     * 
-     * @return The maximum weight, or 0 if the graph has no edges
-     */
-    private double getMaxWeight() {
-        double maxWeight = 0.0;
-        for (DefaultWeightedEdge edge : graph.edgeSet()) {
-            maxWeight = Math.max(maxWeight, graph.getEdgeWeight(edge));
-        }
-        return maxWeight;
-    }
-
-    /**
      * Gets the underlying JGraphT graph structure.
      * 
      * @return The graph object
      */
-    public Graph<Point, DefaultWeightedEdge> getGraph() {
+    public Graph<Node, DefaultWeightedEdge> getGraph() {
         return graph;
     }
 
     /**
-     * Gets the mapping between original points and their corresponding network nodes.
+     * Gets the mapping between points and their corresponding nodes.
      * 
-     * @return The node mapping
+     * @return The point to node mapping
      */
-    public Map<Point, Point> getNodeMappings() {
-        return nodeMappings;
+    public Map<Point, Node> getPointToNode() {
+        return pointToNode;
+    }
+
+    /**
+     * Gets the mapping between graph edges and our custom Edge objects.
+     * 
+     * @return The edge mapping
+     */
+    public Map<DefaultWeightedEdge, Edge> getEdgeMap() {
+        return edgeMap;
     }
 } 

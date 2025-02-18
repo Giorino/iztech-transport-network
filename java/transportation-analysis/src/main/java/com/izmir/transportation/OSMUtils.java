@@ -76,13 +76,11 @@ public class OSMUtils {
         LOGGER.info("Sending request to Overpass API...");
         conn.getOutputStream().write(postData.getBytes(StandardCharsets.UTF_8));
 
-        // Parse response
         LOGGER.info("Parsing XML response...");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(conn.getInputStream());
 
-        // Extract nodes using parallel processing
         LOGGER.info("Extracting nodes from response...");
         Map<String, Point> nodes = new ConcurrentHashMap<>();
         NodeList nodeElements = doc.getElementsByTagName("node");
@@ -104,7 +102,6 @@ public class OSMUtils {
             }
         });
 
-        // Extract ways using parallel processing
         LOGGER.info("Extracting ways from response...");
         List<LineString> ways = Collections.synchronizedList(new ArrayList<>());
         NodeList wayElements = doc.getElementsByTagName("way");
