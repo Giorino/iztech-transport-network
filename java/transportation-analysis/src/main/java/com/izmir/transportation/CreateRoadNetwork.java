@@ -9,7 +9,6 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,6 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapFrame;
 import org.jgrapht.Graph;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.locationtech.jts.geom.Coordinate;
@@ -46,6 +43,9 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.index.strtree.ItemBoundable;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.opengis.feature.simple.SimpleFeatureType;
+
+import com.izmir.transportation.helper.CompleteGraphStrategy;
+import com.izmir.transportation.helper.GraphConnectivityStrategy;
 
 /**
  * A class for creating and analyzing a road network based on generated points and OpenStreetMap data.
@@ -238,54 +238,20 @@ public class CreateRoadNetwork {
      */
     private static List<List<Point>> createPaths(List<Point> points, Map<Point, Point> pointToNode,
                                                Graph<Point, DefaultWeightedEdge> network) {
-        List<List<Point>> paths = new ArrayList<>();
-        DijkstraShortestPath<Point, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<>(network);
-
         TransportationGraph transportationGraph = new TransportationGraph(points);
 
         for (Map.Entry<Point, Point> entry : pointToNode.entrySet()) {
             transportationGraph.updateNodeMapping(entry.getKey(), entry.getValue());
         }
 
-        // Connect each point to its k nearest neighbors
-        int k = 5;  // Number of nearest neighbors to connect to
-        int maxAttempts = 5;  // Maximum number of attempts to find valid neighbors
+        // Create a complete graph by default
+        GraphConnectivityStrategy strategy = new CompleteGraphStrategy();
         
-        for (int i = 0; i < points.size(); i++) {
-            Point p1 = points.get(i);
-            Point node1 = pointToNode.get(p1);
+        // For k-nearest neighbors
+        // GraphConnectivityStrategy strategy = new KNearestNeighborsStrategy(5, 5);
 
-            // Calculate distances to all other points
-            List<PointDistance> distances = new ArrayList<>();
-            for (int j = 0; j < points.size(); j++) {
-                if (i != j) {
-                    Point p2 = points.get(j);
-                    double distance = p1.distance(p2);
-                    distances.add(new PointDistance(j, distance));
-                }
-            }
-
-            distances.sort(Comparator.comparingDouble(PointDistance::getDistance));
-            int connectedPaths = 0;
-            int attemptIndex = 0;
-            
-            while (connectedPaths < k && attemptIndex < Math.min(maxAttempts * k, distances.size())) {
-                Point p2 = points.get(distances.get(attemptIndex).getIndex());
-                Point node2 = pointToNode.get(p2);
-
-                GraphPath<Point, DefaultWeightedEdge> path = dijkstra.getPath(node1, node2);
-                if (path != null) {
-                    List<Point> pathPoints = new ArrayList<>(path.getVertexList());
-                    paths.add(pathPoints);
-                    
-                    double pathDistance = path.getWeight(); 
-                    transportationGraph.addConnection(p1, p2, pathDistance);
-                    connectedPaths++;
-                }
-                attemptIndex++;
-            }
-        }
-
+        List<List<Point>> paths = strategy.createConnections(points, pointToNode, network, transportationGraph);
+        
         transportationGraph.visualizeGraph();
 
         return paths;
