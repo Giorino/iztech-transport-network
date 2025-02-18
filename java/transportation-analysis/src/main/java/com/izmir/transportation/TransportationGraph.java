@@ -1,6 +1,7 @@
 package com.izmir.transportation;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class TransportationGraph {
     private double maxDistance = 0.0;
     private static final double MIN_EDGE_WIDTH = 1.0;
     private static final double MAX_EDGE_WIDTH = 5.0;
+    private AffinityMatrix affinityMatrix;
 
     /**
      * Constructs a new TransportationGraph with the given points.
@@ -245,6 +247,37 @@ public class TransportationGraph {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Creates and saves the affinity matrix for the transportation network.
+     * The matrix will be saved as a CSV file and then displayed in a grid format.
+     */
+    public void createAffinityMatrix() {
+        affinityMatrix = new AffinityMatrix(graph, edgeMap);
+        
+        try {
+            // Save matrix data as CSV
+            String csvFile = "affinity_matrix.csv";
+            affinityMatrix.saveToCSV(csvFile);
+            
+            // Display the CSV file in a grid
+            AffinityMatrix.displayCSV(csvFile);
+            
+            System.out.println("Affinity matrix has been created and saved to: " + csvFile);
+        } catch (IOException e) {
+            System.err.println("Error creating affinity matrix: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Gets the affinity matrix if it has been created.
+     *
+     * @return The affinity matrix, or null if it hasn't been created yet
+     */
+    public AffinityMatrix getAffinityMatrix() {
+        return affinityMatrix;
     }
 
     /**
