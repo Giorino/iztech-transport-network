@@ -44,8 +44,8 @@ import org.locationtech.jts.index.strtree.ItemBoundable;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.izmir.transportation.helper.CompleteGraphStrategy;
 import com.izmir.transportation.helper.GraphConnectivityStrategy;
+import com.izmir.transportation.helper.SparsityBasedConnectivityStrategy;
 
 /**
  * A class for creating and analyzing a road network based on generated points and OpenStreetMap data.
@@ -245,11 +245,15 @@ public class CreateRoadNetwork {
         }
 
         // Create a complete graph by default
-        GraphConnectivityStrategy strategy = new CompleteGraphStrategy();
+        //GraphConnectivityStrategy strategy = new CompleteGraphStrategy();
         
         // For k-nearest neighbors
         // GraphConnectivityStrategy strategy = new KNearestNeighborsStrategy(5, 5);
 
+        // Create a strategy with 50% sparsity
+        GraphConnectivityStrategy strategy = new SparsityBasedConnectivityStrategy(98);
+
+        // Create connections using the strategy
         List<List<Point>> paths = strategy.createConnections(points, pointToNode, network, transportationGraph);
         
         // Create and visualize the affinity matrix
