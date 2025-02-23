@@ -44,6 +44,8 @@ import org.locationtech.jts.index.strtree.ItemBoundable;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import com.izmir.transportation.helper.clustering.GraphClusteringAlgorithm;
+import com.izmir.transportation.helper.clustering.LeidenAlgorithm;
 import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
 import com.izmir.transportation.helper.strategy.SparsityBasedConnectivityStrategy;
 
@@ -251,7 +253,7 @@ public class CreateRoadNetwork {
         // GraphConnectivityStrategy strategy = new KNearestNeighborsStrategy(5, 5);
 
         // Create a strategy with 50% sparsity
-        GraphConnectivityStrategy strategy = new SparsityBasedConnectivityStrategy(98);
+        GraphConnectivityStrategy strategy = new SparsityBasedConnectivityStrategy(70);
 
         // Create connections using the strategy
         List<List<Point>> paths = strategy.createConnections(points, pointToNode, network, transportationGraph);
@@ -265,6 +267,16 @@ public class CreateRoadNetwork {
             System.out.println("Visualizing transportation graph...");
             transportationGraph.visualizeGraph();
             System.out.println("Graph visualization launched. Please wait for the windows to appear...");
+            
+            // Perform community detection using different algorithms
+            System.out.println("\nPerforming community detection analysis...");
+            
+            // Leiden Algorithm
+            System.out.println("Running Leiden algorithm...");
+            GraphClusteringAlgorithm leidenAlgorithm = new LeidenAlgorithm(0.9, 200);
+            transportationGraph.analyzeCommunities(leidenAlgorithm);
+            
+            System.out.println("Community detection analysis completed.");
             
         } catch (Exception e) {
             System.err.println("Error during visualization: " + e.getMessage());
