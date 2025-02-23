@@ -44,8 +44,8 @@ import org.locationtech.jts.index.strtree.ItemBoundable;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.izmir.transportation.helper.GraphConnectivityStrategy;
-import com.izmir.transportation.helper.SparsityBasedConnectivityStrategy;
+import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
+import com.izmir.transportation.helper.strategy.SparsityBasedConnectivityStrategy;
 
 /**
  * A class for creating and analyzing a road network based on generated points and OpenStreetMap data.
@@ -258,9 +258,18 @@ public class CreateRoadNetwork {
         
         // Create and visualize the affinity matrix
         System.out.println("Creating affinity matrix...");
-        transportationGraph.createAffinityMatrix();
-        
-        transportationGraph.visualizeGraph();
+        try {
+            transportationGraph.createAffinityMatrix();
+            System.out.println("Affinity matrix created successfully.");
+            
+            System.out.println("Visualizing transportation graph...");
+            transportationGraph.visualizeGraph();
+            System.out.println("Graph visualization launched. Please wait for the windows to appear...");
+            
+        } catch (Exception e) {
+            System.err.println("Error during visualization: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return paths;
     }

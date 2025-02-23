@@ -1,4 +1,4 @@
-package com.izmir.transportation.helper;
+package com.izmir.transportation.helper.strategy;
 
 import java.util.List;
 import java.util.Map;

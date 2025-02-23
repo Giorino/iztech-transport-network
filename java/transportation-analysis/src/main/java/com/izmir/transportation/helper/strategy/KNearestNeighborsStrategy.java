@@ -1,6 +1,7 @@
-package com.izmir.transportation.helper;
+package com.izmir.transportation.helper.strategy;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,18 +16,31 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.locationtech.jts.geom.Point;
 
+import com.izmir.transportation.PointDistance;
 import com.izmir.transportation.TransportationGraph;
 
 /**
- * Implementation of GraphConnectivityStrategy that creates a complete graph
- * where every node is connected to every other node.
+ * Implementation of GraphConnectivityStrategy that connects each node
+ * to its k nearest neighbors.
  */
-public class CompleteGraphStrategy implements GraphConnectivityStrategy {
+public class KNearestNeighborsStrategy implements GraphConnectivityStrategy {
+    private final int k;
+    private final int maxAttempts;
+
+    /**
+     * Creates a new KNearestNeighborsStrategy.
+     *
+     * @param k Number of nearest neighbors to connect to
+     * @param maxAttempts Maximum number of attempts to find valid neighbors
+     */
+    public KNearestNeighborsStrategy(int k, int maxAttempts) {
+        this.k = k;
+        this.maxAttempts = maxAttempts;
+    }
     
     @Override
     public long calculateTotalConnections(List<Point> points) {
-        int totalPoints = points.size();
-        return ((long) totalPoints * (totalPoints - 1)) / 2;
+        return (long) points.size() * k;
     }
     
     @Override
@@ -43,18 +57,31 @@ public class CompleteGraphStrategy implements GraphConnectivityStrategy {
         AtomicLong lastPercentage = new AtomicLong(0);
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-
+        
         // multi-threaded
         for (int i = 0; i < points.size(); i++) {
-            final int startIndex = i;
+            final int pointIndex = i;
             executor.submit(() -> {
                 DijkstraShortestPath<Point, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<>(network);
-                Point p1 = points.get(startIndex);
+                Point p1 = points.get(pointIndex);
                 Point node1 = pointToNode.get(p1);
 
-                // Connect to all points after startIndex to avoid duplicate connections
-                for (int j = startIndex + 1; j < points.size(); j++) {
-                    Point p2 = points.get(j);
+                // Calculate distances to all other points
+                List<PointDistance> distances = new ArrayList<>();
+                for (int j = 0; j < points.size(); j++) {
+                    if (pointIndex != j) {
+                        Point p2 = points.get(j);
+                        double distance = p1.distance(p2);
+                        distances.add(new PointDistance(j, distance));
+                    }
+                }
+
+                distances.sort(Comparator.comparingDouble(PointDistance::getDistance));
+                int connectedPaths = 0;
+                int attemptIndex = 0;
+                
+                while (connectedPaths < k && attemptIndex < Math.min(maxAttempts * k, distances.size())) {
+                    Point p2 = points.get(distances.get(attemptIndex).getIndex());
                     Point node2 = pointToNode.get(p2);
 
                     GraphPath<Point, DefaultWeightedEdge> path = dijkstra.getPath(node1, node2);
@@ -64,16 +91,18 @@ public class CompleteGraphStrategy implements GraphConnectivityStrategy {
                         
                         double pathDistance = path.getWeight();
                         transportationGraph.addConnection(p1, p2, pathDistance);
+                        connectedPaths++;
+                        
+                        // Update progress
+                        long completed = completedConnections.incrementAndGet();
+                        int currentPercentage = (int) ((completed * 100) / totalConnections);
+                        long lastPct = lastPercentage.get();
+                        if (currentPercentage > lastPct && 
+                            lastPercentage.compareAndSet(lastPct, currentPercentage)) {
+                            updateProgress(completed, totalConnections);
+                        }
                     }
-                    
-                    // Update progress
-                    long completed = completedConnections.incrementAndGet();
-                    int currentPercentage = (int) ((completed * 100) / totalConnections);
-                    long lastPct = lastPercentage.get();
-                    if (currentPercentage > lastPct && 
-                        lastPercentage.compareAndSet(lastPct, currentPercentage)) {
-                        updateProgress(completed, totalConnections);
-                    }
+                    attemptIndex++;
                 }
             });
         }

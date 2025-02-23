@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -160,99 +163,111 @@ public class TransportationGraph {
             // Update all edge weights before visualization
             updateEdgeWeights();
 
-            SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
-            pointBuilder.setName("Nodes");
-            pointBuilder.setCRS(DefaultGeographicCRS.WGS84);
-            pointBuilder.add("geometry", Point.class);
-            pointBuilder.add("id", String.class);
-            SimpleFeatureType pointType = pointBuilder.buildFeatureType();
+            // Create the visualization on the Event Dispatch Thread
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
+                    pointBuilder.setName("Nodes");
+                    pointBuilder.setCRS(DefaultGeographicCRS.WGS84);
+                    pointBuilder.add("geometry", Point.class);
+                    pointBuilder.add("id", String.class);
+                    SimpleFeatureType pointType = pointBuilder.buildFeatureType();
 
-            SimpleFeatureTypeBuilder lineBuilder = new SimpleFeatureTypeBuilder();
-            lineBuilder.setName("Edges");
-            lineBuilder.setCRS(DefaultGeographicCRS.WGS84);
-            lineBuilder.add("geometry", LineString.class);
-            lineBuilder.add("weight", Double.class);
-            lineBuilder.add("label", String.class);
-            SimpleFeatureType lineType = lineBuilder.buildFeatureType();
+                    SimpleFeatureTypeBuilder lineBuilder = new SimpleFeatureTypeBuilder();
+                    lineBuilder.setName("Edges");
+                    lineBuilder.setCRS(DefaultGeographicCRS.WGS84);
+                    lineBuilder.add("geometry", LineString.class);
+                    lineBuilder.add("weight", Double.class);
+                    lineBuilder.add("label", String.class);
+                    SimpleFeatureType lineType = lineBuilder.buildFeatureType();
 
-            DefaultFeatureCollection nodes = new DefaultFeatureCollection();
-            DefaultFeatureCollection edges = new DefaultFeatureCollection();
+                    DefaultFeatureCollection nodes = new DefaultFeatureCollection();
+                    DefaultFeatureCollection edges = new DefaultFeatureCollection();
+                    DefaultFeatureCollection pathCollection = new DefaultFeatureCollection();
 
-            SimpleFeatureBuilder pointBuilder2 = new SimpleFeatureBuilder(pointType);
-            for (Node node : graph.vertexSet()) {
-                pointBuilder2.add(node.getLocation());
-                pointBuilder2.add(node.getId());
-                SimpleFeature feature = pointBuilder2.buildFeature(null);
-                nodes.add(feature);
-            }
+                    SimpleFeatureBuilder pointFeatureBuilder = new SimpleFeatureBuilder(pointType);
+                    for (Node node : graph.vertexSet()) {
+                        pointFeatureBuilder.add(node.getLocation());
+                        pointFeatureBuilder.add(node.getId());
+                        SimpleFeature feature = pointFeatureBuilder.buildFeature(null);
+                        nodes.add(feature);
+                    }
 
-            SimpleFeatureBuilder lineBuilder2 = new SimpleFeatureBuilder(lineType);
-            for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
-                Edge edge = entry.getValue();
-                double weight = edge.getNormalizedWeight();
+                    SimpleFeatureBuilder lineBuilder2 = new SimpleFeatureBuilder(lineType);
+                    for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
+                        Edge edge = entry.getValue();
+                        double weight = edge.getNormalizedWeight();
 
-                lineBuilder2.add(edge.getGeometry());
-                lineBuilder2.add(weight);
-                lineBuilder2.add(String.format("%.3f", weight));
-                SimpleFeature feature = lineBuilder2.buildFeature(null);
-                edges.add(feature);
-            }
+                        lineBuilder2.add(edge.getGeometry());
+                        lineBuilder2.add(weight);
+                        lineBuilder2.add(String.format("%.3f", weight));
+                        SimpleFeature feature = lineBuilder2.buildFeature(null);
+                        edges.add(feature);
+                    }
 
-            Style nodeStyle = SLD.createPointStyle("circle", Color.BLACK, Color.RED, 1.0f, 7);
-            
-            Layer nodesLayer = new FeatureLayer(nodes, nodeStyle);
-            
-            MapContent map = new MapContent();
-            map.setTitle("Izmir Transportation Network Graph");
-            
-            for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
-                Edge edge = entry.getValue();
-                double weight = edge.getNormalizedWeight();
-                
-                float lineWidth = (float) (MIN_EDGE_WIDTH + 
-                    weight * (MAX_EDGE_WIDTH - MIN_EDGE_WIDTH));
-                
-                SimpleFeatureType edgeType = DataUtilities.createType("Edge",
-                    "geometry:LineString,weight:Double,label:String");
-                SimpleFeatureBuilder edgeBuilder = new SimpleFeatureBuilder(edgeType);
-                
-                edgeBuilder.add(edge.getGeometry());
-                edgeBuilder.add(weight);
-                edgeBuilder.add(String.format("%.3f", weight));
-                
-                DefaultFeatureCollection edgeCollection = new DefaultFeatureCollection();
-                edgeCollection.add(edgeBuilder.buildFeature(null));
-                
-                org.geotools.styling.StyleBuilder styleBuilder = new org.geotools.styling.StyleBuilder();
-                
-                org.geotools.styling.LineSymbolizer lineSymbolizer = styleBuilder.createLineSymbolizer(Color.LIGHT_GRAY, lineWidth);
-                
-                org.geotools.styling.TextSymbolizer textSymbolizer = styleBuilder.createTextSymbolizer();
-                textSymbolizer.setLabel(styleBuilder.attributeExpression("label"));
-                textSymbolizer.setFill(styleBuilder.createFill(Color.BLACK));
-                textSymbolizer.setFont(styleBuilder.createFont("Arial", 12));
-                
-                org.geotools.styling.Rule rule = styleBuilder.createRule(new org.geotools.styling.Symbolizer[]{
-                    lineSymbolizer,
-                    textSymbolizer
-                });
-                org.geotools.styling.FeatureTypeStyle fts = styleBuilder.createFeatureTypeStyle("Edge", rule);
-                Style edgeStyle = styleBuilder.createStyle();
-                edgeStyle.featureTypeStyles().add(fts);
-                
-                Layer edgeLayer = new FeatureLayer(edgeCollection, edgeStyle);
-                map.addLayer(edgeLayer);
-            }
-            
-            map.addLayer(nodesLayer);
+                    Style nodeStyle = SLD.createPointStyle("circle", Color.BLACK, Color.RED, 1.0f, 7);
+                    
+                    Layer nodesLayer = new FeatureLayer(nodes, nodeStyle);
+                    
+                    MapContent map = new MapContent();
+                    map.setTitle("Izmir Transportation Network Graph");
+                    
+                    for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
+                        Edge edge = entry.getValue();
+                        double weight = edge.getNormalizedWeight();
+                        
+                        float lineWidth = (float) (MIN_EDGE_WIDTH + 
+                            weight * (MAX_EDGE_WIDTH - MIN_EDGE_WIDTH));
+                        
+                        SimpleFeatureType edgeType = DataUtilities.createType("Edge",
+                            "geometry:LineString,weight:Double,label:String");
+                        SimpleFeatureBuilder edgeBuilder = new SimpleFeatureBuilder(edgeType);
+                        
+                        edgeBuilder.add(edge.getGeometry());
+                        edgeBuilder.add(weight);
+                        edgeBuilder.add(String.format("%.3f", weight));
+                        
+                        DefaultFeatureCollection edgeCollection = new DefaultFeatureCollection();
+                        edgeCollection.add(edgeBuilder.buildFeature(null));
+                        
+                        org.geotools.styling.StyleBuilder styleBuilder = new org.geotools.styling.StyleBuilder();
+                        
+                        org.geotools.styling.LineSymbolizer lineSymbolizer = styleBuilder.createLineSymbolizer(Color.LIGHT_GRAY, lineWidth);
+                        
+                        org.geotools.styling.TextSymbolizer textSymbolizer = styleBuilder.createTextSymbolizer();
+                        textSymbolizer.setLabel(styleBuilder.attributeExpression("label"));
+                        textSymbolizer.setFill(styleBuilder.createFill(Color.BLACK));
+                        textSymbolizer.setFont(styleBuilder.createFont("Arial", 12));
+                        
+                        org.geotools.styling.Rule rule = styleBuilder.createRule(new org.geotools.styling.Symbolizer[]{
+                            lineSymbolizer,
+                            textSymbolizer
+                        });
+                        org.geotools.styling.FeatureTypeStyle fts = styleBuilder.createFeatureTypeStyle("Edge", rule);
+                        Style edgeStyle = styleBuilder.createStyle();
+                        edgeStyle.featureTypeStyles().add(fts);
+                        
+                        Layer edgeLayer = new FeatureLayer(edgeCollection, edgeStyle);
+                        map.addLayer(edgeLayer);
+                    }
+                    
+                    map.addLayer(nodesLayer);
 
-            JMapFrame mapFrame = new JMapFrame(map);
-            mapFrame.enableToolBar(true);
-            mapFrame.enableStatusBar(true);
-            mapFrame.setSize(800, 600);
-            mapFrame.setVisible(true);
+                    JMapFrame mapFrame = new JMapFrame(map);
+                    mapFrame.enableToolBar(true);
+                    mapFrame.enableStatusBar(true);
+                    mapFrame.setSize(800, 600);
+                    mapFrame.setLocationRelativeTo(null);
+                    mapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    mapFrame.setVisible(true);
+                } catch (Exception e) {
+                    System.err.println("Error in graph visualization: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
 
         } catch (Exception e) {
+            System.err.println("Error preparing graph visualization: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -262,15 +277,18 @@ public class TransportationGraph {
      * The matrix will be saved as a CSV file and then displayed in a grid format.
      */
     public void createAffinityMatrix() {
+        System.out.println("Creating affinity matrix...");
         affinityMatrix = new AffinityMatrix(graph, edgeMap);
         
         try {
             // Save matrix data as CSV
             String csvFile = "affinity_matrix.csv";
             affinityMatrix.saveToCSV(csvFile);
+            System.out.println("Affinity matrix saved to CSV file");
             
-            // Display the CSV file in a grid
-            AffinityMatrix.displayCSV(csvFile);
+            // Display the CSV file in a grid and wait for it to appear
+            //System.out.println("Opening affinity matrix visualization...");
+            //AffinityMatrix.displayCSV(csvFile);
             
             System.out.println("Affinity matrix has been created and saved to: " + csvFile);
         } catch (IOException e) {
