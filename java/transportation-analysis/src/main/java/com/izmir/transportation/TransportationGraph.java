@@ -2,9 +2,9 @@ package com.izmir.transportation;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -58,8 +58,8 @@ public class TransportationGraph {
      */
     public TransportationGraph(List<Point> originalPoints) {
         this.graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
-        this.pointToNode = new HashMap<>();
-        this.edgeMap = new HashMap<>();
+        this.pointToNode = new ConcurrentHashMap<>();
+        this.edgeMap = new ConcurrentHashMap<>();
         this.geometryFactory = JTSFactoryFinder.getGeometryFactory();
 
         for (Point point : originalPoints) {
@@ -92,7 +92,7 @@ public class TransportationGraph {
      * @param distance The distance of the connection in meters
      * @return The created edge, or null if the connection couldn't be made
      */
-    public DefaultWeightedEdge addConnection(Point source, Point target, double distance) {
+    public synchronized DefaultWeightedEdge addConnection(Point source, Point target, double distance) {
         if (source == null || target == null || distance <= 0) {
             return null;
         }
@@ -104,44 +104,48 @@ public class TransportationGraph {
             return null;
         }
 
-        if (!graph.containsVertex(sourceNode)) {
-            graph.addVertex(sourceNode);
+        synchronized (graph) {
+            if (!graph.containsVertex(sourceNode)) {
+                graph.addVertex(sourceNode);
+            }
+            if (!graph.containsVertex(targetNode)) {
+                graph.addVertex(targetNode);
+            }
+
+            DefaultWeightedEdge graphEdge = graph.addEdge(sourceNode, targetNode);
+            if (graphEdge != null) {
+                synchronized (this) {
+                    maxDistance = Math.max(maxDistance, distance);
+
+                    LineString geometry = geometryFactory.createLineString(new Coordinate[]{
+                        source.getCoordinate(),
+                        target.getCoordinate()
+                    });
+
+                    Edge edge = new Edge(
+                        String.valueOf(graphEdge.hashCode()),
+                        sourceNode,
+                        targetNode,
+                        geometry,
+                        distance
+                    );
+
+                    edgeMap.put(graphEdge, edge);
+                    graph.setEdgeWeight(graphEdge, distance);
+                }
+            }
+            return graphEdge;
         }
-        if (!graph.containsVertex(targetNode)) {
-            graph.addVertex(targetNode);
-        }
-
-        DefaultWeightedEdge graphEdge = graph.addEdge(sourceNode, targetNode);
-        if (graphEdge != null) {
-            maxDistance = Math.max(maxDistance, distance);
-
-            LineString geometry = geometryFactory.createLineString(new Coordinate[]{
-                source.getCoordinate(),
-                target.getCoordinate()
-            });
-
-            Edge edge = new Edge(
-                String.valueOf(graphEdge.hashCode()),
-                sourceNode,
-                targetNode,
-                geometry,
-                distance
-            );
-
-            edgeMap.put(graphEdge, edge);
-
-            updateEdgeWeights();
-        }
-        return graphEdge;
     }
 
     /**
      * Updates the weights of all edges in the graph based on the current maximum distance.
      */
-    private void updateEdgeWeights() {
+    private synchronized void updateEdgeWeights() {
+        double localMaxDistance = maxDistance;
         for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
             Edge edge = entry.getValue();
-            edge.normalizeWeight(maxDistance);
+            edge.normalizeWeight(localMaxDistance);
             graph.setEdgeWeight(entry.getKey(), edge.getNormalizedWeight());
         }
     }
@@ -153,6 +157,9 @@ public class TransportationGraph {
      */
     public void visualizeGraph() {
         try {
+            // Update all edge weights before visualization
+            updateEdgeWeights();
+
             SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
             pointBuilder.setName("Nodes");
             pointBuilder.setCRS(DefaultGeographicCRS.WGS84);
@@ -165,7 +172,7 @@ public class TransportationGraph {
             lineBuilder.setCRS(DefaultGeographicCRS.WGS84);
             lineBuilder.add("geometry", LineString.class);
             lineBuilder.add("weight", Double.class);
-            lineBuilder.add("label", String.class);  // Add label field for distance text
+            lineBuilder.add("label", String.class);
             SimpleFeatureType lineType = lineBuilder.buildFeatureType();
 
             DefaultFeatureCollection nodes = new DefaultFeatureCollection();
@@ -208,6 +215,7 @@ public class TransportationGraph {
                 SimpleFeatureType edgeType = DataUtilities.createType("Edge",
                     "geometry:LineString,weight:Double,label:String");
                 SimpleFeatureBuilder edgeBuilder = new SimpleFeatureBuilder(edgeType);
+                
                 edgeBuilder.add(edge.getGeometry());
                 edgeBuilder.add(weight);
                 edgeBuilder.add(String.format("%.3f", weight));
