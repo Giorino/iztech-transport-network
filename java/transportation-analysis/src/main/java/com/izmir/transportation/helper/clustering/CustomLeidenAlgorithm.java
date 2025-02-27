@@ -13,11 +13,20 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import com.izmir.transportation.TransportationGraph;
 import com.izmir.transportation.helper.Node;
 
-public class LeidenAlgorithm implements GraphClusteringAlgorithm {
+/**
+ * A custom implementation of the Leiden algorithm for community detection.
+ * 
+ * This implementation is now deprecated in favor of the LeidenClusteringAdapter
+ * which uses the more efficient and accurate implementation from the leiden package.
+ * 
+ * @deprecated Use {@link LeidenClusteringAdapter} instead.
+ */
+@Deprecated
+public class CustomLeidenAlgorithm implements GraphClusteringAlgorithm {
     private final double resolution;
     private final int iterations;
 
-    public LeidenAlgorithm(double resolution, int iterations) {
+    public CustomLeidenAlgorithm(double resolution, int iterations) {
         this.resolution = resolution;
         this.iterations = iterations;
     }
