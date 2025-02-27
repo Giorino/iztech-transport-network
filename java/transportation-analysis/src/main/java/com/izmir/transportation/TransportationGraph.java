@@ -33,6 +33,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.izmir.transportation.helper.Edge;
 import com.izmir.transportation.helper.Node;
+import com.izmir.transportation.helper.clustering.GraphClusteringAlgorithm;
 
 /**
  * A class that models the Izmir transportation network as a weighted graph structure.
@@ -331,5 +332,84 @@ public class TransportationGraph {
      */
     public Map<DefaultWeightedEdge, Edge> getEdgeMap() {
         return edgeMap;
+    }
+
+    public void analyzeCommunities(GraphClusteringAlgorithm algorithm) {
+        List<List<Node>> communities = algorithm.findCommunities(this);
+        visualizeCommunities(communities);
+    }
+
+    /**
+     * Visualizes the communities found by the clustering algorithm.
+     * Each community is displayed in a different color.
+     *
+     * @param communities List of communities, where each community is a list of nodes
+     */
+    private void visualizeCommunities(List<List<Node>> communities) {
+        try {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    SimpleFeatureTypeBuilder pointBuilder = new SimpleFeatureTypeBuilder();
+                    pointBuilder.setName("Nodes");
+                    pointBuilder.setCRS(DefaultGeographicCRS.WGS84);
+                    pointBuilder.add("geometry", Point.class);
+                    pointBuilder.add("id", String.class);
+                    pointBuilder.add("community", Integer.class);
+                    SimpleFeatureType pointType = pointBuilder.buildFeatureType();
+
+                    MapContent map = new MapContent();
+                    map.setTitle("Izmir Transportation Network Communities");
+
+                    Color[] communityColors = new Color[communities.size()];
+                    for (int i = 0; i < communities.size(); i++) {
+                        communityColors[i] = Color.getHSBColor((float) i / communities.size(), 1.0f, 1.0f);
+                    }
+
+                    for (int i = 0; i < communities.size(); i++) {
+                        DefaultFeatureCollection communityNodes = new DefaultFeatureCollection();
+                        SimpleFeatureBuilder pointFeatureBuilder = new SimpleFeatureBuilder(pointType);
+                        
+                        List<Node> community = communities.get(i);
+                        for (Node node : community) {
+                            pointFeatureBuilder.add(node.getLocation());
+                            pointFeatureBuilder.add(node.getId());
+                            pointFeatureBuilder.add(i);
+                            SimpleFeature feature = pointFeatureBuilder.buildFeature(null);
+                            communityNodes.add(feature);
+                        }
+
+                        Style nodeStyle = SLD.createPointStyle("circle",
+                            Color.BLACK,  // outline color
+                            communityColors[i],  // fill color
+                            1.0f,  // opacity
+                            8);  // size
+
+                        Layer communityLayer = new FeatureLayer(communityNodes, nodeStyle);
+                        map.addLayer(communityLayer);
+                    }
+
+                    JMapFrame mapFrame = new JMapFrame(map);
+                    mapFrame.enableToolBar(true);
+                    mapFrame.enableStatusBar(true);
+                    mapFrame.setSize(800, 600);
+                    mapFrame.setLocationRelativeTo(null);
+                    mapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    mapFrame.setVisible(true);
+
+                    System.out.println("\nCommunity Information:");
+                    for (int i = 0; i < communities.size(); i++) {
+                        System.out.printf("Community %d: %d nodes%n", 
+                            i + 1, communities.get(i).size());
+                    }
+
+                } catch (Exception e) {
+                    System.err.println("Error in community visualization: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("Error preparing community visualization: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 } 
