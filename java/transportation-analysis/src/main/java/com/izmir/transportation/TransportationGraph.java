@@ -2,6 +2,8 @@ package com.izmir.transportation;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,6 +56,7 @@ public class TransportationGraph {
     private static final double MIN_EDGE_WIDTH = 1.0;
     private static final double MAX_EDGE_WIDTH = 5.0;
     private AffinityMatrix affinityMatrix;
+    private final List<Point> originalPoints; // Track original points separately
 
     /**
      * Constructs a new TransportationGraph with the given points.
@@ -65,6 +68,7 @@ public class TransportationGraph {
         this.pointToNode = new ConcurrentHashMap<>();
         this.edgeMap = new ConcurrentHashMap<>();
         this.geometryFactory = JTSFactoryFinder.getGeometryFactory();
+        this.originalPoints = new ArrayList<>(originalPoints); // Store original points
 
         for (Point point : originalPoints) {
             Node node = new Node(String.valueOf(point.hashCode()), point);
@@ -334,6 +338,51 @@ public class TransportationGraph {
         return edgeMap;
     }
 
+    /**
+     * Gets a subgraph containing only the nodes corresponding to the original points.
+     * This is used for community detection to ensure we only analyze the original points.
+     * 
+     * @return A subgraph containing only the original point nodes
+     */
+    public Graph<Node, DefaultWeightedEdge> getOriginalPointsGraph() {
+        Graph<Node, DefaultWeightedEdge> subgraph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+        
+        // Add only nodes corresponding to original points
+        for (Point originalPoint : originalPoints) {
+            Node node = pointToNode.get(originalPoint);
+            if (node != null) {
+                subgraph.addVertex(node);
+            }
+        }
+        
+        // Add edges between these nodes
+        for (Point source : originalPoints) {
+            Node sourceNode = pointToNode.get(source);
+            if (sourceNode == null || !subgraph.containsVertex(sourceNode)) continue;
+            
+            for (Point target : originalPoints) {
+                if (source == target) continue;
+                
+                Node targetNode = pointToNode.get(target);
+                if (targetNode == null || !subgraph.containsVertex(targetNode)) continue;
+                
+                // Check if there's an edge in the original graph
+                DefaultWeightedEdge edge = graph.getEdge(sourceNode, targetNode);
+                if (edge != null) {
+                    DefaultWeightedEdge newEdge = subgraph.addEdge(sourceNode, targetNode);
+                    if (newEdge != null) {
+                        subgraph.setEdgeWeight(newEdge, graph.getEdgeWeight(edge));
+                    }
+                }
+            }
+        }
+        
+        System.out.println("Created subgraph with " + subgraph.vertexSet().size() + 
+                          " nodes (original points only) and " + subgraph.edgeSet().size() + " edges");
+        
+        return subgraph;
+    }
+
     public void analyzeCommunities(GraphClusteringAlgorithm algorithm) {
         List<List<Node>> communities = algorithm.findCommunities(this);
         visualizeCommunities(communities);
@@ -397,10 +446,32 @@ public class TransportationGraph {
                     mapFrame.setVisible(true);
 
                     System.out.println("\nCommunity Information:");
+                    int totalNodes = 0;
                     for (int i = 0; i < communities.size(); i++) {
+                        int communitySize = communities.get(i).size();
+                        totalNodes += communitySize;
                         System.out.printf("Community %d: %d nodes%n", 
-                            i + 1, communities.get(i).size());
+                            i + 1, communitySize);
                     }
+                    
+                    // Print summary statistics
+                    System.out.println("\nCommunity Detection Summary:");
+                    System.out.println("Total nodes: " + totalNodes);
+                    System.out.println("Total communities: " + communities.size());
+                    System.out.println("Average community size: " + (double)totalNodes / communities.size());
+                    
+                    // Count communities by size
+                    Map<Integer, Integer> communitySizeCounts = new HashMap<>();
+                    for (List<Node> community : communities) {
+                        int size = community.size();
+                        communitySizeCounts.put(size, communitySizeCounts.getOrDefault(size, 0) + 1);
+                    }
+                    
+                    System.out.println("\nCommunity Size Distribution:");
+                    communitySizeCounts.entrySet().stream()
+                        .sorted(Map.Entry.comparingByKey())
+                        .forEach(entry -> System.out.printf("%d nodes: %d communities%n", 
+                            entry.getKey(), entry.getValue()));
 
                 } catch (Exception e) {
                     System.err.println("Error in community visualization: " + e.getMessage());

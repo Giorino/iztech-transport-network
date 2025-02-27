@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -44,8 +45,7 @@ import org.locationtech.jts.index.strtree.ItemBoundable;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.opengis.feature.simple.SimpleFeatureType;
 
-import com.izmir.transportation.helper.clustering.GraphClusteringAlgorithm;
-import com.izmir.transportation.helper.clustering.LeidenAlgorithm;
+import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
 import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
 import com.izmir.transportation.helper.strategy.SparsityBasedConnectivityStrategy;
 
@@ -273,7 +273,20 @@ public class CreateRoadNetwork {
             
             // Leiden Algorithm
             System.out.println("Running Leiden algorithm...");
-            GraphClusteringAlgorithm leidenAlgorithm = new LeidenAlgorithm(0.9, 200);
+            
+            // Create and run the Leiden algorithm for community detection
+            // Parameters:
+            // - resolution: Lower values (e.g., 0.0001) create larger communities
+            // - iterations: Higher values (e.g., 200) allow for better convergence
+            // - randomness: Controls the randomness in the algorithm (0.0-1.0)
+            LeidenCommunityDetection leidenAlgorithm = new LeidenCommunityDetection(
+                0.005,     // Very low resolution for fewer, larger communities
+                200,       // More iterations for better convergence
+                0.01,      // Low randomness for more deterministic results
+                new Random(42)  // Fixed seed for reproducibility
+            );
+            
+            // Run the algorithm and analyze communities
             transportationGraph.analyzeCommunities(leidenAlgorithm);
             
             System.out.println("Community detection analysis completed.");
