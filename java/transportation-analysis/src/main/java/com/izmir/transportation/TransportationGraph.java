@@ -479,9 +479,9 @@ public class TransportationGraph {
                     }
 
                     int x1 = 20 + (int)((source.getLocation().getX() - minX) * scale);
-                    int y1 = 20 + (int)((source.getLocation().getY() - minY) * scale);
+                    int y1 = getHeight() - 20 - (int)((source.getLocation().getY() - minY) * scale);
                     int x2 = 20 + (int)((target.getLocation().getX() - minX) * scale);
-                    int y2 = 20 + (int)((target.getLocation().getY() - minY) * scale);
+                    int y2 = getHeight() - 20 - (int)((target.getLocation().getY() - minY) * scale);
 
                     g2d.drawLine(x1, y1, x2, y2);
                 }
@@ -496,7 +496,7 @@ public class TransportationGraph {
                     }
 
                     int x = 20 + (int)((node.getLocation().getX() - minX) * scale);
-                    int y = 20 + (int)((node.getLocation().getY() - minY) * scale);
+                    int y = getHeight() - 20 - (int)((node.getLocation().getY() - minY) * scale);
 
                     g2d.fillOval(x - 5, y - 5, 10, 10);
                 }
