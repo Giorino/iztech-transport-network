@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -246,13 +245,7 @@ public class CreateRoadNetwork {
             transportationGraph.updateNodeMapping(entry.getKey(), entry.getValue());
         }
 
-        // Create a complete graph by default
-        //GraphConnectivityStrategy strategy = new CompleteGraphStrategy();
-        
-        // For k-nearest neighbors
-        // GraphConnectivityStrategy strategy = new KNearestNeighborsStrategy(5, 5);
-
-        // Create a strategy with 50% sparsity
+        // Create a strategy with 70% sparsity
         GraphConnectivityStrategy strategy = new SparsityBasedConnectivityStrategy(70);
 
         // Create connections using the strategy
@@ -268,26 +261,10 @@ public class CreateRoadNetwork {
             transportationGraph.visualizeGraph();
             System.out.println("Graph visualization launched. Please wait for the windows to appear...");
             
-            // Perform community detection using different algorithms
-            System.out.println("\nPerforming community detection analysis...");
+            // Perform community detection using Leiden algorithm
+            System.out.println("\nPerforming community detection analysis using Leiden algorithm...");
             
-            // Leiden Algorithm
-            System.out.println("Running Leiden algorithm...");
-            
-            // Create and run the Leiden algorithm for community detection
-            // Parameters:
-            // - resolution: Lower values (e.g., 0.0001) create larger communities
-            // - iterations: Higher values (e.g., 200) allow for better convergence
-            // - randomness: Controls the randomness in the algorithm (0.0-1.0)
-            LeidenCommunityDetection leidenAlgorithm = new LeidenCommunityDetection(
-                0.005,     // Very low resolution for fewer, larger communities
-                200,       // More iterations for better convergence
-                0.01,      // Low randomness for more deterministic results
-                new Random(42)  // Fixed seed for reproducibility
-            );
-            
-            // Run the algorithm and analyze communities
-            transportationGraph.analyzeCommunities(leidenAlgorithm);
+            performLeidenCommunityDetection(transportationGraph);
             
             System.out.println("Community detection analysis completed.");
             
@@ -297,6 +274,74 @@ public class CreateRoadNetwork {
         }
 
         return paths;
+    }
+    
+    /**
+     * Performs community detection using the Leiden algorithm on the transportation graph.
+     * This method handles the configuration, detection, visualization, and saving of communities.
+     *
+     * @param transportationGraph The graph to perform community detection on
+     */
+    private static void performLeidenCommunityDetection(TransportationGraph transportationGraph) {
+        try {
+            // Create a LeidenCommunityDetection instance
+            System.out.println("Creating Leiden Community Detection instance...");
+            LeidenCommunityDetection leidenCommunityDetection = new LeidenCommunityDetection(transportationGraph);
+            
+            // Configure community detection parameters based on network size
+            int nodeCount = transportationGraph.getGraph().vertexSet().size();
+            
+            // Example of adjusting settings based on network size
+            if (nodeCount <= 100) {
+                // For small networks, aim for 3-5 communities
+                leidenCommunityDetection.setCommunityScalingFactor(0.4); // Lower = fewer communities
+                leidenCommunityDetection.setCommunityCountLimits(2, 5);
+            } else if (nodeCount <= 500) {
+                // For medium networks, aim for 4-8 communities
+                leidenCommunityDetection.setCommunityScalingFactor(0.5);
+                leidenCommunityDetection.setCommunityCountLimits(4, 8);
+            } else if (nodeCount <= 1000) {
+                // For larger networks, aim for 6-12 communities
+                leidenCommunityDetection.setCommunityScalingFactor(0.6);
+                leidenCommunityDetection.setCommunityCountLimits(6, 12);
+            } else {
+                // For very large networks, allow more communities
+                leidenCommunityDetection.setCommunityScalingFactor(0.7);
+                leidenCommunityDetection.setCommunityCountLimits(8, 20);
+            }
+            
+            // Use original points only for cleaner communities (comment this out to use all nodes)
+            leidenCommunityDetection.useOriginalPointsOnly(true);
+            
+            // Detect communities
+            Map<Integer, List<com.izmir.transportation.helper.Node>> communities = leidenCommunityDetection.detectCommunities();
+            
+            // Get statistics
+            String communityStats = leidenCommunityDetection.getCommunityStatistics();
+            System.out.println(communityStats);
+            
+            // Prepare communities for visualization
+            List<List<com.izmir.transportation.helper.Node>> communityList = new ArrayList<>(communities.values());
+            
+            // Visualize the communities
+            System.out.println("Visualizing communities...");
+            transportationGraph.visualizeCommunities(communityList);
+            System.out.println("Community visualization launched. Please wait for the window to appear...");
+            
+            // Save community data for further analysis
+            transportationGraph.saveCommunityData(communities);
+            
+        } catch (Exception e) {
+            System.err.println("Error during Leiden community detection: " + e.getMessage());
+            System.err.println("This may be due to missing the Leiden algorithm dependency.");
+            System.err.println("Please ensure you have added the nl.cwts:networkanalysis:1.3.0 dependency to your project.");
+            e.printStackTrace();
+            
+            // Print detailed implementation guidance
+            System.out.println("\nTo implement the Leiden algorithm, please follow these steps:");
+            System.out.println("1. Add the Leiden algorithm library dependency to your project (nl.cwts:networkanalysis:1.3.0)");
+            System.out.println("2. Refer to the implementation in src/main/java/com/izmir/transportation/helper/clustering/leiden/README-Implementation.md");
+        }
     }
 
     /**
