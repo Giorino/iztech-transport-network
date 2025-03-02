@@ -44,6 +44,7 @@ import org.locationtech.jts.index.strtree.ItemBoundable;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import com.izmir.transportation.cost.TransportationCostAnalysis;
 import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
 import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
 import com.izmir.transportation.helper.strategy.SparsityBasedConnectivityStrategy;
@@ -279,6 +280,7 @@ public class CreateRoadNetwork {
     /**
      * Performs community detection using the Leiden algorithm on the transportation graph.
      * This method handles the configuration, detection, visualization, and saving of communities.
+     * It also performs transportation cost analysis for each detected community.
      *
      * @param transportationGraph The graph to perform community detection on
      */
@@ -330,6 +332,12 @@ public class CreateRoadNetwork {
             
             // Save community data for further analysis
             transportationGraph.saveCommunityData(communities);
+            
+            // NEW CODE: Perform transportation cost analysis
+            System.out.println("\n=== TRANSPORTATION COST ANALYSIS ===");
+            System.out.println("Analyzing transportation costs for detected communities...");
+            TransportationCostAnalysis.analyzeCosts(transportationGraph);
+            System.out.println("Transportation cost analysis completed successfully.");
             
         } catch (Exception e) {
             System.err.println("Error during Leiden community detection: " + e.getMessage());
