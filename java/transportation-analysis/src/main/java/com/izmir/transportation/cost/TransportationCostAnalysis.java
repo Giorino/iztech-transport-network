@@ -26,7 +26,7 @@ public class TransportationCostAnalysis {
         System.out.println("Starting transportation cost analysis...");
         
         // Step 1: Detect communities
-        System.out.println("Step 1: Detecting communities using Leiden algorithm...");
+        System.out.println("Detecting communities using Leiden algorithm...");
         LeidenCommunityDetection leidenCommunityDetection = new LeidenCommunityDetection(transportationGraph);
         
         // Configure the algorithm to use original points for clearer communities
@@ -40,16 +40,15 @@ public class TransportationCostAnalysis {
         System.out.println("Community Detection Results:\n" + communityStats);
         
         // Step 2: Analyze transportation costs using optimized analyzer
-        System.out.println("\nStep 2: Analyzing transportation costs with optimized analyzer...");
+        System.out.println("\nAnalyzing transportation costs with optimized analyzer...");
         OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(transportationGraph);
         analyzer.analyzeTransportationCosts(communities);
         
         // Step 3: Print summary of optimized analysis results
-        System.out.println("\nStep 3: Printing cost analysis summary...");
+        System.out.println("\nPrinting cost analysis summary...");
         analyzer.printCostSummary();
         
         // Step 4: Save optimized results to CSV
-        System.out.println("\nStep 4: Saving cost analysis to CSV...");
         try {
             analyzer.saveAnalysisToCSV("transportation_cost_analysis.csv");
         } catch (IOException e) {

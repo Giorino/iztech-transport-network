@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.izmir.transportation.cost.TransportationCostAnalysis;
 import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
+import com.izmir.transportation.helper.clustering.SpectralClustering;
 import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
 import com.izmir.transportation.helper.strategy.SparsityBasedConnectivityStrategy;
 
@@ -59,8 +62,37 @@ import com.izmir.transportation.helper.strategy.SparsityBasedConnectivityStrateg
 public class CreateRoadNetwork {
     private static final GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 
-        public static void main(String[] args) {
+    /**
+     * Main entry point for the road network creation and analysis application.
+     * 
+     * Usage:
+     *   java com.izmir.transportation.CreateRoadNetwork [algorithm]
+     * 
+     * Where [algorithm] is one of:
+     *   - "leiden" - Use only the Leiden community detection algorithm
+     *   - "spectral" - Use only the Spectral Clustering algorithm
+     *   - "both" - Use both algorithms (default)
+     * 
+     * Example:
+     *   java com.izmir.transportation.CreateRoadNetwork spectral
+     *
+     * @param args Command-line arguments, first argument can specify the community detection algorithm
+     */
+    public static void main(String[] args) {
         try {
+            // Parse command line arguments to determine which community detection algorithm to use
+            String communityDetectionAlgorithm = "both"; // Default to run both algorithms
+            
+            if (args.length > 0) {
+                String algorithm = args[0].toLowerCase();
+                if ("leiden".equals(algorithm) || "spectral".equals(algorithm) || "both".equals(algorithm)) {
+                    communityDetectionAlgorithm = algorithm;
+                } else {
+                    System.out.println("Unknown community detection algorithm: " + algorithm);
+                    System.out.println("Using default (both). Valid options are: leiden, spectral, both");
+                }
+            }
+            
             // Read the random points
             System.out.println("Loading points...");
             List<Point> points = loadPoints("random_izmir_points.csv");
@@ -80,7 +112,7 @@ public class CreateRoadNetwork {
 
             // Create edges between points using shortest paths
             System.out.println("Creating edges using shortest paths...");
-            List<List<Point>> paths = createPaths(points, pointToNode, roadNetwork);
+            List<List<Point>> paths = createPaths(points, pointToNode, roadNetwork, communityDetectionAlgorithm);
 
             // Visualize the results
             visualizeNetwork(roadNetwork, points, paths);
@@ -236,10 +268,11 @@ public class CreateRoadNetwork {
      * @param points Original input points
      * @param pointToNode Mapping of input points to network nodes
      * @param network The road network graph
+     * @param communityDetectionAlgorithm The community detection algorithm to use
      * @return List of paths connecting the points
      */
     private static List<List<Point>> createPaths(List<Point> points, Map<Point, Point> pointToNode,
-                                               Graph<Point, DefaultWeightedEdge> network) {
+                                               Graph<Point, DefaultWeightedEdge> network, String communityDetectionAlgorithm) {
         TransportationGraph transportationGraph = new TransportationGraph(points);
 
         for (Map.Entry<Point, Point> entry : pointToNode.entrySet()) {
@@ -262,10 +295,20 @@ public class CreateRoadNetwork {
             transportationGraph.visualizeGraph();
             System.out.println("Graph visualization launched. Please wait for the windows to appear...");
             
-            // Perform community detection using Leiden algorithm
-            System.out.println("\nPerforming community detection analysis using Leiden algorithm...");
+            // Variables to store community results if we're running both algorithms
+            Map<Integer, List<com.izmir.transportation.helper.Node>> leidenCommunities = null;
+            Map<Integer, List<com.izmir.transportation.helper.Node>> spectralCommunities = null;
             
-            performLeidenCommunityDetection(transportationGraph);
+            // Perform community detection based on the selected algorithm
+            if ("leiden".equals(communityDetectionAlgorithm) || "both".equals(communityDetectionAlgorithm)) {
+                System.out.println("\nPerforming community detection analysis using Leiden algorithm...");
+                leidenCommunities = performLeidenCommunityDetection(transportationGraph);
+            }
+            
+            if ("spectral".equals(communityDetectionAlgorithm) || "both".equals(communityDetectionAlgorithm)) {
+                System.out.println("\nPerforming community detection analysis using Spectral Clustering...");
+                spectralCommunities = performSpectralClustering(transportationGraph);
+            }
             
             System.out.println("Community detection analysis completed.");
             
@@ -284,7 +327,7 @@ public class CreateRoadNetwork {
      *
      * @param transportationGraph The graph to perform community detection on
      */
-    private static void performLeidenCommunityDetection(TransportationGraph transportationGraph) {
+    private static Map<Integer, List<com.izmir.transportation.helper.Node>> performLeidenCommunityDetection(TransportationGraph transportationGraph) {
         try {
             // Create a LeidenCommunityDetection instance
             System.out.println("Creating Leiden Community Detection instance...");
@@ -327,11 +370,11 @@ public class CreateRoadNetwork {
             
             // Visualize the communities
             System.out.println("Visualizing communities...");
-            transportationGraph.visualizeCommunities(communityList);
+            transportationGraph.visualizeCommunities(communityList, "leiden");
             System.out.println("Community visualization launched. Please wait for the window to appear...");
             
             // Save community data for further analysis
-            transportationGraph.saveCommunityData(communities);
+            transportationGraph.saveCommunityData(communities, "leiden");
             
             // NEW CODE: Perform transportation cost analysis
             System.out.println("\n=== TRANSPORTATION COST ANALYSIS ===");
@@ -339,6 +382,7 @@ public class CreateRoadNetwork {
             TransportationCostAnalysis.analyzeCosts(transportationGraph);
             System.out.println("Transportation cost analysis completed successfully.");
             
+            return communities;
         } catch (Exception e) {
             System.err.println("Error during Leiden community detection: " + e.getMessage());
             System.err.println("This may be due to missing the Leiden algorithm dependency.");
@@ -349,6 +393,83 @@ public class CreateRoadNetwork {
             System.out.println("\nTo implement the Leiden algorithm, please follow these steps:");
             System.out.println("1. Add the Leiden algorithm library dependency to your project (nl.cwts:networkanalysis:1.3.0)");
             System.out.println("2. Refer to the implementation in src/main/java/com/izmir/transportation/helper/clustering/leiden/README-Implementation.md");
+            return null;
+        }
+    }
+
+    /**
+     * Performs community detection using Spectral Clustering on the transportation graph.
+     * This method handles the configuration, detection, visualization, and saving of communities.
+     *
+     * @param transportationGraph The graph to perform community detection on
+     */
+    private static Map<Integer, List<com.izmir.transportation.helper.Node>> performSpectralClustering(TransportationGraph transportationGraph) {
+        try {
+            // Create a SpectralClustering instance
+            System.out.println("Creating Spectral Clustering instance...");
+            SpectralClustering spectralClustering = new SpectralClustering(transportationGraph);
+            
+            // Configure community detection parameters based on network size
+            int nodeCount = transportationGraph.getGraph().vertexSet().size();
+            
+            // Adjust settings based on network size
+            if (nodeCount <= 100) {
+                // For small networks, aim for 3-5 communities
+                spectralClustering.setNumberOfClusters(4)
+                                 .setSigma(0.4)  // Controls similarity scaling
+                                 .setGeographicWeight(0.3); // Balance between network and geographic distance
+            } else if (nodeCount <= 500) {
+                // For medium networks, aim for 5-8 communities
+                spectralClustering.setNumberOfClusters(6)
+                                 .setSigma(0.5)
+                                 .setGeographicWeight(0.35);
+            } else if (nodeCount <= 1000) {
+                // For larger networks
+                spectralClustering.setNumberOfClusters(8)
+                                 .setSigma(0.6)
+                                 .setGeographicWeight(0.4);
+            } else {
+                // For very large networks
+                spectralClustering.setNumberOfClusters(12)
+                                 .setSigma(0.7)
+                                 .setGeographicWeight(0.45);
+            }
+            
+            // Additional configuration
+            spectralClustering.setUseNormalizedCut(true) // Use normalized spectral clustering (usually better)
+                             .useOriginalPointsOnly(true) // Only use original points for cleaner communities
+                             .setMaxIterations(200);      // Ensure convergence of k-means
+            
+            // Detect communities
+            Map<Integer, List<com.izmir.transportation.helper.Node>> communities = spectralClustering.detectCommunities();
+            
+            // Get statistics
+            String communityStats = spectralClustering.getCommunityStatistics();
+            System.out.println(communityStats);
+            
+            // Prepare communities for visualization
+            List<List<com.izmir.transportation.helper.Node>> communityList = new ArrayList<>(communities.values());
+            
+            // Visualize the communities
+            System.out.println("Visualizing spectral clustering communities...");
+            transportationGraph.visualizeCommunities(communityList, "spectral");
+            System.out.println("Spectral clustering visualization launched. Please wait for the window to appear...");
+            
+            // Save community data for further analysis
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            transportationGraph.saveCommunityData(communities, "spectral");
+            
+            // Perform transportation cost analysis for spectral clustering communities
+            System.out.println("\n=== SPECTRAL CLUSTERING TRANSPORTATION COST ANALYSIS ===");
+            System.out.println("Analyzing transportation costs for spectral clustering communities...");
+            TransportationCostAnalysis.analyzeCosts(transportationGraph);
+            System.out.println("Transportation cost analysis completed successfully.");
+            
+            return communities;
+        } catch (Exception e) {
+            System.err.println("Error during Spectral Clustering: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -517,7 +638,4 @@ public class CreateRoadNetwork {
 
         System.out.println("Network data save completed successfully.");
     }
-
-    
-    
 } 

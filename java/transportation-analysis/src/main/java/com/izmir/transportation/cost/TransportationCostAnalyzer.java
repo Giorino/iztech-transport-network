@@ -324,24 +324,6 @@ public class TransportationCostAnalyzer {
                 df.format(totalDistance),
                 df.format(totalFuel),
                 df.format(totalCost)));
-        
-        System.out.println("\n=== BUS DETAILS ===");
-        for (CommunityTransportationCost cost : communityCosts.values()) {
-            System.out.println("\nCommunity " + cost.getCommunityId() + " (" + cost.getNodeCount() + " nodes):");
-            System.out.println(String.format("%-10s %-15s %-15s %-15s %-15s",
-                    "Bus #", "Nodes Carried", "Distance (km)", "Fuel (L)", "Cost"));
-            System.out.println(String.format("%-10s %-15s %-15s %-15s %-15s",
-                    "-----", "-------------", "-------------", "--------", "----"));
-            
-            for (BusInfo bus : cost.getBuses()) {
-                System.out.println(String.format("%-10d %-15d %-15s %-15s %-15s",
-                        bus.getBusNumber(),
-                        bus.getNodeCount(),
-                        df.format(bus.getRouteDistanceKm()),
-                        df.format(bus.getFuelLiters()),
-                        df.format(bus.getFuelCost())));
-            }
-        }
     }
     
     /**

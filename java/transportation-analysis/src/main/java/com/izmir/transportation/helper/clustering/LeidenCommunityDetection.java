@@ -138,17 +138,17 @@ public class LeidenCommunityDetection {
         Clustering bestClustering = null;
         double bestResolution = 0;
         
-        System.out.println("Searching for optimal community structure by testing different resolution parameters...");
+        //System.out.println("Searching for optimal community structure by testing different resolution parameters...");
         
         for (double resolution : resolutionValues) {
-            System.out.println("Trying resolution = " + resolution);
+            //System.out.println("Trying resolution = " + resolution);
             Map<Integer, List<Node>> testCommunities = detectCommunities(resolution, DEFAULT_ITERATIONS, DEFAULT_RANDOMNESS);
             
             // Assess balance quality - lower is better
             double balanceScore = assessCommunityBalance(testCommunities, graphSize);
             
-            System.out.println("  - Found " + testCommunities.size() + " communities with balance score " + 
-                               String.format("%.2f", balanceScore));
+            //System.out.println("  - Found " + testCommunities.size() + " communities with balance score " + 
+            //                   String.format("%.2f", balanceScore));
             
             // Keep track of the best result - only report improvement when we actually have one
             if (balanceScore < bestBalanceScore) {
@@ -290,17 +290,12 @@ public class LeidenCommunityDetection {
         
         if (useOriginalPointsOnly) {
             graph = transportationGraph.getOriginalPointsGraph();
-            System.out.println("Using original points graph with " + graph.vertexSet().size() + " nodes for community detection.");
         } else {
             graph = transportationGraph.getGraph();
-            System.out.println("Using full transportation graph with " + graph.vertexSet().size() + " nodes for community detection.");
         }
         
         // Create a subgraph with only the vertices that have edges
         graph = createSubgraph(new ArrayList<>(graph.vertexSet()), graph);
-        System.out.println("Created subgraph with " + graph.vertexSet().size() + " nodes (" + 
-                           (useOriginalPointsOnly ? "original points only" : "all nodes") + 
-                           ") and " + graph.edgeSet().size() + " edges");
         
         // Convert to LeidenNetwork format
         int nNodes = graph.vertexSet().size();
@@ -510,18 +505,6 @@ public class LeidenCommunityDetection {
             giniCoefficient * 3.0 +
             distributionScore * 1.0 +
             spatialCohesionPenalty * 6.0;
-
-        // Log detailed scoring for debugging when score is potentially good
-        if (score < 20.0) {
-            System.out.println("  - Score components: communityCount=" + communityCount +
-                             ", idealCount=" + String.format("%.2f", idealCommunityCount) +
-                             ", countPenalty=" + String.format("%.2f", communityCountPenalty) +
-                             ", singletonPenalty=" + String.format("%.2f", singletonPenalty) +
-                             ", dominancePenalty=" + String.format("%.2f", dominancePenalty) +
-                             ", giniCoefficient=" + String.format("%.2f", giniCoefficient) +
-                             ", distributionScore=" + String.format("%.2f", distributionScore) +
-                             ", spatialCohesion=" + String.format("%.2f", spatialCohesionPenalty));
-        }
         
         return score;
     }

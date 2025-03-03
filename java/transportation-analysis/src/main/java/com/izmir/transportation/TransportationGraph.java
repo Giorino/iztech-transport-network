@@ -389,9 +389,6 @@ public class TransportationGraph {
             }
         }
 
-        System.out.println("Created subgraph with " + subgraph.vertexSet().size() +
-                          " nodes (original points only) and " + subgraph.edgeSet().size() + " edges");
-
         return subgraph;
     }
 
@@ -407,6 +404,17 @@ public class TransportationGraph {
      * @param communities A list of communities, where each community is a list of nodes
      */
     public void visualizeCommunities(List<List<Node>> communities) {
+        visualizeCommunities(communities, "community");
+    }
+    
+    /**
+     * Visualizes detected communities by coloring nodes and edges based on community membership.
+     * Also saves the visualization as a PNG file with the algorithm name in the filename.
+     *
+     * @param communities A list of communities, where each community is a list of nodes
+     * @param algorithmName The name of the algorithm used (e.g., "leiden", "spectral")
+     */
+    public void visualizeCommunities(List<List<Node>> communities, String algorithmName) {
         if (communities == null || communities.isEmpty()) {
             System.out.println("No communities to visualize.");
             return;
@@ -425,7 +433,7 @@ public class TransportationGraph {
         List<Color> communityColors = generateCommunityColors(communities.size());
 
         // Create a visualization frame
-        JFrame frame = new JFrame("Izmir Transportation Network - Communities");
+        JFrame frame = new JFrame("Izmir Transportation Network - " + algorithmName.substring(0, 1).toUpperCase() + algorithmName.substring(1) + " Communities");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(1200, 800);
 
@@ -532,8 +540,7 @@ public class TransportationGraph {
         System.out.println("Initializing image saving procedures...");
 
         // Try multiple times with increasing delays - but without the Robot method
-        saveVisualizationAttempt(panel, communities.size());
-
+        saveVisualizationAttempt(panel, communities.size(), algorithmName);
     }
 
     /**
@@ -541,7 +548,18 @@ public class TransportationGraph {
      * Saves to current working directory
      */
     private void saveVisualizationAttempt(JPanel panel, int communityCount) {
+        saveVisualizationAttempt(panel, communityCount, "community");
+    }
 
+    /**
+     * Second attempt at saving the visualization - using panel's print method
+     * Saves to current working directory
+     * 
+     * @param panel The JPanel containing the visualization
+     * @param communityCount The number of communities
+     * @param algorithmName The name of the algorithm used
+     */
+    private void saveVisualizationAttempt(JPanel panel, int communityCount, String algorithmName) {
         try {
             // Create timestamp for filename
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -549,7 +567,7 @@ public class TransportationGraph {
 
             // Create absolute path for current directory
             String currentDir = System.getProperty("user.dir");
-            File outputDir = new File(currentDir);
+            File outputDir = new File(currentDir+"/graphs");
             System.out.println("Using current directory: " + outputDir.getAbsolutePath());
 
             // Create the buffered image
@@ -569,18 +587,20 @@ public class TransportationGraph {
             g2d.dispose();
 
             // First try to save as BMP (widely supported format)
-            File bmpFile = new File(outputDir, "community_" + communityCount + "_" + timestamp + ".bmp");
+            File bmpFile = new File(outputDir, algorithmName + "_community_" + communityCount + "_" + timestamp + ".bmp");
             // Save as BMP file (simple image format that can be viewed on macOS)
             if (saveAsBMP(image, bmpFile)) {
+                System.out.println("Visualization saved as: " + bmpFile.getAbsolutePath());
             } else {
                 // Try PPM as fallback
-                File ppmFile = new File(outputDir, "community_" + communityCount + "_" + timestamp + ".ppm");
+                File ppmFile = new File(outputDir, algorithmName + "_community_" + communityCount + "_" + timestamp + ".ppm");
                 System.out.println("BMP save failed, trying PPM: " + ppmFile.getAbsolutePath());
                 
                 if (saveAsPPM(image, ppmFile)) {
+                    System.out.println("Visualization saved as: " + ppmFile.getAbsolutePath());
                 } else {
                     // Last resort - try to save as a plain text report
-                    saveAsTextReport(panel, communityCount);
+                    saveAsTextReport(panel, communityCount, algorithmName);
                 }
             }
 
@@ -589,7 +609,7 @@ public class TransportationGraph {
             e.printStackTrace();
             
             // Last resort - try to save as a plain text report
-            saveAsTextReport(panel, communityCount);
+            saveAsTextReport(panel, communityCount, algorithmName);
         }
     }
     
@@ -728,6 +748,18 @@ public class TransportationGraph {
      * @param communityCount The number of communities
      */
     private void saveAsTextReport(JPanel panel, int communityCount) {
+        saveAsTextReport(panel, communityCount, "community");
+    }
+    
+    /**
+     * Last resort method to save community visualization data as a text report
+     * when all image saving methods have failed.
+     * 
+     * @param panel The panel containing the visualization
+     * @param communityCount The number of communities
+     * @param algorithmName The name of the algorithm used
+     */
+    private void saveAsTextReport(JPanel panel, int communityCount, String algorithmName) {
         System.out.println("Attempting to save visualization data as text report...");
         
         try {
@@ -735,13 +767,14 @@ public class TransportationGraph {
             String timestamp = dateFormat.format(new Date());
             String currentDir = System.getProperty("user.dir");
             
-            File reportFile = new File(currentDir, "community_report_" + communityCount + "_" + 
+            File reportFile = new File(currentDir, algorithmName + "_community_report_" + communityCount + "_" + 
                                       timestamp + ".txt");
             
             BufferedWriter writer = new BufferedWriter(new FileWriter(reportFile));
             
             writer.write("COMMUNITY VISUALIZATION REPORT\n");
             writer.write("==============================\n");
+            writer.write("Algorithm: " + algorithmName.substring(0, 1).toUpperCase() + algorithmName.substring(1) + "\n");
             writer.write("Generated: " + new Date() + "\n");
             writer.write("Communities: " + communityCount + "\n\n");
             
@@ -808,8 +841,20 @@ public class TransportationGraph {
      * @param communities Map of community IDs to lists of nodes
      */
     public void saveCommunityData(Map<Integer, List<Node>> communities) {
+        saveCommunityData(communities, "community");
+    }
+    
+    /**
+     * Saves the community data to a file for further analysis.
+     * The format is:
+     * node_id,community_id
+     *
+     * @param communities Map of community IDs to lists of nodes
+     * @param algorithmName The name of the algorithm used
+     */
+    public void saveCommunityData(Map<Integer, List<Node>> communities, String algorithmName) {
         try {
-            String fileName = "community_data.csv";
+            String fileName = algorithmName + "_community_data.csv";
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
             
             // Write header

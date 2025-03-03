@@ -145,10 +145,6 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
         // Step 1: Determine number of buses needed based on node count and max distance
         int nodeCount = nodes.size();
         int busesNeeded = (int) Math.ceil((double) nodeCount / BUS_CAPACITY);
-        
-        System.out.println("Community " + communityId + ": " + nodeCount + " nodes, initial estimate of " + 
-                          busesNeeded + " buses needed");
-        
         // Create the cost object
         CommunityTransportationCost cost = new CommunityTransportationCost(communityId, nodeCount, busesNeeded);
         
@@ -232,7 +228,6 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
      * @param cost The cost object to update with bus data
      */
     private void assignNodesToBusesWithTSP(List<Node> nodes, int busCount, CommunityTransportationCost cost) {
-        System.out.println("Using TSP optimization to assign " + nodes.size() + " nodes to " + busCount + " buses");
         
         // Simple assignment strategy: divide nodes evenly among buses
         int nodesPerBus = (int) Math.ceil((double) nodes.size() / busCount);
@@ -254,9 +249,6 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
             
             // Add the bus to the cost object
             cost.addBus(new BusInfo(busIndex + 1, busNodes.size(), route));
-            
-            System.out.println("Bus " + (busIndex + 1) + ": " + busNodes.size() + 
-                              " nodes, route distance: " + String.format("%.2f", route.getDistanceKm()) + " km");
         }
     }
     
@@ -707,27 +699,6 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
         System.out.println("Total fixed cost: " + df.format(totalBuses * ADDITIONAL_COST_PER_BUS));
         System.out.println("Total fuel cost: " + df.format(totalFuel * FUEL_COST_PER_LITER));
         System.out.println("Total cost: " + df.format(totalCost));
-        
-        System.out.println("\n=== BUS DETAILS ===");
-        for (CommunityTransportationCost cost : getCommunityCosts().values()) {
-            System.out.println("\nCommunity " + cost.getCommunityId() + " (" + cost.getNodeCount() + " nodes):");
-            System.out.println(String.format("%-10s %-15s %-15s %-15s %-15s %-15s",
-                    "Bus #", "Nodes Carried", "Distance (km)", "Fuel (L)", "Fuel Cost", "Total Cost"));
-            System.out.println(String.format("%-10s %-15s %-15s %-15s %-15s %-15s",
-                    "-----", "-------------", "-------------", "--------", "---------", "----------"));
-            
-            for (BusInfo bus : cost.getBuses()) {
-                double totalBusCost = bus.getFuelCost() + ADDITIONAL_COST_PER_BUS;
-                
-                System.out.println(String.format("%-10d %-15d %-15s %-15s %-15s %-15s",
-                        bus.getBusNumber(),
-                        bus.getNodeCount(),
-                        df.format(bus.getRouteDistanceKm()),
-                        df.format(bus.getFuelLiters()),
-                        df.format(bus.getFuelCost()),
-                        df.format(totalBusCost)));
-            }
-        }
     }
     
     /**
