@@ -1,53 +1,91 @@
-# Analyzing Transportation Network of Izmir Institute of Technology using Graph Theory and Algorithms
+# Transportation Network Analysis of Izmir Institute of Technology
 
-This project analyzes the transportation network around Izmir Institute of Technology (IYTE) using graph theory and algorithms. It creates a weighted graph representation of the road network, with a focus on the IYTE campus and surrounding areas.
+This project analyzes the transportation network of Izmir Institute of Technology using graph theory and various clustering algorithms. It allows for the construction of transportation graphs, application of community detection algorithms, and analysis of transportation costs.
 
 ## Features
 
-- Generation of random vertices based on population density
-- Integration with OpenStreetMap data for real road network information
-- Visualization of the transportation network using GeoTools
-- Graph-based analysis of transportation paths
-- Distance-weighted connections between points
+- Generation of random vertices based on population centers
+- Construction of road networks using different graph strategies (Complete, K-Nearest Neighbors, Gabriel, Delaunay)
+- Application of community detection algorithms (Leiden, Spectral Clustering)
+- Transportation cost analysis for optimized bus routing
+- Visualization of graphs and communities
+- Persistence of constructed graphs for reuse
 
-## Prerequisites
+## Project Structure
 
-- Java 8 or higher
-- Maven
-- Internet connection (for downloading OpenStreetMap data)
+The project is organized into several modules:
 
-## Building the Project
+- **Graph Construction**: Builds transportation graphs using different strategies
+- **Community Detection**: Applies clustering algorithms to identify transportation zones
+- **Cost Analysis**: Analyzes transportation costs for each community
+- **Persistence**: Saves and loads constructed graphs to avoid rebuilding
 
-To build the project, run:
+## Configuration
 
-```bash
-mvn clean install
+The main application parameters can be configured in the `App.java` file:
+
+```java
+// Number of nodes to generate
+private static final int NODE_COUNT = 1000; 
+
+// Graph construction strategy (COMPLETE, K_NEAREST_NEIGHBORS, GABRIEL, DELAUNAY)
+private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
+        GraphConstructionService.GraphStrategy.COMPLETE;
+
+// K value for K-nearest neighbors strategy
+private static final int K_VALUE = 5; 
+
+// Clustering algorithm (LEIDEN, SPECTRAL)
+private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
+        ClusteringService.ClusteringAlgorithm.LEIDEN;
+
+// Whether to use parallel processing
+private static final boolean USE_PARALLEL = true;
+
+// Whether to visualize the graph
+private static final boolean VISUALIZE_GRAPH = true;
+
+// Whether to visualize clusters
+private static final boolean VISUALIZE_CLUSTERS = true;
+
+// Whether to save the graph for future use
+private static final boolean SAVE_GRAPH = true;
 ```
 
 ## Running the Application
 
-After building, you can run the application using:
+To run the application:
 
-```bash
-mvn exec:java -Dexec.mainClass="com.izmir.App"
-```
+1. Build the project: `mvn clean package`
+2. Run the application: `java -jar target/transportation-analysis-1.0.jar`
 
-## Project Structure
+The application will:
+1. Generate random points based on population centers
+2. Check if a saved graph exists with the specified parameters
+3. If a saved graph exists, load it; otherwise, construct a new graph
+4. Apply the specified clustering algorithm to the graph
+5. Perform transportation cost analysis on the detected communities
+6. Visualize the results and save them to files
 
-- `src/main/java/com/izmir/`
-  - `App.java` - Main application entry point
-  - `transportation/` - Core transportation analysis classes
-    - `TransportationGraph.java` - Graph representation of the network
-    - `CreateRoadNetwork.java` - Road network creation from OSM data
-    - `IzmirBayGraph.java` - Random vertex generation
-    - `OSMUtils.java` - OpenStreetMap data utilities
+## Extending the Project
 
-## Output
+### Adding a New Graph Construction Strategy
 
-The application generates several output files:
-- `random_izmir_points.csv` - Generated points data
-- `izmir_network_nodes.csv` - Network node locations
-- Visual map displays showing:
-  - Base road network
-  - Generated points
-  - Connected paths
+1. Create a new class implementing `GraphConnectivityStrategy` in the `src/main/java/com/izmir/transportation/helper/strategy` package
+2. Add the new strategy to the `GraphStrategy` enum in `GraphConstructionService.java`
+3. Update the `createStrategy` method in `GraphConstructionService.java` to handle the new strategy
+
+### Adding a New Clustering Algorithm
+
+1. Create a new class implementing `GraphClusteringAlgorithm` in the `src/main/java/com/izmir/transportation/helper/clustering` package
+2. Add the new algorithm to the `ClusteringAlgorithm` enum in `ClusteringService.java`
+3. Update the `performClustering` method in `ClusteringService.java` to handle the new algorithm
+
+## Performance Considerations
+
+For large graphs (e.g., 3000+ nodes), the graph construction process can be time-consuming. The persistence mechanism allows you to save constructed graphs and reuse them for different clustering algorithms or analyses. 
+
+Key tips:
+- Set `SAVE_GRAPH = true` to persist graphs
+- Graphs are saved with filenames based on node count and strategy (e.g., `graph_3000_complete.json`)
+- When running with the same node count and strategy, the application will automatically load the saved graph

@@ -39,6 +39,22 @@ public class TransportationCostAnalysis {
         String communityStats = leidenCommunityDetection.getCommunityStatistics();
         System.out.println("Community Detection Results:\n" + communityStats);
         
+        analyzeCosts(transportationGraph, communities);
+    }
+    
+    /**
+     * Performs transportation cost analysis on the given transportation graph
+     * and communities using the optimized transportation cost analyzer.
+     * 
+     * @param transportationGraph The transportation graph to analyze
+     * @param communities The communities to analyze
+     */
+    public static void analyzeCosts(TransportationGraph transportationGraph, Map<Integer, List<Node>> communities) {
+        System.out.println("Starting transportation cost analysis with pre-detected communities...");
+        
+        // Step 1: Print community information
+        System.out.println("Found " + communities.size() + " communities for analysis");
+        
         // Step 2: Analyze transportation costs using optimized analyzer
         System.out.println("\nAnalyzing transportation costs with optimized analyzer...");
         OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(transportationGraph);

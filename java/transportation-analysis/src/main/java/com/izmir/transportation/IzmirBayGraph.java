@@ -8,10 +8,13 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -55,25 +58,41 @@ public class IzmirBayGraph {
         loadPopulationCenters();
     }
 
-    public static void main(String[] args) {
+    private static final Logger LOGGER = Logger.getLogger(IzmirBayGraph.class.getName());
+
+    public static List<Point> generatePoints(int numPoints) {
         try {
-            // Generate random points
-            System.out.println("Generating random vertices...");
-            List<Point> points = generateRandomPoints(3000, 0.01);
-
-            // Save points to CSV
-            System.out.println("Saving points to CSV...");
-            savePointsToCSV(points, "random_izmir_points.csv");
-
-            // Visualize points
-            System.out.println("Visualizing points...");
+            loadIzmirBoundary();
+            loadPopulationCenters();
+            
+            // Generate random points influenced by population centers
+            List<Point> points = generateRandomPoints(numPoints, 0.01);
+            
+            // Visualize the points
             visualizePoints(points);
-
-            System.out.println("Done! Points have been generated and saved.");
-
+            
+            // Save points to CSV
+            savePointsToCSV(points, "generated_points.csv");
+            
+            return points;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error generating points", e);
+            return Collections.emptyList();
         }
+    }
+
+    public static void main(String[] args) {
+        int numPoints = 1000;
+        if (args.length > 0) {
+            try {
+                numPoints = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                LOGGER.log(Level.WARNING, "Invalid number of points, using default 1000 points");
+            }
+        }
+        
+        List<Point> points = generatePoints(numPoints);
+        LOGGER.log(Level.INFO, "Generated {0} points", points.size());
     }
 
     /**

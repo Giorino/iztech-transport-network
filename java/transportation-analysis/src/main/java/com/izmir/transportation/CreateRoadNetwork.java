@@ -179,7 +179,7 @@ public class CreateRoadNetwork {
      * @return Graph representing the road network
      * @throws Exception If there is an error loading or processing the OSM data
      */
-    private static Graph<Point, DefaultWeightedEdge> loadRoadNetwork(Envelope bbox) throws Exception {
+    public static Graph<Point, DefaultWeightedEdge> loadRoadNetwork(Envelope bbox) throws Exception {
         // Create a weighted graph
         Graph<Point, DefaultWeightedEdge> graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
 
@@ -236,7 +236,7 @@ public class CreateRoadNetwork {
      * @param network The road network graph
      * @return Map linking input points to their nearest network nodes
      */
-    private static Map<Point, Point> snapPointsToNetwork(List<Point> points, Graph<Point, DefaultWeightedEdge> network) {
+    public static Map<Point, Point> snapPointsToNetwork(List<Point> points, Graph<Point, DefaultWeightedEdge> network) {
         Map<Point, Point> pointToNode = new HashMap<>();
         STRtree spatialIndex = new STRtree();
 

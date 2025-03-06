@@ -1,0 +1,194 @@
+{
+  "name": "Transportation Network Analysis",
+  "description": "Analyzing Transportation Network of Izmir Institute of Technology using Graph Theory and Algorithms",
+  "workspaceLayout": {
+    "editorGroups": [
+      {
+        "name": "Main Application",
+        "tabs": [
+          {
+            "path": "src/main/java/com/izmir/App.java",
+            "description": "Main application entry point and configuration"
+          }
+        ]
+      },
+      {
+        "name": "Core Services",
+        "tabs": [
+          {
+            "path": "src/main/java/com/izmir/transportation/GraphConstructionService.java",
+            "description": "Service for constructing graphs with different strategies"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/ClusteringService.java",
+            "description": "Service for applying clustering algorithms"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/IzmirBayGraph.java",
+            "description": "Graph generation with population centers"
+          }
+        ]
+      },
+      {
+        "name": "Data Model",
+        "tabs": [
+          {
+            "path": "src/main/java/com/izmir/transportation/TransportationGraph.java",
+            "description": "Core graph model with visualization capabilities"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/Node.java",
+            "description": "Node representation in the graph"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/Edge.java",
+            "description": "Edge representation in the graph"
+          }
+        ]
+      },
+      {
+        "name": "Graph Strategies",
+        "tabs": [
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/strategy/GraphConnectivityStrategy.java",
+            "description": "Interface for graph construction strategies"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/strategy/CompleteGraphStrategy.java",
+            "description": "Strategy for creating a complete graph"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/strategy/KNearestNeighborsStrategy.java",
+            "description": "Strategy for creating a k-nearest neighbors graph"
+          }
+        ]
+      },
+      {
+        "name": "Clustering Algorithms",
+        "tabs": [
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/clustering/GraphClusteringAlgorithm.java",
+            "description": "Interface for clustering algorithms"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/clustering/LeidenCommunityDetection.java",
+            "description": "Leiden community detection algorithm"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/helper/clustering/SpectralClustering.java",
+            "description": "Spectral clustering algorithm"
+          }
+        ]
+      },
+      {
+        "name": "Persistence",
+        "tabs": [
+          {
+            "path": "src/main/java/com/izmir/transportation/persistence/GraphPersistenceService.java",
+            "description": "Service for saving and loading graphs"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/persistence/GraphData.java",
+            "description": "Data model for graph persistence"
+          }
+        ]
+      },
+      {
+        "name": "Cost Analysis",
+        "tabs": [
+          {
+            "path": "src/main/java/com/izmir/transportation/cost/TransportationCostAnalysis.java",
+            "description": "Transportation cost analysis"
+          },
+          {
+            "path": "src/main/java/com/izmir/transportation/cost/OptimizedTransportationCostAnalyzer.java",
+            "description": "Optimized transportation cost analyzer"
+          }
+        ]
+      },
+      {
+        "name": "Documentation",
+        "tabs": [
+          {
+            "path": "README.md",
+            "description": "Project README"
+          },
+          {
+            "path": "WORKSPACE_GUIDE.md",
+            "description": "Workspace guide for developers"
+          }
+        ]
+      }
+    ]
+  },
+  "hotkeys": [
+    {
+      "key": "cmd+shift+g",
+      "description": "Navigate to graph construction",
+      "command": "openEditor",
+      "args": {
+        "path": "src/main/java/com/izmir/transportation/GraphConstructionService.java"
+      }
+    },
+    {
+      "key": "cmd+shift+c",
+      "description": "Navigate to clustering",
+      "command": "openEditor",
+      "args": {
+        "path": "src/main/java/com/izmir/transportation/ClusteringService.java"
+      }
+    },
+    {
+      "key": "cmd+shift+a",
+      "description": "Navigate to main app",
+      "command": "openEditor",
+      "args": {
+        "path": "src/main/java/com/izmir/App.java"
+      }
+    },
+    {
+      "key": "cmd+shift+p",
+      "description": "Navigate to persistence",
+      "command": "openEditor",
+      "args": {
+        "path": "src/main/java/com/izmir/transportation/persistence/GraphPersistenceService.java"
+      }
+    }
+  ],
+  "codeTour": {
+    "title": "Transportation Network Analysis Codebase",
+    "description": "A tour of the key components of the Transportation Network Analysis project",
+    "steps": [
+      {
+        "title": "Main Application Entry Point",
+        "description": "The App.java file is the main entry point of the application. It configures and orchestrates the different components.",
+        "file": "src/main/java/com/izmir/App.java"
+      },
+      {
+        "title": "Graph Construction Service",
+        "description": "The GraphConstructionService.java handles the construction of graphs using different strategies.",
+        "file": "src/main/java/com/izmir/transportation/GraphConstructionService.java"
+      },
+      {
+        "title": "Clustering Service",
+        "description": "The ClusteringService.java applies clustering algorithms to detect communities in the graph.",
+        "file": "src/main/java/com/izmir/transportation/ClusteringService.java"
+      },
+      {
+        "title": "Transportation Graph",
+        "description": "The TransportationGraph.java is the core data structure that represents the transportation network.",
+        "file": "src/main/java/com/izmir/transportation/TransportationGraph.java"
+      },
+      {
+        "title": "Persistence",
+        "description": "The GraphPersistenceService.java handles saving and loading graph data to/from disk.",
+        "file": "src/main/java/com/izmir/transportation/persistence/GraphPersistenceService.java"
+      },
+      {
+        "title": "Cost Analysis",
+        "description": "The TransportationCostAnalysis.java analyzes transportation costs for communities.",
+        "file": "src/main/java/com/izmir/transportation/cost/TransportationCostAnalysis.java"
+      }
+    ]
+  }
+} 
