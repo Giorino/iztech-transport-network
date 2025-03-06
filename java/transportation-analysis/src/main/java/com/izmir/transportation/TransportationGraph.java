@@ -429,6 +429,10 @@ public class TransportationGraph {
             }
         }
 
+        // Post-process to ensure all nodes have a community assignment
+        // This prevents black nodes in visualization
+        assignMissingCommunities(nodeCommunities);
+
         // Generate distinct colors for each community (max 20 unique colors)
         List<Color> communityColors = generateCommunityColors(communities.size());
 
@@ -877,6 +881,55 @@ public class TransportationGraph {
             System.out.println("Community data saved to " + fileName);
         } catch (IOException e) {
             System.err.println("Error writing community data: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Assigns communities to nodes that weren't assigned by the clustering algorithm.
+     * This ensures all nodes have a community and prevents black nodes in visualization.
+     * 
+     * @param nodeCommunities The map of nodes to their community IDs
+     */
+    private void assignMissingCommunities(Map<Node, Integer> nodeCommunities) {
+        List<Node> unassignedNodes = new ArrayList<>();
+        
+        // Find all nodes without a community
+        for (Node node : graph.vertexSet()) {
+            if (!nodeCommunities.containsKey(node)) {
+                unassignedNodes.add(node);
+            }
+        }
+        
+        // Skip if there are no unassigned nodes
+        if (unassignedNodes.isEmpty()) {
+            return;
+        }
+        
+        System.out.println("Found " + unassignedNodes.size() + " unassigned nodes, assigning to nearest communities...");
+        
+        // For each unassigned node, find the closest assigned node and use its community
+        for (Node unassignedNode : unassignedNodes) {
+            Node closestNode = null;
+            double minDistance = Double.MAX_VALUE;
+            
+            // Find the closest assigned node
+            for (Map.Entry<Node, Integer> entry : nodeCommunities.entrySet()) {
+                Node assignedNode = entry.getKey();
+                double distance = unassignedNode.getLocation().distance(assignedNode.getLocation());
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestNode = assignedNode;
+                }
+            }
+            
+            // Assign the unassigned node to the same community as the closest node
+            if (closestNode != null) {
+                nodeCommunities.put(unassignedNode, nodeCommunities.get(closestNode));
+            } else {
+                // If somehow we can't find a closest node, assign to community 0
+                nodeCommunities.put(unassignedNode, 0);
+            }
         }
     }
 } 
