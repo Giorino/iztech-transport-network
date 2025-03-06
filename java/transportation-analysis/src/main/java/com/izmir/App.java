@@ -25,10 +25,10 @@ public class App
     // Configuration properties
     private static final int NODE_COUNT = 3000; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
-            GraphConstructionService.GraphStrategy.GABRIEL; // Graph construction strategy
+            GraphConstructionService.GraphStrategy.COMPLETE; // Graph construction strategy
     private static final int K_VALUE = 5; // K value for K-nearest neighbors strategy
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.SPECTRAL; // Clustering algorithm
+            ClusteringService.ClusteringAlgorithm.LEIDEN; // Clustering algorithm
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
     private static final boolean VISUALIZE_CLUSTERS = true; // Whether to visualize clusters
