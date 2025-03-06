@@ -49,8 +49,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import com.izmir.transportation.cost.TransportationCostAnalysis;
 import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
 import com.izmir.transportation.helper.clustering.SpectralClustering;
+import com.izmir.transportation.helper.strategy.GabrielGraphStrategy;
 import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
-import com.izmir.transportation.helper.strategy.SparsityBasedConnectivityStrategy;
 
 /**
  * A class for creating and analyzing a road network based on generated points and OpenStreetMap data.
@@ -280,8 +280,10 @@ public class CreateRoadNetwork {
         }
 
         // Create a strategy with 70% sparsity
-        GraphConnectivityStrategy strategy = new SparsityBasedConnectivityStrategy(70);
-
+        GraphConnectivityStrategy strategy = new GabrielGraphStrategy();
+        //GraphConnectivityStrategy strategy = new CompleteGraphStrategy();
+        //GraphConnectivityStrategy strategy = new SparsityBasedConnectivityStrategy(70);
+        //GraphConnectivityStrategy strategy = new DelaunayTriangulationStrategy();
         // Create connections using the strategy
         List<List<Point>> paths = strategy.createConnections(points, pointToNode, network, transportationGraph);
         

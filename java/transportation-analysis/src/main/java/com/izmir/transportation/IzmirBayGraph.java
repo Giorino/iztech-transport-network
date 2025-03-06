@@ -59,7 +59,7 @@ public class IzmirBayGraph {
         try {
             // Generate random points
             System.out.println("Generating random vertices...");
-            List<Point> points = generateRandomPoints(1000, 0.01);
+            List<Point> points = generateRandomPoints(3000, 0.01);
 
             // Save points to CSV
             System.out.println("Saving points to CSV...");
