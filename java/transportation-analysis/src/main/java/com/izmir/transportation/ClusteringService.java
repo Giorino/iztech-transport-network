@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.izmir.transportation.cost.TransportationCostAnalysis;
 import com.izmir.transportation.helper.Node;
+import com.izmir.transportation.helper.clustering.GirvanNewmanClustering;
 import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
 import com.izmir.transportation.helper.clustering.SpectralClustering;
 import com.izmir.transportation.helper.clustering.SpectralClusteringConfig;
@@ -29,6 +30,7 @@ public class ClusteringService {
     private double communityScalingFactor = 0.75; // Controls community detection sensitivity (higher = more communities)
     private boolean adaptiveResolution = true; // Whether to use adaptive resolution for Leiden algorithm
     private int minCommunitySize = 5; // Minimum size for a community, smaller ones will be merged
+    private boolean useModularityMaximization = true; // Whether to use modularity maximization for Girvan-Newman
     
     // Specific spectral clustering configuration
     private SpectralClusteringConfig spectralConfig;
@@ -49,7 +51,8 @@ public class ClusteringService {
      */
     public enum ClusteringAlgorithm {
         LEIDEN("leiden"),
-        SPECTRAL("spectral");
+        SPECTRAL("spectral"),
+        GIRVAN_NEWMAN("girvan_newman");
         
         private final String code;
         
@@ -128,6 +131,19 @@ public class ClusteringService {
     }
     
     /**
+     * Sets whether to use modularity maximization for Girvan-Newman algorithm.
+     * When enabled, the algorithm will find the community division that maximizes modularity.
+     * 
+     * @param useModularity True to use modularity maximization
+     * @return This ClusteringService instance for method chaining
+     */
+    public ClusteringService setUseModularityMaximization(boolean useModularity) {
+        this.useModularityMaximization = useModularity;
+        LOGGER.info("Modularity maximization set to {}", this.useModularityMaximization);
+        return this;
+    }
+    
+    /**
      * Gets the SpectralClusteringConfig object for detailed configuration of spectral clustering.
      * This allows for fine-tuning the spectral clustering algorithm beyond the basic parameters.
      * 
@@ -198,6 +214,17 @@ public class ClusteringService {
             
             SpectralClustering spectralAlgorithm = new SpectralClustering(graph, spectralConfig);
             communities = spectralAlgorithm.detectCommunities();
+        } else if (algorithm == ClusteringAlgorithm.GIRVAN_NEWMAN) {
+            // Use Girvan-Newman algorithm
+            LOGGER.info("Using Girvan-Newman algorithm with target communities: {}, min community size: {}",
+                       maxClusters, minCommunitySize);
+            LOGGER.info("Modularity maximization: {}", useModularityMaximization);
+            
+            GirvanNewmanClustering girvanNewmanAlgorithm = new GirvanNewmanClustering(graph);
+            girvanNewmanAlgorithm.setTargetCommunityCount(maxClusters)
+                                .setMinCommunitySize(minCommunitySize)
+                                .setUseModularityMaximization(useModularityMaximization);
+            communities = girvanNewmanAlgorithm.detectCommunities();
         } else {
             throw new IllegalArgumentException("Unsupported algorithm: " + algorithm);
         }
