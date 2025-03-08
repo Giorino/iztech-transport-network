@@ -60,6 +60,11 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
     private boolean useOriginalPointsOnly = false;
     private int maxIterations = DEFAULT_MAX_ITERATIONS;
     private double geoWeight = DEFAULT_GEO_WEIGHT;
+    private int minCommunitySize = 1; // Minimum size for a community
+    private boolean preventSingletons = false; // Whether to prevent singleton communities
+    
+    // Configuration object
+    private SpectralClusteringConfig config;
     
     // Results storage
     private Map<Integer, List<Node>> communities;
@@ -74,6 +79,49 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
     public SpectralClustering(TransportationGraph transportationGraph) {
         this.transportationGraph = transportationGraph;
         this.communities = new HashMap<>();
+        this.config = new SpectralClusteringConfig();
+    }
+    
+    /**
+     * Constructs a SpectralClustering instance with a config object.
+     * 
+     * @param transportationGraph The transportation graph to analyze
+     * @param config Configuration parameters for spectral clustering
+     */
+    public SpectralClustering(TransportationGraph transportationGraph, SpectralClusteringConfig config) {
+        this.transportationGraph = transportationGraph;
+        this.communities = new HashMap<>();
+        this.config = config;
+        
+        // Apply configuration
+        this.numberOfClusters = config.getNumberOfClusters();
+        this.sigma = config.getSigma();
+        this.useNormalizedCut = config.isUseNormalizedCut();
+        this.maxIterations = config.getMaxIterations();
+        this.geoWeight = config.getGeoWeight();
+        this.minCommunitySize = config.getMinCommunitySize();
+        this.preventSingletons = config.isPreventSingletons();
+    }
+    
+    /**
+     * Sets the configuration object for spectral clustering.
+     * 
+     * @param config The configuration object
+     * @return This SpectralClustering instance for method chaining
+     */
+    public SpectralClustering setConfig(SpectralClusteringConfig config) {
+        this.config = config;
+        
+        // Apply configuration
+        this.numberOfClusters = config.getNumberOfClusters();
+        this.sigma = config.getSigma();
+        this.useNormalizedCut = config.isUseNormalizedCut();
+        this.maxIterations = config.getMaxIterations();
+        this.geoWeight = config.getGeoWeight();
+        this.minCommunitySize = config.getMinCommunitySize();
+        this.preventSingletons = config.isPreventSingletons();
+        
+        return this;
     }
     
     /**
@@ -468,9 +516,23 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
             points.add(new EmbeddingPoint(embedding.getRow(i), i));
         }
         
+        // Determine appropriate number of clusters based on minCommunitySize
+        int effectiveNumClusters = numberOfClusters;
+        if (minCommunitySize > 1) {
+            // Calculate maximum possible number of clusters given minimum size
+            int maxPossibleClusters = nodes.size() / minCommunitySize;
+            effectiveNumClusters = Math.min(numberOfClusters, maxPossibleClusters);
+            System.out.println("Adjusted number of clusters from " + numberOfClusters + 
+                           " to " + effectiveNumClusters + " based on minimum community size " + 
+                           minCommunitySize);
+        }
+        
+        // Ensure we have at least 2 clusters
+        effectiveNumClusters = Math.max(2, effectiveNumClusters);
+        
         // Perform k-means clustering
         KMeansPlusPlusClusterer<EmbeddingPoint> clusterer = 
-            new KMeansPlusPlusClusterer<>(numberOfClusters, maxIterations, new EuclideanDistance());
+            new KMeansPlusPlusClusterer<>(effectiveNumClusters, maxIterations, new EuclideanDistance());
         
         List<CentroidCluster<EmbeddingPoint>> clusters = clusterer.cluster(points);
         
@@ -487,7 +549,127 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
             result.put(i, community);
         }
         
+        // Check for small communities and handle them if needed
+        if (preventSingletons || minCommunitySize > 1) {
+            result = handleSmallCommunities(result, nodes);
+        }
+        
         return result;
+    }
+    
+    /**
+     * Handles small communities based on configuration settings.
+     * Merges communities smaller than minCommunitySize into their closest neighbors.
+     * 
+     * @param communities The original communities
+     * @param nodes All nodes in the graph
+     * @return Updated communities with small ones merged
+     */
+    private Map<Integer, List<Node>> handleSmallCommunities(Map<Integer, List<Node>> communities, List<Node> nodes) {
+        // Make a working copy
+        Map<Integer, List<Node>> result = new HashMap<>(communities);
+        
+        // Identify small communities
+        List<Integer> smallCommunityIds = new ArrayList<>();
+        for (Map.Entry<Integer, List<Node>> entry : result.entrySet()) {
+            if (entry.getValue().size() < minCommunitySize || 
+                (preventSingletons && entry.getValue().size() == 1)) {
+                smallCommunityIds.add(entry.getKey());
+            }
+        }
+        
+        if (smallCommunityIds.isEmpty()) {
+            return result; // No small communities to handle
+        }
+        
+        System.out.println("Found " + smallCommunityIds.size() + 
+                       " communities smaller than minimum size " + minCommunitySize);
+        
+        // Calculate centroids for all communities (for distance calculations)
+        Map<Integer, double[]> centroids = new HashMap<>();
+        for (Map.Entry<Integer, List<Node>> entry : result.entrySet()) {
+            centroids.put(entry.getKey(), calculateCentroid(entry.getValue()));
+        }
+        
+        // Process each small community
+        for (Integer smallId : smallCommunityIds) {
+            List<Node> smallCommunity = result.get(smallId);
+            if (smallCommunity == null || smallCommunity.isEmpty()) {
+                continue; // Skip if already processed
+            }
+            
+            // Find closest community
+            int closestId = -1;
+            double minDistance = Double.MAX_VALUE;
+            
+            double[] smallCentroid = centroids.get(smallId);
+            
+            for (Map.Entry<Integer, double[]> entry : centroids.entrySet()) {
+                int otherId = entry.getKey();
+                if (otherId == smallId || smallCommunityIds.contains(otherId)) {
+                    continue; // Skip self or other small communities
+                }
+                
+                double dist = calculateDistance(smallCentroid, entry.getValue());
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closestId = otherId;
+                }
+            }
+            
+            // If we found a community to merge with
+            if (closestId != -1) {
+                // Merge small community into closest
+                List<Node> targetCommunity = result.get(closestId);
+                targetCommunity.addAll(smallCommunity);
+                
+                // Update centroid of target community
+                centroids.put(closestId, calculateCentroid(targetCommunity));
+                
+                // Remove small community
+                result.remove(smallId);
+                centroids.remove(smallId);
+                
+                System.out.println("Merged community " + smallId + " (size " + smallCommunity.size() + 
+                               ") into community " + closestId + " (new size " + targetCommunity.size() + ")");
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Calculate the centroid (average position) of a set of nodes
+     * 
+     * @param nodes The nodes
+     * @return The centroid as a double array
+     */
+    private double[] calculateCentroid(List<Node> nodes) {
+        if (nodes == null || nodes.isEmpty()) {
+            return new double[2];
+        }
+        
+        double[] sum = new double[2];
+        for (Node node : nodes) {
+            Point point = node.getLocation();
+            sum[0] += point.getX();
+            sum[1] += point.getY();
+        }
+        
+        return new double[] { sum[0] / nodes.size(), sum[1] / nodes.size() };
+    }
+    
+    /**
+     * Calculate Euclidean distance between two points
+     * 
+     * @param p1 First point
+     * @param p2 Second point
+     * @return Euclidean distance
+     */
+    private double calculateDistance(double[] p1, double[] p2) {
+        double dx = p1[0] - p2[0];
+        double dy = p1[1] - p2[1];
+        return Math.sqrt(dx * dx + dy * dy);
     }
     
     /**
