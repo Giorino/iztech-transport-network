@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.izmir.transportation.cost.TransportationCostAnalysis;
 import com.izmir.transportation.helper.Node;
 import com.izmir.transportation.helper.clustering.GirvanNewmanClustering;
+import com.izmir.transportation.helper.clustering.InfomapCommunityDetection;
 import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
 import com.izmir.transportation.helper.clustering.SpectralClustering;
 import com.izmir.transportation.helper.clustering.SpectralClusteringConfig;
@@ -52,7 +53,8 @@ public class ClusteringService {
     public enum ClusteringAlgorithm {
         LEIDEN("leiden"),
         SPECTRAL("spectral"),
-        GIRVAN_NEWMAN("girvan_newman");
+        GIRVAN_NEWMAN("girvan_newman"),
+        INFOMAP("infomap");
         
         private final String code;
         
@@ -225,6 +227,17 @@ public class ClusteringService {
                                 .setMinCommunitySize(minCommunitySize)
                                 .setUseModularityMaximization(useModularityMaximization);
             communities = girvanNewmanAlgorithm.detectCommunities();
+        } else if (algorithm == ClusteringAlgorithm.INFOMAP) {
+            // Use Infomap algorithm
+            LOGGER.info("Using Infomap algorithm with natural community discovery");
+            LOGGER.info("Min community size: {}, Max iterations: {}", minCommunitySize, 200);
+            
+            InfomapCommunityDetection infomapAlgorithm = new InfomapCommunityDetection(graph);
+            infomapAlgorithm.setMinClusterSize(minCommunitySize)
+                           .setMaxIterations(200)  // Increase iterations for better convergence
+                           .setTolerance(1e-5)     // Lower tolerance for more precise results
+                           .setForceMaxClusters(false);  // Don't force merging, let algorithm find natural communities
+            communities = infomapAlgorithm.detectCommunities();
         } else {
             throw new IllegalArgumentException("Unsupported algorithm: " + algorithm);
         }
@@ -232,7 +245,7 @@ public class ClusteringService {
         LOGGER.info("Found {} communities before post-processing", communities.size());
         
         // Post-process to handle small communities - only for Leiden or if we're not using spectral config
-        if (algorithm == ClusteringAlgorithm.LEIDEN && minCommunitySize > 1) {
+        if ((algorithm == ClusteringAlgorithm.LEIDEN || algorithm == ClusteringAlgorithm.GIRVAN_NEWMAN) && minCommunitySize > 1) {
             communities = mergeSmallCommunities(communities, graph, minCommunitySize);
             LOGGER.info("After merging small communities: {} communities remain", communities.size());
         }

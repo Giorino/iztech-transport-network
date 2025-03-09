@@ -13,6 +13,7 @@ import com.izmir.transportation.IzmirBayGraph;
 import com.izmir.transportation.TransportationGraph;
 import com.izmir.transportation.helper.Node;
 import com.izmir.transportation.helper.clustering.GirvanNewmanClustering;
+import com.izmir.transportation.helper.clustering.InfomapCommunityDetection;
 import com.izmir.transportation.helper.clustering.SpectralClusteringConfig;
 
 /**
@@ -33,7 +34,8 @@ public class App
             GraphConstructionService.GraphStrategy.GABRIEL; // Using Gabriel graph
     private static final int K_VALUE = 50; // K value for K-nearest neighbors strategy
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN; // Clustering algorithm
+            ClusteringService.ClusteringAlgorithm.INFOMAP; // Clustering algorithm
+            // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
     private static final boolean VISUALIZE_CLUSTERS = true; // Whether to visualize clusters
@@ -59,6 +61,11 @@ public class App
     // Additional Girvan-Newman specific configuration
     private static final int GN_MAX_ITERATIONS = 500; // Increased max iterations to ensure enough communities
     private static final boolean GN_EARLY_STOP = false; // Disable early stopping to force more iterations
+    
+    // Infomap specific configuration
+    private static final int INFOMAP_MAX_ITERATIONS = 250; // Maximum iterations for Infomap algorithm
+    private static final double INFOMAP_TOLERANCE = 1e-5; // Convergence tolerance for Infomap
+    private static final boolean INFOMAP_FORCE_MAX_CLUSTERS = false; // Don't force a specific number of communities
 
     public static void main( String[] args )
     {
@@ -105,6 +112,37 @@ public class App
                 Map<Integer, List<Node>> communities = gnAlgorithm.detectCommunities();
                 
                 // Visualize if requested
+                if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                    List<List<Node>> communityList = new ArrayList<>(communities.values());
+                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
+                    graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                }
+                
+                // Perform transportation cost analysis
+                LOGGER.info("Performing transportation cost analysis...");
+                new com.izmir.transportation.cost.TransportationCostAnalysis().analyzeCosts(graph, communities);
+            } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
+                // Infomap algorithm
+                LOGGER.info("Step 3: Performing Infomap clustering");
+                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Community Size: " + MIN_COMMUNITY_SIZE);
+                LOGGER.info("Max Iterations: " + INFOMAP_MAX_ITERATIONS + ", Tolerance: " + INFOMAP_TOLERANCE);
+                LOGGER.info("Force Max Clusters: " + INFOMAP_FORCE_MAX_CLUSTERS + " (Letting algorithm find natural communities)");
+                
+                ClusteringService clusteringService = new ClusteringService();
+                clusteringService.setMaxClusters(MAX_CLUSTERS)
+                                .setMinCommunitySize(MIN_COMMUNITY_SIZE);
+                
+                // Use Infomap-specific configuration
+                InfomapCommunityDetection infomapAlgorithm = new InfomapCommunityDetection(graph);
+                infomapAlgorithm.setMaxClusters(MAX_CLUSTERS)
+                               .setMinClusterSize(MIN_COMMUNITY_SIZE)
+                               .setMaxIterations(INFOMAP_MAX_ITERATIONS)
+                               .setTolerance((float)INFOMAP_TOLERANCE)
+                               .setForceMaxClusters(INFOMAP_FORCE_MAX_CLUSTERS);
+                
+                Map<Integer, List<Node>> communities = infomapAlgorithm.detectCommunities();
+                
+                // Visualize the communities
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
                     List<List<Node>> communityList = new ArrayList<>(communities.values());
                     graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
