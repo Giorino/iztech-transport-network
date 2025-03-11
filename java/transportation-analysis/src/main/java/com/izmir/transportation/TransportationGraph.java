@@ -69,6 +69,7 @@ public class TransportationGraph {
     private static final double MAX_EDGE_WIDTH = 5.0;
     private AffinityMatrix affinityMatrix;
     private final List<Point> originalPoints; // Track original points separately
+    private String graphConstructionMethod; // Construction method to be set from App.java
 
     /**
      * Constructs a new TransportationGraph with the given points.
@@ -590,14 +591,17 @@ public class TransportationGraph {
             panel.print(g2d);
             g2d.dispose();
 
+            // Build filename with construction method included
+            String baseFilename = algorithmName + "_" + graphConstructionMethod + "_community_" + communityCount + "_" + timestamp;
+
             // First try to save as BMP (widely supported format)
-            File bmpFile = new File(outputDir, algorithmName + "_community_" + communityCount + "_" + timestamp + ".bmp");
+            File bmpFile = new File(outputDir, baseFilename + ".bmp");
             // Save as BMP file (simple image format that can be viewed on macOS)
             if (saveAsBMP(image, bmpFile)) {
                 System.out.println("Visualization saved as: " + bmpFile.getAbsolutePath());
             } else {
                 // Try PPM as fallback
-                File ppmFile = new File(outputDir, algorithmName + "_community_" + communityCount + "_" + timestamp + ".ppm");
+                File ppmFile = new File(outputDir, baseFilename + ".ppm");
                 System.out.println("BMP save failed, trying PPM: " + ppmFile.getAbsolutePath());
                 
                 if (saveAsPPM(image, ppmFile)) {
@@ -771,14 +775,16 @@ public class TransportationGraph {
             String timestamp = dateFormat.format(new Date());
             String currentDir = System.getProperty("user.dir");
             
-            File reportFile = new File(currentDir, algorithmName + "_community_report_" + communityCount + "_" + 
+            // Include construction method in filename
+            File reportFile = new File(currentDir, algorithmName + "_" + graphConstructionMethod + "_community_report_" + communityCount + "_" + 
                                       timestamp + ".txt");
             
             BufferedWriter writer = new BufferedWriter(new FileWriter(reportFile));
             
             writer.write("COMMUNITY VISUALIZATION REPORT\n");
             writer.write("==============================\n");
-            writer.write("Algorithm: " + algorithmName.substring(0, 1).toUpperCase() + algorithmName.substring(1) + "\n");
+            writer.write("Algorithm: " + algorithmName + "\n");
+            writer.write("Construction Method: " + graphConstructionMethod + "\n");
             writer.write("Generated: " + new Date() + "\n");
             writer.write("Communities: " + communityCount + "\n\n");
             
@@ -845,7 +851,7 @@ public class TransportationGraph {
      * @param communities Map of community IDs to lists of nodes
      */
     public void saveCommunityData(Map<Integer, List<Node>> communities) {
-        saveCommunityData(communities, "community");
+        //saveCommunityData(communities, "community");
     }
     
     /**
@@ -858,8 +864,14 @@ public class TransportationGraph {
      */
     public void saveCommunityData(Map<Integer, List<Node>> communities, String algorithmName) {
         try {
-            String fileName = algorithmName + "_community_data.csv";
-            BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            String timestamp = dateFormat.format(new Date());
+            String currentDir = System.getProperty("user.dir");
+            
+            // Include construction method in filename
+            File csvFile = new File(currentDir, algorithmName + "_" + graphConstructionMethod + "_community_data_" + 
+                                  timestamp + ".csv");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
             
             // Write header
             writer.write("node_id,community_id,latitude,longitude\n");
@@ -878,7 +890,7 @@ public class TransportationGraph {
             }
             
             writer.close();
-            System.out.println("Community data saved to " + fileName);
+            System.out.println("Community data saved to " + csvFile.getAbsolutePath());
         } catch (IOException e) {
             System.err.println("Error writing community data: " + e.getMessage());
         }
@@ -931,5 +943,24 @@ public class TransportationGraph {
                 nodeCommunities.put(unassignedNode, 0);
             }
         }
+    }
+
+    /**
+     * Sets the graph construction method used for this transportation network.
+     * This will be included in saved file names for better traceability.
+     * 
+     * @param methodName The name of the construction method used
+     */
+    public void setGraphConstructionMethod(String methodName) {
+        this.graphConstructionMethod = methodName;
+    }
+    
+    /**
+     * Gets the current graph construction method name.
+     * 
+     * @return The name of the construction method
+     */
+    public String getGraphConstructionMethod() {
+        return this.graphConstructionMethod;
     }
 } 

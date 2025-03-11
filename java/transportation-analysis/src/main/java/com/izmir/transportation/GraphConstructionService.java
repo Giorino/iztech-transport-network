@@ -1,11 +1,9 @@
 package com.izmir.transportation;
 
-import com.izmir.transportation.helper.strategy.CompleteGraphStrategy;
-import com.izmir.transportation.helper.strategy.DelaunayTriangulationStrategy;
-import com.izmir.transportation.helper.strategy.GabrielGraphStrategy;
-import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
-import com.izmir.transportation.helper.strategy.KNearestNeighborsStrategy;
-import com.izmir.transportation.persistence.GraphPersistenceService;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.locationtech.jts.geom.Envelope;
@@ -13,9 +11,12 @@ import org.locationtech.jts.geom.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import com.izmir.transportation.helper.strategy.CompleteGraphStrategy;
+import com.izmir.transportation.helper.strategy.DelaunayTriangulationStrategy;
+import com.izmir.transportation.helper.strategy.GabrielGraphStrategy;
+import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
+import com.izmir.transportation.helper.strategy.KNearestNeighborsStrategy;
+import com.izmir.transportation.persistence.GraphPersistenceService;
 
 /**
  * Service for constructing transportation graphs using different strategies.
@@ -99,6 +100,9 @@ public class GraphConstructionService {
         
         // Create the transportation graph
         TransportationGraph transportationGraph = new TransportationGraph(points);
+        
+        // Set the graph construction method
+        transportationGraph.setGraphConstructionMethod(strategyType.getCode());
         
         // Apply the selected strategy to create connections
         GraphConnectivityStrategy strategy = createStrategy(strategyType, kValue);

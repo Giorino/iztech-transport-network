@@ -1,12 +1,16 @@
 package com.izmir.transportation.persistence;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.izmir.transportation.TransportationGraph;
-import com.izmir.transportation.helper.Edge;
-import com.izmir.transportation.helper.Node;
-import org.jgrapht.Graph;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -15,12 +19,12 @@ import org.locationtech.jts.geom.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.izmir.transportation.TransportationGraph;
+import com.izmir.transportation.helper.Edge;
+import com.izmir.transportation.helper.Node;
 
 /**
  * Service for persisting and loading transportation graph data.
@@ -177,6 +181,9 @@ public class GraphPersistenceService {
         
         // Create the transportation graph
         TransportationGraph graph = new TransportationGraph(originalPoints);
+        
+        // Set the graph construction method
+        graph.setGraphConstructionMethod(strategyName);
         
         // Recreate all edges
         for (EdgeData edgeData : graphData.getEdges()) {
