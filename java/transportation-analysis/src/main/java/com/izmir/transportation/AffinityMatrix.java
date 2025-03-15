@@ -10,13 +10,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,10 +39,12 @@ import com.izmir.transportation.helper.Node;
  * @author yagizugurveren
  */
 public class AffinityMatrix {
+    private static final Logger LOGGER = Logger.getLogger(AffinityMatrix.class.getName());
     private final double[][] matrix;
     private final List<Node> nodes;
     private final Map<Node, Integer> nodeIndices;
     private static final int NUM_THREADS = Runtime.getRuntime().availableProcessors(); // Use available CPU cores
+    private int nonZeroEntries = 0;
 
     /**
      * Creates a new AffinityMatrix from a transportation graph using parallel processing.
@@ -52,21 +53,16 @@ public class AffinityMatrix {
      * @param edgeMap Mapping of graph edges to custom Edge objects
      */
     public AffinityMatrix(Graph<Node, DefaultWeightedEdge> graph, Map<DefaultWeightedEdge, Edge> edgeMap) {
+        LOGGER.info("Creating affinity matrix using " + NUM_THREADS + " threads...");
         System.out.println("Creating affinity matrix using " + NUM_THREADS + " threads...");
         long startTime = System.currentTimeMillis();
 
-        // First collect connected nodes
-        Set<Node> connectedNodes = new HashSet<>();
-        for (DefaultWeightedEdge graphEdge : graph.edgeSet()) {
-            Edge edge = edgeMap.get(graphEdge);
-            if (edge != null) {
-                connectedNodes.add(edge.getSource());
-                connectedNodes.add(edge.getTarget());
-            }
-        }
-        
-        nodes = new ArrayList<>(connectedNodes);
+        // First collect all nodes from the graph (not just connected ones)
+        nodes = new ArrayList<>(graph.vertexSet());
         nodeIndices = new HashMap<>();
+        
+        LOGGER.info("Total nodes in graph: " + nodes.size());
+        System.out.println("Total nodes in graph: " + nodes.size());
         
         for (int i = 0; i < nodes.size(); i++) {
             nodeIndices.put(nodes.get(i), i);
@@ -74,31 +70,73 @@ public class AffinityMatrix {
 
         matrix = new double[nodes.size()][nodes.size()];
         
+        // First ensure all edges are normalized
+        double maxDistance = 0.0;
+        for (DefaultWeightedEdge graphEdge : graph.edgeSet()) {
+            Edge edge = edgeMap.get(graphEdge);
+            if (edge != null) {
+                maxDistance = Math.max(maxDistance, edge.getOriginalDistance());
+            }
+        }
+        
+        LOGGER.info("Maximum edge distance: " + maxDistance);
+        System.out.println("Maximum edge distance: " + maxDistance);
+        
+        // Now normalize all edges
+        if (maxDistance > 0) {
+            for (Map.Entry<DefaultWeightedEdge, Edge> entry : edgeMap.entrySet()) {
+                Edge edge = entry.getValue();
+                edge.normalizeWeight(maxDistance);
+            }
+        }
+        
         // Create a thread pool
         ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
         
-        // Calculate chunk size for each thread
-        int chunkSize = Math.max(1, graph.edgeSet().size() / NUM_THREADS);
+        // Store the final value of maxDistance for lambda use
+        final double finalMaxDistance = maxDistance;
         
-        // Convert edge set to list for parallel processing
-        List<DefaultWeightedEdge> edges = new ArrayList<>(graph.edgeSet());
-        
-        // Process edges in parallel
-        for (int i = 0; i < edges.size(); i += chunkSize) {
-            final int start = i;
-            final int end = Math.min(start + chunkSize, edges.size());
+        // Fill matrix directly from graph edge weights (not from edgeMap)
+        for (int i = 0; i < nodes.size(); i++) {
+            final int rowIndex = i;
+            
+            // Store effectively final copies of objects needed in lambda
+            final Map<DefaultWeightedEdge, Edge> finalEdgeMap = edgeMap;
+            final Graph<Node, DefaultWeightedEdge> finalGraph = graph;
             
             executor.submit(() -> {
-                for (int j = start; j < end; j++) {
-                    DefaultWeightedEdge graphEdge = edges.get(j);
-                    Edge edge = edgeMap.get(graphEdge);
-                    if (edge != null) {
-                        int sourceIndex = nodeIndices.get(edge.getSource());
-                        int targetIndex = nodeIndices.get(edge.getTarget());
+                Node sourceNode = nodes.get(rowIndex);
+                for (int j = 0; j < nodes.size(); j++) {
+                    Node targetNode = nodes.get(j);
+                    
+                    // Skip self-connections
+                    if (sourceNode.equals(targetNode)) {
+                        continue;
+                    }
+                    
+                    // Get the edge from the graph
+                    DefaultWeightedEdge graphEdge = finalGraph.getEdge(sourceNode, targetNode);
+                    if (graphEdge != null) {
+                        double weight = finalGraph.getEdgeWeight(graphEdge);
                         
+                        // Alternative: Get weight from edgeMap if graph weight is not available
+                        if (weight <= 0 && finalEdgeMap.containsKey(graphEdge)) {
+                            Edge edge = finalEdgeMap.get(graphEdge);
+                            if (edge != null) {
+                                weight = edge.getNormalizedWeight();
+                                if (weight <= 0) {
+                                    // Fall back to raw distance if normalized weight is not available
+                                    weight = (finalMaxDistance > 0) ? edge.getOriginalDistance() / finalMaxDistance : 0;
+                                }
+                            }
+                        }
+                        
+                        // Set the weight in the matrix
                         synchronized (matrix) {
-                            matrix[sourceIndex][targetIndex] = edge.getNormalizedWeight();
-                            matrix[targetIndex][sourceIndex] = edge.getNormalizedWeight();
+                            matrix[rowIndex][j] = weight;
+                            if (weight > 0) {
+                                nonZeroEntries++;
+                            }
                         }
                     }
                 }
@@ -115,7 +153,26 @@ public class AffinityMatrix {
         }
 
         long endTime = System.currentTimeMillis();
-        System.out.println("Affinity matrix created in " + (endTime - startTime) + " ms");
+        LOGGER.info("Affinity matrix created in " + (endTime - startTime) + " ms with " + 
+                   nonZeroEntries + " non-zero entries out of " + (nodes.size() * nodes.size()) + " total entries.");
+        System.out.println("Affinity matrix created in " + (endTime - startTime) + " ms with " + 
+                          nonZeroEntries + " non-zero entries out of " + (nodes.size() * nodes.size()) + " total entries.");
+        
+        // Validate matrix has some values
+        boolean hasValues = false;
+        for (int i = 0; i < matrix.length && !hasValues; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] > 0) {
+                    hasValues = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!hasValues) {
+            LOGGER.warning("WARNING: Affinity matrix has no positive values! This will result in a CSV full of zeros.");
+            System.out.println("WARNING: Affinity matrix has no positive values! This will result in a CSV full of zeros.");
+        }
     }
 
     /**
@@ -138,7 +195,7 @@ public class AffinityMatrix {
             // Write matrix data
             for (int i = 0; i < matrix.length; i++) {
                 for (int j = 0; j < matrix[i].length; j++) {
-                    writer.write(String.format("%.2f", matrix[i][j]));
+                    writer.write(String.format("%.4f", matrix[i][j]));
                     if (j < matrix[i].length - 1) {
                         writer.write(",");
                     }
@@ -146,6 +203,9 @@ public class AffinityMatrix {
                 writer.write("\n");
             }
         }
+        
+        LOGGER.info("Saved affinity matrix to " + filename);
+        System.out.println("Saved affinity matrix to " + filename);
     }
 
     /**

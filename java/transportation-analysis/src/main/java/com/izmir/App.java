@@ -14,6 +14,7 @@ import com.izmir.transportation.TransportationGraph;
 import com.izmir.transportation.helper.Node;
 import com.izmir.transportation.helper.clustering.GirvanNewmanClustering;
 import com.izmir.transportation.helper.clustering.InfomapCommunityDetection;
+import com.izmir.transportation.helper.clustering.MvAGCClustering;
 import com.izmir.transportation.helper.clustering.SpectralClusteringConfig;
 
 /**
@@ -31,41 +32,52 @@ public class App
     // Configuration properties
     private static final int NODE_COUNT = 2000; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
-            GraphConstructionService.GraphStrategy.K_NEAREST_NEIGHBORS; // Using Gabriel graph
+            GraphConstructionService.GraphStrategy.COMPLETE; // Using Gabriel graph
     private static final int K_VALUE = 50; // K value for K-nearest neighbors strategy
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.LEIDEN; // Clustering algorithm
-            // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP
+            ClusteringService.ClusteringAlgorithm.MVAGC; // Using Infomap algorithm
+            // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
     private static final boolean VISUALIZE_CLUSTERS = true; // Whether to visualize clusters
     private static final boolean SAVE_GRAPH = true; // Whether to save the graph for future use
     
     // Clustering configuration
-    private static final int MAX_CLUSTERS = 50; // Increased from 30 to encourage more subdivision
-    private static final double COMMUNITY_SCALING_FACTOR = 0.1; // Higher value = more communities
+    private static final int MAX_CLUSTERS = 13; // Maximum number of communities
+    private static final double COMMUNITY_SCALING_FACTOR = 0.3; // Increased for better local community detection
     private static final boolean USE_ADAPTIVE_RESOLUTION = true; // Adaptive resolution based on network size
-    private static final int MIN_COMMUNITY_SIZE = 5; // Minimum size for communities (eliminates singletons)
+    private static final int MIN_COMMUNITY_SIZE = 80; // Increased to prevent small fragmented communities
+    private static final double GEOGRAPHIC_WEIGHT = 0.7; // Higher weight for geographic proximity
+    private static final double MAX_COMMUNITY_DIAMETER = 5000.0; // Maximum allowed diameter for a community in meters
     
     // Spectral clustering specific configuration
     private static final SpectralClusteringConfig SPECTRAL_CONFIG = new SpectralClusteringConfig()
             .setNumberOfClusters(MAX_CLUSTERS)
             .setMinCommunitySize(MIN_COMMUNITY_SIZE)
             .setPreventSingletons(true)
-            .setSigma(100)  // Higher value for better similarity detection
-            .setGeographicWeight(0.3); // Higher weight for geographic proximity
+            .setSigma(300)  // Controls similarity falloff with distance (lower = more local focus)
+            .setGeographicWeight(0.8); // Higher weight for geographic proximity
     
     // Girvan-Newman specific configuration
-    private static final boolean USE_MODULARITY_MAXIMIZATION = false; // Disable modularity maximization to force finding more communities
+    private static final boolean USE_MODULARITY_MAXIMIZATION = true; // Disable modularity maximization to force finding more communities
     
     // Additional Girvan-Newman specific configuration
-    private static final int GN_MAX_ITERATIONS = 500; // Increased max iterations to ensure enough communities
-    private static final boolean GN_EARLY_STOP = false; // Disable early stopping to force more iterations
+    private static final int GN_MAX_ITERATIONS = 100; // Increased max iterations to ensure enough communities
+    private static final boolean GN_EARLY_STOP = true; // Disable early stopping to force more iterations
     
     // Infomap specific configuration
-    private static final int INFOMAP_MAX_ITERATIONS = 250; // Maximum iterations for Infomap algorithm
-    private static final double INFOMAP_TOLERANCE = 1e-5; // Convergence tolerance for Infomap
-    private static final boolean INFOMAP_FORCE_MAX_CLUSTERS = false; // Don't force a specific number of communities
+    private static final int INFOMAP_MAX_ITERATIONS = 1000; // Increased for better convergence
+    private static final double INFOMAP_TOLERANCE = 1e-8; // Tighter convergence tolerance
+    private static final boolean INFOMAP_FORCE_MAX_CLUSTERS = true; // Force merging to max clusters
+    private static final double INFOMAP_RESOLUTION_PARAMETER = 1.5; // Higher value for more compact communities
+    private static final double INFOMAP_GEOGRAPHIC_IMPORTANCE = 0.6; // 60% weight to geographic proximity
+    private static final double INFOMAP_MAX_GEOGRAPHIC_DISTANCE = 8000.0; // Max distance in meters
+    
+    // MvAGC specific configuration
+    private static final int MVAGC_NUM_ANCHORS = 500; // Further increased number of anchor nodes for better representation
+    private static final int MVAGC_FILTER_ORDER = 4; // Increased filter order for more effective smoothing
+    private static final double MVAGC_ALPHA = 8.0; // Balanced value for alpha - too high can over-emphasize structure
+    private static final double MVAGC_SAMPLING_POWER = 0.3; // Further reduced to improve anchor diversity in complete graphs
 
     public static void main( String[] args )
     {
@@ -115,7 +127,7 @@ public class App
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
                     List<List<Node>> communityList = new ArrayList<>(communities.values());
                     graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
-                    graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                 }
                 
                 // Perform transportation cost analysis
@@ -138,7 +150,11 @@ public class App
                                .setMinClusterSize(MIN_COMMUNITY_SIZE)
                                .setMaxIterations(INFOMAP_MAX_ITERATIONS)
                                .setTolerance((float)INFOMAP_TOLERANCE)
-                               .setForceMaxClusters(INFOMAP_FORCE_MAX_CLUSTERS);
+                               .setForceMaxClusters(INFOMAP_FORCE_MAX_CLUSTERS)
+                               .setUseHierarchicalRefinement(false) // Disable hierarchical refinement to prevent fragmentation
+                               .setTeleportationProbability(0.05) // Significantly reduced to prevent "jumping" across the network
+                               .setGeographicImportance(INFOMAP_GEOGRAPHIC_IMPORTANCE) // Add geographic importance
+                               .setMaxGeographicDistance(INFOMAP_MAX_GEOGRAPHIC_DISTANCE); // Set max geographic distance
                 
                 Map<Integer, List<Node>> communities = infomapAlgorithm.detectCommunities();
                 
@@ -146,7 +162,35 @@ public class App
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
                     List<List<Node>> communityList = new ArrayList<>(communities.values());
                     graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
-                    graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                }
+                
+                // Perform transportation cost analysis
+                LOGGER.info("Performing transportation cost analysis...");
+                new com.izmir.transportation.cost.TransportationCostAnalysis().analyzeCosts(graph, communities);
+            } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
+                // MvAGC algorithm
+                LOGGER.info("Step 3: Performing MvAGC clustering");
+                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Anchor Nodes: " + MVAGC_NUM_ANCHORS);
+                LOGGER.info("Filter Order: " + MVAGC_FILTER_ORDER + ", Alpha: " + MVAGC_ALPHA);
+                LOGGER.info("Importance Sampling Power: " + MVAGC_SAMPLING_POWER);
+                
+                // Create and configure MvAGC algorithm directly
+                MvAGCClustering mvagcAlgorithm = new MvAGCClustering(graph);
+                mvagcAlgorithm.setNumClusters(MAX_CLUSTERS)
+                             .setNumAnchors(MVAGC_NUM_ANCHORS)
+                             .setFilterOrder(MVAGC_FILTER_ORDER)
+                             .setAlpha(MVAGC_ALPHA)
+                             .setImportanceSamplingPower(MVAGC_SAMPLING_POWER);
+                
+                // Run the algorithm
+                Map<Integer, List<Node>> communities = mvagcAlgorithm.detectCommunities();
+                
+                // Visualize if requested
+                if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                    List<List<Node>> communityList = new ArrayList<>(communities.values());
+                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
+                    //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                 }
                 
                 // Perform transportation cost analysis

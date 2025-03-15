@@ -1,0 +1,80 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+%% Bachelor Thesis Template of the PRG Group
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt,twoside,a4paper,fleqn,bibliography=totocnumbered]{report}
+
+% some often used and useful packages (others can be added if necessary)
+\usepackage{latexsym}
+\usepackage[utf8]{inputenc}
+\usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{algorithm,algorithmic}
+\usepackage{amsfonts}
+\usepackage{multirow}
+\usepackage{xspace}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{pifont}
+\usepackage{psfrag}
+\usepackage{epsfig}
+\usepackage{bm}
+\usepackage{wasysym}
+\usepackage[table]{xcolor}
+\usepackage{setspace}
+\usepackage{framed}
+\usepackage{float,pdflscape}
+\usepackage{url}
+\usepackage{color}
+\usepackage{minted}
+\usepackage[margin=1.1in,bindingoffset=.2in]{geometry} 
+
+
+\onehalfspacing
+
+
+
+\begin{document}
+
+
+% frontmatter
+\input title.tex
+\pagenumbering{roman}
+\setcounter{page}{1}
+\cleardoublepage
+\include{abstract}
+%\cleardoublepage
+\input acknowledgments.tex % delete this and next line if not applicable
+%\cleardoublepage
+\tableofcontents
+\cleardoublepage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% The major parts 
+\include{introduction}
+\include{Thesis_Template/theory}
+\include{method}
+\include{experiments}
+\include{conclusions}
+
+% endmatter
+\include{appendix}
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Bibliography}
+%\bibliography{references}
+%\bibliographystyle{unsrt}    	             
+
+\begin{thebibliography}{1}
+
+%Estimating algebraic connectivity
+\bibitem{estalgeb1} A. Bertrand and M. Moonen, ``Seeing the bigger picture: How nodes can learn their place within a complex ad hoc network topology'' \emph{IEEE Signal Process. Mag.}, vol. 30, pp. 71-82, 2013.
+
+
+
+\end{thebibliography}
+
+\end{document}
+% that's all folks

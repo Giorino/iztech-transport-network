@@ -1,0 +1,129 @@
+\chapter{Theory \& Background}
+\label{ch:basics}
+This chapter introduces the basic concepts and theories used and implemented throughout the thesis. An introduction to machine learning in the field of medicine is given. The used ML models are introduced and their core ideas and concepts are explained. Further, an introduction and definition of outliers are given and the outlier detection algorithms are presented and discussed.
+
+\section{Introduction to Machine Learning in Medical Data}
+\label{se:Intro ML in Medicine}
+This section gives a general introduction to the application of ML in medicine. It discusses possible applications and opportunities that come with ML, especially when using EHR. Further typical challenges are examined and brought up and the need for robustness is shown. 
+
+\subsection{Importance and applications of machine learning in EHR analysis}
+
+
+In the last years, ML models have found their application across various fields including medicine and health care. The use of electronic health records (EHRs) is growing in both inpatient and outpatient healthcare environments. The organization and accessibility of patient data have significantly changed with the transition to digital records, opening up applications that were not feasible with paper records~\cite{wu_prediction_2010}. Besides different data analysis tools, ML is one of the most interesting approaches because it can detect diseases or predict diagnoses by extracting underlying structures in the data~\cite{garg_role_2021}.\newline\newline
+With ML being integrated into EHRs, the potential to improve clinical decision support systems by improving predictive analytics is made available. By analyzing big amounts of patient data, ML models augment clinicians in multiple aspects such as prognosis, diagnosis, treatment and clinical workflow~\cite{rajkomar_alvin_machine_2019}. This may lead to better and more personalized treatment, ultimately improving patient outcomes and reducing healthcare costs. 
+
+
+
+\subsection{Challenges and the need for robustness in medical data analysis}    
+The increasing availability of EHRs makes medical data analysis more accessible, but it is important to note that they are not primarily designed to apply data analysis tools. In reality, most of the time medical data is unstructured, and heterogeneous with various data representations. Often it is also not yet aggregated, vague, or even inaccurate~\cite{hariri_uncertainty_2019}. These challenges demand proper preprocessing of the data before training ML models. \newline\newline
+Additional to these challenges comes that medical data often has missing data and inconsistent observations~\cite{qayyum_secure_2021}. Further, medical observations are often prone to outliers and noise, which can impact the performance of ML models significantly. Training models on noisy and outlier corrupted data leads to a performance decrease. Using outlier detection algorithms to detect outliers and clean medical data sets is a common way to introduce robustness to a ML model. Using outlier detection can not only help to improve the performance of a model and ensure that extreme values do not impact predictions, but it also helps to understand the underlying distribution of data more accurately.
+
+
+\section{Machine Learning Algorithms}
+
+\subsection{k-Nearest Neighbors (k-NN)}
+
+The k-Nearest Neighbors (k-NN) algorithm is a supervised machine learning that can be used for classification~\cite{cover_nearest_1967}. It is based on the idea that similar observations are likely to be near each other. A new observation is classified based on the majority of the classes that the $k$ nearest neighbors in the feature space have. \\\\
+To measure distances between observations, a distance metric is used. For continuous variables, the Euclidean distance ($D_E$) (Eq.~\ref{eq:euclidean}) or the Manhattan distance ($D_M$) (Eq.~\ref{eq:manhattan}) measure is employed. For categorical variables can the Hamming distance ($D_H$) (Eq.~\ref{eq:hamming}) be used.
+
+\begin{equation}
+    D_E = \sqrt{\sum_{i=1}^n (x_i - y_i)^2}
+    \label{eq:euclidean}
+\end{equation}
+\begin{equation}
+    D_M = \sum_{i=1}^n |(x_i - y_i)|
+    \label{eq:manhattan}
+\end{equation}
+\begin{equation}
+    D_H = \sum_{i=1}^n \mathbf{1}(p_i \neq q_i)
+    \label{eq:hamming}
+\end{equation}
+
+The k-NN algorithm is a simple and straight-forward classification method to use. Because the algorithm assumes all features to be of equal importance and therefore assigns them equal weight, features with large numerical value ranges can disproportionately impact the classification. 
+
+
+\subsection{Support Vector Machine (SVM)}
+
+Support Vector Machines (SVMs) are powerful supervised learning models that can be used for classification and regression tasks. The concept of SVM models is trying to find a hyperplane that best separates the data points of different classes in the feature space~\cite{suykens_least_1999}. Often are data points mapped into a higher dimensional feature space to find the best hyperplane. The primary goal of the SVM model is to maximize the margin between the closest data points of different classes, the so-called support vectors. The SVM model can handle linear and non-linear classification problems. For linearly separable data, the hyperplane can be defined as in Eq.~\ref{eq:hyperplane}, where $\mathbf{w^T}$ is the weight vector, $\mathbf{x}$ is the feature vector, and $b$ is the bias.
+\begin{equation}
+    \mathbf{w^Tx}+b = 0
+    \label{eq:hyperplane}
+\end{equation}
+
+The margin is the distance between the hyperplane and the nearest data points from each class. For maximizing the margin, the optimization problem can be formulated as in Eq.~\ref{eq:maximizing margin}.
+\begin{equation}
+    \min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2 \quad \text{subject to} \quad y_i (\mathbf{w}^T\mathbf{x}_i - b) \geq 1 \quad \forall i
+    \label{eq:maximizing margin}
+    \end{equation}
+For non-linearly separable data, use kernel functions to transform the feature space. Common kernel functions include:
+    \begin{itemize}
+        \item \textbf{Linear Kernel:} $K(\mathbf{x}_i, \mathbf{x}_j) = \mathbf{x}_i^T\mathbf{x}_j$
+        \item \textbf{Polynomial Kernel:} $K(\mathbf{x}_i, \mathbf{x}_j) = (\mathbf{x}_i^T \mathbf{x}_j + 1)^d$
+        \item \textbf{Radial Basis Function (RBF) Kernel:} $K(\mathbf{x}_i, \mathbf{x}_j) = \exp(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2)$
+    \end{itemize}
+
+\subsection{Decision Trees (DT)}
+One of the most popular supervised ML models for classification are decision trees (DTs). They utilize a divide and conquer approach, employing a greedy algorithm to determine the best places to split within the tree. The splitting is repeated from top-down recursively until all or most of the data points are classified with class labels. Splits are made to minimize the impurity of the child nodes. The impurity of a node can be measured using either the Gini index or entropy. 
+\begin{equation}
+    G = 1 - \sum_{i=1}^k p_i^{2}
+    \label{eq:gini}
+\end{equation}
+\begin{equation}
+    H = -\sum_{i=1}^k p_i \log_2 p_i
+\end{equation}
+
+\subsection{Random Forest (RF)}
+A random forest (RF) consists of a collection of decision trees, that vote together to determine the class of an unlabeled data point and the majority vote specifies the final class for the data point~\cite{breiman_random_2001}. For calculating a prediction of a RF with m trees and individual weights $W_j$ (Eq.~\ref{eq:randomforest}) is used. 
+\begin{equation}
+    \hat{y} = \frac{1}{m}\sum_{j=1}^m \sum_{i=1}^n W_j(x_i,x')
+    \label{eq:randomforest}
+\end{equation}
+When DTs grow deeper, they tend to overfit the training data, meaning if there is a minor deviation in the input, the output can vary strongly. RFs address this problem by using an ensemble of decision trees, each taking a vectorized portion of the input for classification. Like that, each tree in the forest classifies a different part of the input vector. After the trees collectively process the vector, the Rf aggregates their predictions and chooses the class with the most votes. This approach of using multiple DTs significantly reduces the variance and therefore addresses the overfitting problem that comes with individual trees.
+
+\subsection{Naive Bayes (NB)}
+Naive Bayes (NB) is a widely used supervised ML algorithm that is used for classification tasks. It is especially favored for its simplicity and efficiency. The NB classification algorithm is built upon the foundation of the Bayes theorem. Bayes theorem is a fundamental principle in probability theory. It calculates the probability of an event based on prior knowledge of conditions that might be related to the event, as shown in Eq.~\ref{eq:bayes}.
+
+\begin{equation}
+    P(A|B) = \frac{P(B|A)P(A)}{P(B)}
+    \label{eq:bayes}
+\end{equation}
+
+The NB algorithm makes the strong assumption of conditional independence among the predictors within a dataset. This assumption is often referred to as “naive”, hence the name. Despite the simplicity of the assumption, shows the algorithm's great performance across a variety of applications. Because of the assumption, the decomposition of the joint probability distribution in the Bayes theorem into the product of individual probabilities for each feature is possible. This results in a significantly reduced computational complexity of calculating conditional probabilities, which enhances the scalability of the algorithm.
+
+\subsection{Extreme Gradient Boosting (XGBoost)}
+Extreme gradient boosting (XGBoost) is an advanced implementation of gradient boosting, it was first introduced by Chen and Guestrin~\cite{chen_xgboost_2016}. Because of its scalability, speed, and performance, XGBoost is widely used for both classification and regression tasks. XGBoost works by sequentially building an ensemble of decision trees, where each tree attempts to correct the errors of the previous ones. 
+
+\section{Introduction to Outlier Detection}
+
+\subsection{Intro}
+Outlier detection algorithms are used in many areas and surround a wide spectrum of techniques. There are different motivations for detecting outliers, one being improving data quality by identifying and correcting errors, another being enhancing model performance by removing or mitigating the influence of extreme values, and a third being identifying rare events that provide valuable insights for decision-making ~\cite{boukerche_outlier_2020}. According to the statistician Hawkins~\cite{hawkins_identification_1980} outliers can be defined as:
+\begin{quote}
+“An observation which deviates so much from other observations is to arouse suspicions that it was generated by a different mechanism”.
+\end{quote}
+This means outliers are data points that deviate strongly from the expected behavior or underlying distribution. The occurrence of outliers can be due to different reasons, such as: 
+\begin{itemize}
+    \item Measurement or recording errors
+    \item Exceptional but true values
+    \item Mis-reporting
+    \item Sampling error
+\end{itemize}
+
+
+
+
+\subsection{Outliers vs. Noise}
+\subsection{Outlier Types}
+
+\section{Outlier Detection Algorithms}
+
+\subsection{Local Outlier Factor}
+
+\subsection{DBSCAN}
+
+\subsection{HDBSCAN}
+
+\subsection{Modified Z-Score}
+
+\section{Related Work}
+
+

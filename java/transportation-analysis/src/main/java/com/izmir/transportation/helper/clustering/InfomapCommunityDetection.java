@@ -41,6 +41,8 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
     private int maxClusters = 20; // Maximum number of clusters
     private boolean forceMaxClusters = false; // Don't force merging to maxClusters by default
     private boolean useHierarchicalRefinement = true; // Use hierarchical refinement to improve communities
+    private double geographicImportance = 0.0; // Weight given to geographic distance (0.0 = topology only, 1.0 = geography only)
+    private double maxGeographicDistance = 10000.0; // Maximum geographic distance to consider (meters)
     
     // Random number generator
     private final Random random;
@@ -147,6 +149,28 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
      */
     public InfomapCommunityDetection setUseHierarchicalRefinement(boolean use) {
         this.useHierarchicalRefinement = use;
+        return this;
+    }
+    
+    /**
+     * Sets the importance of geographic proximity in community assignment
+     * 
+     * @param weight Weight from 0.0 (topology only) to 1.0 (geography only)
+     * @return This InfomapCommunityDetection instance for method chaining
+     */
+    public InfomapCommunityDetection setGeographicImportance(double weight) {
+        this.geographicImportance = Math.max(0.0, Math.min(1.0, weight));
+        return this;
+    }
+    
+    /**
+     * Sets the maximum geographic distance to consider for community cohesion
+     * 
+     * @param distance Maximum distance in meters
+     * @return This InfomapCommunityDetection instance for method chaining
+     */
+    public InfomapCommunityDetection setMaxGeographicDistance(double distance) {
+        this.maxGeographicDistance = Math.max(1000.0, distance);
         return this;
     }
     
@@ -735,7 +759,7 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
     }
     
     /**
-     * Find the best community for a node based on the Map Equation
+     * Find the best community for a node based on both topology and geography
      */
     private int findBestCommunity(Node node, Graph<Node, DefaultWeightedEdge> graph, 
                                  Map<Node, Double> stationaryDistribution,
@@ -757,6 +781,28 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
             neighborCommunities.add(nodeCommunities.get(neighbor));
         }
         
+        // If geographic importance is set, consider all communities within max distance
+        if (geographicImportance > 0.0) {
+            for (Node otherNode : graph.vertexSet()) {
+                // Skip if already considering this community
+                int otherCommunity = nodeCommunities.get(otherNode);
+                if (neighborCommunities.contains(otherCommunity)) {
+                    continue;
+                }
+                
+                // Check geographic distance
+                double distance = Math.sqrt(
+                    Math.pow(node.getLocation().getX() - otherNode.getLocation().getX(), 2) + 
+                    Math.pow(node.getLocation().getY() - otherNode.getLocation().getY(), 2)
+                );
+                
+                // If within range, consider this community too
+                if (distance < maxGeographicDistance * 0.5) {
+                    neighborCommunities.add(otherCommunity);
+                }
+            }
+        }
+        
         // Evaluate each neighboring community
         for (int candidateCommunity : neighborCommunities) {
             if (candidateCommunity == currentCommunity) {
@@ -770,6 +816,23 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
             double newCodeLength = calculateMapEquation(graph, nodeCommunities, 
                                                       stationaryDistribution, flowMatrix);
             
+            // Add geographic penalty if enabled
+            if (geographicImportance > 0.0) {
+                // Get center of candidate community
+                List<Node> communityNodes = new ArrayList<>();
+                for (Node n : graph.vertexSet()) {
+                    if (nodeCommunities.get(n) == candidateCommunity && !n.equals(node)) {
+                        communityNodes.add(n);
+                    }
+                }
+                
+                // Apply geographic penalty
+                if (!communityNodes.isEmpty()) {
+                    double geographicPenalty = calculateGeographicPenalty(node, communityNodes);
+                    newCodeLength += geographicImportance * geographicPenalty;
+                }
+            }
+            
             // If this improves the code length, remember it
             if (newCodeLength < bestCodeLength) {
                 bestCodeLength = newCodeLength;
@@ -781,6 +844,30 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
         }
         
         return bestCommunity;
+    }
+    
+    /**
+     * Calculate geographic penalty for placing a node in a community
+     * Higher distance = higher penalty
+     */
+    private double calculateGeographicPenalty(Node node, List<Node> communityNodes) {
+        // Find community center
+        double centerX = 0.0, centerY = 0.0;
+        for (Node n : communityNodes) {
+            centerX += n.getLocation().getX();
+            centerY += n.getLocation().getY();
+        }
+        centerX /= communityNodes.size();
+        centerY /= communityNodes.size();
+        
+        // Calculate distance from node to center
+        double distance = Math.sqrt(
+            Math.pow(node.getLocation().getX() - centerX, 2) + 
+            Math.pow(node.getLocation().getY() - centerY, 2)
+        );
+        
+        // Convert to penalty (larger distance = larger penalty)
+        return Math.min(1.0, distance / maxGeographicDistance);
     }
     
     /**
@@ -941,6 +1028,7 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
     
     /**
      * Find the nearest community to a given community
+     * Modified to consider geographic proximity
      * 
      * @param communityId The ID of the community to find neighbors for
      * @param communities Map of community IDs to lists of nodes
@@ -952,7 +1040,7 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
         List<Node> sourceCommunity = communities.get(communityId);
         
         int nearestCommunity = communityId;
-        double maxConnections = 0.0;
+        double bestScore = Double.NEGATIVE_INFINITY;
         
         // Check connections to other communities
         for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
@@ -962,15 +1050,61 @@ public class InfomapCommunityDetection implements GraphClusteringAlgorithm {
             if (targetCommunityId == communityId) continue;
             
             List<Node> targetCommunity = entry.getValue();
+            
+            // Calculate connectivity score (network topology)
             double connections = countConnections(sourceCommunity, targetCommunity, graph);
             
-            if (connections > maxConnections) {
-                maxConnections = connections;
+            // Calculate geographic proximity score if enabled
+            double geographicScore = 0.0;
+            if (geographicImportance > 0.0) {
+                geographicScore = calculateGeographicProximity(sourceCommunity, targetCommunity);
+            }
+            
+            // Combine scores based on importance weight
+            double combinedScore = (1.0 - geographicImportance) * connections + 
+                                  geographicImportance * geographicScore;
+            
+            if (combinedScore > bestScore) {
+                bestScore = combinedScore;
                 nearestCommunity = targetCommunityId;
             }
         }
         
         return nearestCommunity;
+    }
+    
+    /**
+     * Calculate geographic proximity between two communities
+     * Higher value means communities are closer together
+     * 
+     * @param community1 First community
+     * @param community2 Second community
+     * @return Proximity score (higher = closer)
+     */
+    private double calculateGeographicProximity(List<Node> community1, List<Node> community2) {
+        // Find geographic centers of each community
+        double c1X = 0.0, c1Y = 0.0, c2X = 0.0, c2Y = 0.0;
+        
+        for (Node node : community1) {
+            c1X += node.getLocation().getX();
+            c1Y += node.getLocation().getY();
+        }
+        c1X /= community1.size();
+        c1Y /= community1.size();
+        
+        for (Node node : community2) {
+            c2X += node.getLocation().getX();
+            c2Y += node.getLocation().getY();
+        }
+        c2X /= community2.size();
+        c2Y /= community2.size();
+        
+        // Calculate Euclidean distance between centers
+        double distance = Math.sqrt(Math.pow(c1X - c2X, 2) + Math.pow(c1Y - c2Y, 2));
+        
+        // Convert distance to proximity score (closer = higher score)
+        double proximity = Math.max(0.0, 1.0 - (distance / maxGeographicDistance));
+        return proximity;
     }
     
     /**

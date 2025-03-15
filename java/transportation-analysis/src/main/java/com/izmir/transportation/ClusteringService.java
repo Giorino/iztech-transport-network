@@ -16,6 +16,7 @@ import com.izmir.transportation.helper.Node;
 import com.izmir.transportation.helper.clustering.GirvanNewmanClustering;
 import com.izmir.transportation.helper.clustering.InfomapCommunityDetection;
 import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
+import com.izmir.transportation.helper.clustering.MvAGCClustering;
 import com.izmir.transportation.helper.clustering.SpectralClustering;
 import com.izmir.transportation.helper.clustering.SpectralClusteringConfig;
 
@@ -54,7 +55,8 @@ public class ClusteringService {
         LEIDEN("leiden"),
         SPECTRAL("spectral"),
         GIRVAN_NEWMAN("girvan_newman"),
-        INFOMAP("infomap");
+        INFOMAP("infomap"),
+        MVAGC("mvagc");
         
         private final String code;
         
@@ -238,6 +240,17 @@ public class ClusteringService {
                            .setTolerance(1e-5)     // Lower tolerance for more precise results
                            .setForceMaxClusters(false);  // Don't force merging, let algorithm find natural communities
             communities = infomapAlgorithm.detectCommunities();
+        } else if (algorithm == ClusteringAlgorithm.MVAGC) {
+            // Use MvAGC algorithm
+            LOGGER.info("Using MvAGC algorithm with {} clusters and {} anchor nodes", maxClusters, Math.min(200, graph.getGraph().vertexSet().size()/2));
+            
+            MvAGCClustering mvagcAlgorithm = new MvAGCClustering(graph);
+            mvagcAlgorithm.setNumClusters(maxClusters)
+                         .setNumAnchors(Math.min(200, graph.getGraph().vertexSet().size()/2)) // Use at most 200 anchor nodes or half the nodes
+                         .setFilterOrder(2)
+                         .setAlpha(5.0)
+                         .setImportanceSamplingPower(1.0);
+            communities = mvagcAlgorithm.detectCommunities();
         } else {
             throw new IllegalArgumentException("Unsupported algorithm: " + algorithm);
         }
@@ -256,7 +269,7 @@ public class ClusteringService {
             graph.visualizeCommunities(communityList, algorithm.toString());
             
             // Save the community data
-            graph.saveCommunityData(communities, algorithm.toString());
+            //graph.saveCommunityData(communities, algorithm.toString());
         }
         
         // Perform transportation cost analysis

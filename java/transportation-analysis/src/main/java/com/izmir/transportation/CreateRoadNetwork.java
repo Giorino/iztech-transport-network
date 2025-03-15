@@ -376,7 +376,7 @@ public class CreateRoadNetwork {
             System.out.println("Community visualization launched. Please wait for the window to appear...");
             
             // Save community data for further analysis
-            transportationGraph.saveCommunityData(communities, "leiden");
+            //transportationGraph.saveCommunityData(communities, "leiden");
             
             // NEW CODE: Perform transportation cost analysis
             System.out.println("\n=== TRANSPORTATION COST ANALYSIS ===");
@@ -459,7 +459,7 @@ public class CreateRoadNetwork {
             
             // Save community data for further analysis
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            transportationGraph.saveCommunityData(communities, "spectral");
+            //transportationGraph.saveCommunityData(communities, "spectral");
             
             // Perform transportation cost analysis for spectral clustering communities
             System.out.println("\n=== SPECTRAL CLUSTERING TRANSPORTATION COST ANALYSIS ===");
