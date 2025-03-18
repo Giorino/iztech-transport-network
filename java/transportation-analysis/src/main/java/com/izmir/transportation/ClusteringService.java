@@ -32,6 +32,7 @@ public class ClusteringService {
     private double communityScalingFactor = 0.75; // Controls community detection sensitivity (higher = more communities)
     private boolean adaptiveResolution = true; // Whether to use adaptive resolution for Leiden algorithm
     private int minCommunitySize = 5; // Minimum size for a community, smaller ones will be merged
+    private int maxCommunitySize = 50; // Maximum community size (corresponds to bus capacity)
     private boolean useModularityMaximization = true; // Whether to use modularity maximization for Girvan-Newman
     
     // Specific spectral clustering configuration
@@ -207,6 +208,15 @@ public class ClusteringService {
             leidenAlgorithm.setCommunityCountLimits(2, maxClusters); // Set the max clusters
             leidenAlgorithm.setCommunityScalingFactor(communityScalingFactor); // Set sensitivity
             leidenAlgorithm.setAdaptiveResolution(adaptiveResolution); // Configure resolution approach
+            
+            // Set the maximum size constraint for bus capacity
+            leidenAlgorithm.setMaxCommunitySize(maxCommunitySize);
+            leidenAlgorithm.setEnforceMaxCommunitySize(true);
+            
+            // Set the minimum size constraint for efficient bus utilization
+            leidenAlgorithm.setMinCommunitySize(minCommunitySize);
+            leidenAlgorithm.setEnforceMinCommunitySize(true);
+            
             communities = leidenAlgorithm.detectCommunities();
         } else if (algorithm == ClusteringAlgorithm.SPECTRAL) {
             // Use Spectral algorithm with SpectralClusteringConfig
@@ -266,7 +276,7 @@ public class ClusteringService {
         // Visualize the communities if requested
         if (visualize && !communities.isEmpty()) {
             List<List<Node>> communityList = new ArrayList<>(communities.values());
-            graph.visualizeCommunities(communityList, algorithm.toString());
+            graph.visualizeCommunities(communityList, algorithm.toString(), false); // Hide community 0
             
             // Save the community data
             //graph.saveCommunityData(communities, algorithm.toString());

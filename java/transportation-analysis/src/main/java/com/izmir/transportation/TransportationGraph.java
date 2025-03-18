@@ -2,6 +2,7 @@ package com.izmir.transportation;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -416,6 +417,18 @@ public class TransportationGraph {
      * @param algorithmName The name of the algorithm used (e.g., "leiden", "spectral")
      */
     public void visualizeCommunities(List<List<Node>> communities, String algorithmName) {
+        visualizeCommunities(communities, algorithmName, true);
+    }
+    
+    /**
+     * Visualizes detected communities by coloring nodes and edges based on community membership.
+     * Also saves the visualization as a PNG file with the algorithm name in the filename.
+     *
+     * @param communities A list of communities, where each community is a list of nodes
+     * @param algorithmName The name of the algorithm used (e.g., "leiden", "spectral")
+     * @param showCommunityZero Whether to show community 0 (outliers) in the visualization
+     */
+    public void visualizeCommunities(List<List<Node>> communities, String algorithmName, boolean showCommunityZero) {
         if (communities == null || communities.isEmpty()) {
             System.out.println("No communities to visualize.");
             return;
@@ -424,6 +437,11 @@ public class TransportationGraph {
         // Create a map of node to community ID for quick lookup
         Map<Node, Integer> nodeCommunities = new HashMap<>();
         for (int i = 0; i < communities.size(); i++) {
+            // Skip community 0 if showCommunityZero is false
+            if (!showCommunityZero && i == 0) {
+                continue;
+            }
+            
             List<Node> community = communities.get(i);
             for (Node node : community) {
                 nodeCommunities.put(node, i);
@@ -483,6 +501,12 @@ public class TransportationGraph {
                     // Get community IDs for source and target
                     Integer sourceCommunity = nodeCommunities.get(source);
                     Integer targetCommunity = nodeCommunities.get(target);
+                    
+                    // Skip edges connected to community 0 if we're hiding it
+                    if (!showCommunityZero && (sourceCommunity != null && sourceCommunity == 0 || 
+                        targetCommunity != null && targetCommunity == 0)) {
+                        continue;
+                    }
 
                     // Draw edge in gray if nodes belong to different communities
                     if (sourceCommunity != null && targetCommunity != null && sourceCommunity.equals(targetCommunity)) {
@@ -502,6 +526,12 @@ public class TransportationGraph {
                 // Draw nodes on top
                 for (Node node : graph.vertexSet()) {
                     Integer communityId = nodeCommunities.get(node);
+                    
+                    // Skip nodes in community 0 if we're hiding it
+                    if (!showCommunityZero && communityId != null && communityId == 0) {
+                        continue;
+                    }
+                    
                     if (communityId != null) {
                         g2d.setColor(communityColors.get(communityId % communityColors.size()));
                     } else {
@@ -517,21 +547,56 @@ public class TransportationGraph {
                 // Draw legend
                 int legendX = 20;
                 int legendY = 20;
-                for (int i = 0; i < communities.size(); i++) {
-                    if (i >= communityColors.size()) break;
-
-                    g2d.setColor(communityColors.get(i));
-                    g2d.fillRect(legendX, legendY, 15, 15);
-                    g2d.setColor(Color.BLACK);
-                    g2d.drawRect(legendX, legendY, 15, 15);
-                    g2d.drawString("Community " + i + " (" + communities.get(i).size() + " nodes)", legendX + 20, legendY + 12);
-
-                    legendY += 20;
-                    if (legendY > getHeight() - 40) {
-                        legendY = 20;
-                        legendX += 200;
-                    }
+                int legendItemHeight = 12; // Even smaller height
+                int legendColumnWidth = 140; // Smaller column width
+                Font originalFont = g2d.getFont();
+                Font legendFont = originalFont.deriveFont(9.0f); // Smaller font for legend
+                g2d.setFont(legendFont);
+                
+                int maxLegendX = getWidth() - 80; // Use more of the right side
+                int maxVisibleCommunities = 200; // Higher limit for number of displayed communities
+                
+                // Calculate layout for multiple columns
+                int visibleCommunities = Math.min(communities.size(), maxVisibleCommunities);
+                if (!showCommunityZero) {
+                    visibleCommunities = Math.min(communities.size() - 1, maxVisibleCommunities);
                 }
+                
+                int maxItemsPerColumn = (getHeight() - 40) / legendItemHeight;
+                int numColumns = (int) Math.ceil((double) visibleCommunities / maxItemsPerColumn);
+                int actualItemsPerColumn = (int) Math.ceil((double) visibleCommunities / numColumns);
+                
+                for (int i = 0; i < communities.size() && i < maxVisibleCommunities; i++) {
+                    // Skip community 0 in legend if we're hiding it
+                    if (!showCommunityZero && i == 0) {
+                        continue;
+                    }
+                    
+                    int displayIndex = showCommunityZero ? i : i - 1;
+                    int column = displayIndex / actualItemsPerColumn;
+                    int posInColumn = displayIndex % actualItemsPerColumn;
+                    
+                    int currentLegendX = legendX + (column * legendColumnWidth);
+                    int currentLegendY = legendY + (posInColumn * legendItemHeight);
+                    
+                    // Skip if this would go off screen
+                    if (currentLegendX > maxLegendX) {
+                        g2d.setColor(Color.BLACK);
+                        g2d.drawString("+" + (communities.size() - i) + " more communities...", 
+                                       20, getHeight() - 10);
+                        break;
+                    }
+                    
+                    g2d.setColor(communityColors.get(i % communityColors.size()));
+                    g2d.fillRect(currentLegendX, currentLegendY, 10, 10); // Even smaller squares
+                    g2d.setColor(Color.BLACK);
+                    g2d.drawRect(currentLegendX, currentLegendY, 10, 10);
+                    String label = "Community " + i + " (" + communities.get(i).size() + ")";
+                    g2d.drawString(label, currentLegendX + 14, currentLegendY + 9);
+                }
+                
+                // Restore original font
+                g2d.setFont(originalFont);
             }
         };
 
@@ -826,18 +891,22 @@ public class TransportationGraph {
         colors.add(new Color(128, 128, 0));    // Olive
         colors.add(new Color(165, 42, 42));    // Brown
         colors.add(new Color(0, 255, 255));    // Cyan
+        colors.add(new Color(255, 0, 255));    // Magenta
+        colors.add(new Color(255, 215, 0));    // Gold
+        colors.add(new Color(70, 130, 180));   // Steel Blue
+        colors.add(new Color(244, 164, 96));   // Sandy Brown
+        colors.add(new Color(46, 139, 87));    // Sea Green
         
-        // Generate additional colors if needed
+        // Generate additional colors if needed - no limit now, generate as many as requested
         Random random = new Random(42); // Fixed seed for reproducibility
-        while (colors.size() < count && colors.size() < 30) { // Cap at 30 colors for visibility
-            int r = random.nextInt(256);
-            int g = random.nextInt(256);
-            int b = random.nextInt(256);
+        while (colors.size() < count) {
+            // Generate more varied colors by spreading them across the color space
+            float hue = (float) colors.size() / count;
+            float saturation = 0.7f + random.nextFloat() * 0.3f; // 0.7-1.0
+            float brightness = 0.7f + random.nextFloat() * 0.3f; // 0.7-1.0
             
-            // Ensure color is distinguishable (not too dark or light)
-            if ((r + g + b) > 200 && (r + g + b) < 550) {
-                colors.add(new Color(r, g, b));
-            }
+            Color color = Color.getHSBColor(hue, saturation, brightness);
+            colors.add(color);
         }
         
         return colors;

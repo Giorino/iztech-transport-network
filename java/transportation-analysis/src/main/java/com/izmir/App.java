@@ -1,8 +1,11 @@
 package com.izmir;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.locationtech.jts.geom.Point;
@@ -35,28 +38,24 @@ public class App
             GraphConstructionService.GraphStrategy.COMPLETE; // Using Gabriel graph
     private static final int K_VALUE = 50; // K value for K-nearest neighbors strategy
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.MVAGC; // Using Infomap algorithm
+            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using Infomap algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
     private static final boolean VISUALIZE_CLUSTERS = true; // Whether to visualize clusters
     private static final boolean SAVE_GRAPH = true; // Whether to save the graph for future use
     
-    // Clustering configuration
-    private static final int MAX_CLUSTERS = 13; // Maximum number of communities
-    private static final double COMMUNITY_SCALING_FACTOR = 0.3; // Increased for better local community detection
+    // Clustering configuration - now loaded from properties file
+    private static int MAX_CLUSTERS = 40; // Increased from 12 back to 40 to ensure each community can be within 50-node limit
+    private static final double COMMUNITY_SCALING_FACTOR = 0.5; // Increased to create more balanced communities
     private static final boolean USE_ADAPTIVE_RESOLUTION = true; // Adaptive resolution based on network size
-    private static final int MIN_COMMUNITY_SIZE = 80; // Increased to prevent small fragmented communities
+    private static int MIN_CLUSTER_SIZE = 40; // Increased from 10 to 40 for efficient bus utilization (minimum passengers)
+    private static int MAX_CLUSTER_SIZE = 50; // Strict maximum - bus capacity
     private static final double GEOGRAPHIC_WEIGHT = 0.7; // Higher weight for geographic proximity
     private static final double MAX_COMMUNITY_DIAMETER = 5000.0; // Maximum allowed diameter for a community in meters
-    
+   
     // Spectral clustering specific configuration
-    private static final SpectralClusteringConfig SPECTRAL_CONFIG = new SpectralClusteringConfig()
-            .setNumberOfClusters(MAX_CLUSTERS)
-            .setMinCommunitySize(MIN_COMMUNITY_SIZE)
-            .setPreventSingletons(true)
-            .setSigma(300)  // Controls similarity falloff with distance (lower = more local focus)
-            .setGeographicWeight(0.8); // Higher weight for geographic proximity
+    private static SpectralClusteringConfig SPECTRAL_CONFIG; // Will be initialized with properties
     
     // Girvan-Newman specific configuration
     private static final boolean USE_MODULARITY_MAXIMIZATION = true; // Disable modularity maximization to force finding more communities
@@ -84,6 +83,13 @@ public class App
         try {
             LOGGER.info("Starting Iztech Transportation Analysis...");
             
+            // Load properties from application.properties
+            loadProperties();
+            
+            LOGGER.info("Configuration loaded: MAX_CLUSTERS=" + MAX_CLUSTERS + 
+                      ", MIN_CLUSTER_SIZE=" + MIN_CLUSTER_SIZE + 
+                      ", MAX_CLUSTER_SIZE=" + MAX_CLUSTER_SIZE);
+            
             // Step 1: Generate random points using IzmirBayGraph
             LOGGER.info("Step 1: Generating random vertices...");
             List<Point> points = IzmirBayGraph.generatePoints(NODE_COUNT);
@@ -108,7 +114,7 @@ public class App
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
                 // Girvan-Newman algorithm
                 LOGGER.info("Step 3: Performing Girvan-Newman clustering");
-                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Community Size: " + MIN_COMMUNITY_SIZE);
+                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
                 LOGGER.info("Max Iterations: " + GN_MAX_ITERATIONS + ", Early Stop: " + GN_EARLY_STOP);
                 LOGGER.info("Using Modularity Maximization: " + USE_MODULARITY_MAXIMIZATION);
                 
@@ -117,7 +123,7 @@ public class App
                 gnAlgorithm.setTargetCommunityCount(MAX_CLUSTERS)
                          .setMaxIterations(GN_MAX_ITERATIONS)
                          .setEarlyStop(GN_EARLY_STOP)
-                         .setMinCommunitySize(MIN_COMMUNITY_SIZE)
+                         .setMinCommunitySize(MIN_CLUSTER_SIZE)
                          .setUseModularityMaximization(USE_MODULARITY_MAXIMIZATION);
                 
                 // Run the algorithm
@@ -126,7 +132,7 @@ public class App
                 // Visualize if requested
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
                     List<List<Node>> communityList = new ArrayList<>(communities.values());
-                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
+                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
                     //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                 }
                 
@@ -136,18 +142,18 @@ public class App
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
                 // Infomap algorithm
                 LOGGER.info("Step 3: Performing Infomap clustering");
-                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Community Size: " + MIN_COMMUNITY_SIZE);
+                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
                 LOGGER.info("Max Iterations: " + INFOMAP_MAX_ITERATIONS + ", Tolerance: " + INFOMAP_TOLERANCE);
                 LOGGER.info("Force Max Clusters: " + INFOMAP_FORCE_MAX_CLUSTERS + " (Letting algorithm find natural communities)");
                 
                 ClusteringService clusteringService = new ClusteringService();
                 clusteringService.setMaxClusters(MAX_CLUSTERS)
-                                .setMinCommunitySize(MIN_COMMUNITY_SIZE);
+                                .setMinCommunitySize(MIN_CLUSTER_SIZE);
                 
                 // Use Infomap-specific configuration
                 InfomapCommunityDetection infomapAlgorithm = new InfomapCommunityDetection(graph);
                 infomapAlgorithm.setMaxClusters(MAX_CLUSTERS)
-                               .setMinClusterSize(MIN_COMMUNITY_SIZE)
+                               .setMinClusterSize(MIN_CLUSTER_SIZE)
                                .setMaxIterations(INFOMAP_MAX_ITERATIONS)
                                .setTolerance((float)INFOMAP_TOLERANCE)
                                .setForceMaxClusters(INFOMAP_FORCE_MAX_CLUSTERS)
@@ -161,7 +167,7 @@ public class App
                 // Visualize the communities
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
                     List<List<Node>> communityList = new ArrayList<>(communities.values());
-                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
+                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false); // Hide community 0
                     //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                 }
                 
@@ -171,7 +177,8 @@ public class App
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
                 // MvAGC algorithm
                 LOGGER.info("Step 3: Performing MvAGC clustering");
-                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Anchor Nodes: " + MVAGC_NUM_ANCHORS);
+                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                LOGGER.info("Anchor Nodes: " + MVAGC_NUM_ANCHORS);
                 LOGGER.info("Filter Order: " + MVAGC_FILTER_ORDER + ", Alpha: " + MVAGC_ALPHA);
                 LOGGER.info("Importance Sampling Power: " + MVAGC_SAMPLING_POWER);
                 
@@ -189,7 +196,7 @@ public class App
                 // Visualize if requested
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
                     List<List<Node>> communityList = new ArrayList<>(communities.values());
-                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString());
+                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
                     //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                 }
                 
@@ -199,12 +206,13 @@ public class App
             } else {
                 // Leiden algorithm
                 LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
+                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
                 
                 ClusteringService clusteringService = new ClusteringService();
                 clusteringService.setMaxClusters(MAX_CLUSTERS)
                                 .setCommunityScalingFactor(COMMUNITY_SCALING_FACTOR)
                                 .setAdaptiveResolution(USE_ADAPTIVE_RESOLUTION)
-                                .setMinCommunitySize(MIN_COMMUNITY_SIZE);
+                                .setMinCommunitySize(MIN_CLUSTER_SIZE);
                 
                 clusteringService.performClustering(graph, CLUSTERING_ALGORITHM, VISUALIZE_CLUSTERS);
             }
@@ -213,6 +221,41 @@ public class App
         } catch (Exception e) {
             LOGGER.severe("Error during analysis: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Loads configuration from application.properties file
+     */
+    private static void loadProperties() {
+        Properties properties = new Properties();
+        try (InputStream input = App.class.getClassLoader().getResourceAsStream("application.properties")) {
+            if (input == null) {
+                LOGGER.warning("Unable to find application.properties, using default values");
+                return;
+            }
+            
+            // Load properties file
+            properties.load(input);
+            
+            // Load clustering configuration
+            MAX_CLUSTERS = Integer.parseInt(properties.getProperty("transportation.services.count", "40"));
+            MIN_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.min.seats", "10"));
+            MAX_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.max.seats", 
+                                                properties.getProperty("transportation.bus.capacity", "50")));
+            
+            // Initialize spectral clustering config
+            SPECTRAL_CONFIG = new SpectralClusteringConfig()
+                    .setNumberOfClusters(MAX_CLUSTERS)
+                    .setMinCommunitySize(MIN_CLUSTER_SIZE)
+                    .setPreventSingletons(true)
+                    .setSigma(300)
+                    .setGeographicWeight(0.8);
+            
+        } catch (IOException ex) {
+            LOGGER.warning("Error loading properties: " + ex.getMessage());
+        } catch (NumberFormatException ex) {
+            LOGGER.warning("Error parsing property value: " + ex.getMessage());
         }
     }
 }

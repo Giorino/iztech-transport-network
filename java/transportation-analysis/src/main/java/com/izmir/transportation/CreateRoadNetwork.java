@@ -372,7 +372,7 @@ public class CreateRoadNetwork {
             
             // Visualize the communities
             System.out.println("Visualizing communities...");
-            transportationGraph.visualizeCommunities(communityList, "leiden");
+            transportationGraph.visualizeCommunities(communityList, "leiden", false);
             System.out.println("Community visualization launched. Please wait for the window to appear...");
             
             // Save community data for further analysis
@@ -453,9 +453,9 @@ public class CreateRoadNetwork {
             List<List<com.izmir.transportation.helper.Node>> communityList = new ArrayList<>(communities.values());
             
             // Visualize the communities
-            System.out.println("Visualizing spectral clustering communities...");
-            transportationGraph.visualizeCommunities(communityList, "spectral");
-            System.out.println("Spectral clustering visualization launched. Please wait for the window to appear...");
+            System.out.println("Visualizing communities...");
+            transportationGraph.visualizeCommunities(communityList, "spectral", false);
+            System.out.println("Community visualization launched. Please wait for the window to appear...");
             
             // Save community data for further analysis
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());

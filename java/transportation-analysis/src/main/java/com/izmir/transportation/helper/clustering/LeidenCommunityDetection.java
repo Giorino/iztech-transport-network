@@ -32,15 +32,21 @@ import com.izmir.transportation.helper.clustering.leiden.util.LargeIntArray;
 public class LeidenCommunityDetection {
     
     // Default values for the algorithm - adjusted for producing fewer, more meaningful communities
-    private static final double DEFAULT_RESOLUTION = 0.005; // Increased from 0.001 to allow more communities
+    private static final double DEFAULT_RESOLUTION = 0.002; // Increased from 0.001 to create more balanced communities
     private static final int DEFAULT_ITERATIONS = 50; // Keep high iteration count for optimization
     private static final double DEFAULT_RANDOMNESS = 0.001; // Keep low randomness for deterministic results
     
     // Configuration parameters to control community detection
-    private double communityScalingFactor = 0.5; // Controls how many communities to target (higher = more communities)
+    private double communityScalingFactor = 0.5; // Controls how many communities to target
     private int minCommunities = 2; // Minimum number of communities to aim for
-    private int maxCommunities = 8; // Maximum number of communities to allow before merging
+    private int maxCommunities = 40; // Maximum number of communities to allow before merging
     private boolean adaptiveResolution = true; // Whether to use adaptive resolution values based on network size
+    
+    // Add max community size parameter
+    private int maxCommunitySize = 50; // Maximum size of any community (bus capacity)
+    private int minCommunitySize = 40; // Increased from 10 to ensure efficient bus utilization
+    private boolean enforceMaxCommunitySize = true; // Enable strict enforcement of max community size
+    private boolean enforceMinCommunitySize = true; // Enable strict enforcement of min community size
     
     private final TransportationGraph transportationGraph;
     private Clustering clustering;
@@ -95,6 +101,52 @@ public class LeidenCommunityDetection {
      */
     public void setAdaptiveResolution(boolean adaptive) {
         this.adaptiveResolution = adaptive;
+    }
+    
+    /**
+     * Sets the maximum size for any community (e.g., bus capacity).
+     * Communities larger than this will be split during post-processing.
+     * 
+     * @param maxSize Maximum community size
+     * @return This LeidenCommunityDetection instance for method chaining
+     */
+    public LeidenCommunityDetection setMaxCommunitySize(int maxSize) {
+        this.maxCommunitySize = Math.max(1, maxSize);
+        return this;
+    }
+    
+    /**
+     * Sets whether to strictly enforce the maximum community size.
+     * 
+     * @param enforce True to enforce max community size, false to allow larger communities
+     * @return This LeidenCommunityDetection instance for method chaining
+     */
+    public LeidenCommunityDetection setEnforceMaxCommunitySize(boolean enforce) {
+        this.enforceMaxCommunitySize = enforce;
+        return this;
+    }
+    
+    /**
+     * Sets the minimum size for any community (e.g., minimum bus utilization).
+     * Communities smaller than this will be merged during post-processing.
+     * 
+     * @param minSize Minimum community size
+     * @return This LeidenCommunityDetection instance for method chaining
+     */
+    public LeidenCommunityDetection setMinCommunitySize(int minSize) {
+        this.minCommunitySize = Math.max(1, minSize);
+        return this;
+    }
+    
+    /**
+     * Sets whether to strictly enforce the minimum community size.
+     * 
+     * @param enforce True to enforce min community size, false to allow smaller communities
+     * @return This LeidenCommunityDetection instance for method chaining
+     */
+    public LeidenCommunityDetection setEnforceMinCommunitySize(boolean enforce) {
+        this.enforceMinCommunitySize = enforce;
+        return this;
     }
     
     /**
@@ -198,6 +250,9 @@ public class LeidenCommunityDetection {
         
         // Apply spatial post-processing to ensure geographic coherence
         enhanceSpatialCoherence();
+        
+        // Add call to post-process communities to enforce size constraints
+        postProcessCommunities();
         
         return communities;
     }
@@ -1824,5 +1879,518 @@ public class LeidenCommunityDetection {
         } else {
             return null;
         }
+    }
+    
+    /**
+     * Post-process communities after detection to handle size constraints and other requirements
+     */
+    private void postProcessCommunities() {
+        System.out.println("Post-processing communities with size constraints: min=" + minCommunitySize + ", max=" + maxCommunitySize);
+        
+        // First, handle oversized communities
+        if (enforceMaxCommunitySize) {
+            System.out.println("Enforcing maximum community size of " + maxCommunitySize + " nodes (bus capacity)");
+            
+            boolean hasOversizedCommunities;
+            int iterationCount = 0;
+            int maxIterations = 10; // Increased from 5 to ensure we process all communities
+            
+            do {
+                hasOversizedCommunities = false;
+                iterationCount++;
+                
+                // Find communities that are too large
+                for (Map.Entry<Integer, List<Node>> entry : new HashMap<>(communities).entrySet()) {
+                    int communityId = entry.getKey();
+                    List<Node> communityNodes = entry.getValue();
+                    
+                    if (communityNodes.size() > maxCommunitySize) {
+                        System.out.println("Community " + communityId + " has " + communityNodes.size() + 
+                                          " nodes, which exceeds the maximum of " + maxCommunitySize);
+                        
+                        // Split this community
+                        hasOversizedCommunities = true;
+                        splitLargeCommunity(communityId);
+                    }
+                }
+                
+                System.out.println("Post-processing iteration " + iterationCount + 
+                                 ": " + (hasOversizedCommunities ? "Found oversized communities" : "No oversized communities found"));
+                
+            } while (hasOversizedCommunities && iterationCount < maxIterations);
+            
+            if (iterationCount >= maxIterations && hasOversizedCommunities) {
+                System.out.println("Warning: Reached maximum split iterations. Forcibly splitting any remaining oversized communities.");
+                
+                // Force split any remaining large communities
+                for (Map.Entry<Integer, List<Node>> entry : new HashMap<>(communities).entrySet()) {
+                    int communityId = entry.getKey();
+                    List<Node> communityNodes = entry.getValue();
+                    
+                    if (communityNodes.size() > maxCommunitySize) {
+                        // Use simple chunking method as a last resort
+                        forceSplitOversizedCommunity(communityId);
+                    }
+                }
+            }
+        }
+        
+        // Next, handle undersized communities - merge them into larger ones
+        if (enforceMinCommunitySize && minCommunitySize > 0) {
+            System.out.println("Enforcing minimum community size of " + minCommunitySize + " nodes (minimum bus utilization)");
+            
+            boolean hasUndersizedCommunities;
+            int iterationCount = 0;
+            int maxIterations = 10;
+            
+            do {
+                hasUndersizedCommunities = false;
+                iterationCount++;
+                
+                // Identify undersized communities
+                List<Integer> undersizedCommunityIds = new ArrayList<>();
+                for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+                    if (entry.getValue().size() < minCommunitySize) {
+                        undersizedCommunityIds.add(entry.getKey());
+                    }
+                }
+                
+                // Process undersized communities if any exist
+                if (!undersizedCommunityIds.isEmpty()) {
+                    hasUndersizedCommunities = true;
+                    System.out.println("Found " + undersizedCommunityIds.size() + " undersized communities (iteration " + iterationCount + ")");
+                    
+                    // Sort by size ascending (merge smallest first)
+                    undersizedCommunityIds.sort((id1, id2) -> 
+                        Integer.compare(communities.get(id1).size(), communities.get(id2).size()));
+                    
+                    // Process the smallest community
+                    Integer smallestCommunityId = undersizedCommunityIds.get(0);
+                    List<Node> smallestCommunity = communities.get(smallestCommunityId);
+                    
+                    System.out.println("Processing undersized community " + smallestCommunityId + 
+                                     " with " + smallestCommunity.size() + " nodes");
+                    
+                    // Find the best community to merge with
+                    int bestTargetId = findBestMergeTarget(smallestCommunityId);
+                    
+                    if (bestTargetId != -1) {
+                        List<Node> targetCommunity = communities.get(bestTargetId);
+                        int combinedSize = targetCommunity.size() + smallestCommunity.size();
+                        
+                        // If combining would exceed max size, try to find another target
+                        if (combinedSize > maxCommunitySize) {
+                            System.out.println("Cannot merge with community " + bestTargetId + 
+                                             " as combined size would be " + combinedSize + 
+                                             " which exceeds max of " + maxCommunitySize);
+                            
+                            // Find next best target that doesn't exceed max size
+                            bestTargetId = findBestMergeTargetWithSizeConstraint(smallestCommunityId, maxCommunitySize);
+                        }
+                        
+                        if (bestTargetId != -1) {
+                            // Merge the communities
+                            targetCommunity = communities.get(bestTargetId);
+                            System.out.println("Merging community " + smallestCommunityId + 
+                                             " (" + smallestCommunity.size() + " nodes) into community " + 
+                                             bestTargetId + " (" + targetCommunity.size() + " nodes)");
+                            
+                            targetCommunity.addAll(smallestCommunity);
+                            communities.remove(smallestCommunityId);
+                        } else {
+                            // If no suitable merge target found, keep as is
+                            System.out.println("No suitable merge target found for community " + 
+                                             smallestCommunityId + ". Keeping as is.");
+                            hasUndersizedCommunities = false;
+                        }
+                    } else {
+                        // If no merge target found, keep as is
+                        System.out.println("No merge target found for community " + 
+                                         smallestCommunityId + ". Keeping as is.");
+                        hasUndersizedCommunities = false;
+                    }
+                }
+                
+            } while (hasUndersizedCommunities && iterationCount < maxIterations);
+            
+            // If we still have undersized communities after all iterations, combine small ones together
+            List<Integer> remainingUndersizedIds = new ArrayList<>();
+            for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+                if (entry.getValue().size() < minCommunitySize) {
+                    remainingUndersizedIds.add(entry.getKey());
+                }
+            }
+            
+            if (!remainingUndersizedIds.isEmpty()) {
+                System.out.println("Still have " + remainingUndersizedIds.size() + 
+                                 " undersized communities. Attempting to combine them.");
+                
+                // Sort by size for better combinations
+                remainingUndersizedIds.sort((id1, id2) -> 
+                    Integer.compare(communities.get(id2).size(), communities.get(id1).size()));
+                
+                // Try to combine undersized communities with each other
+                while (remainingUndersizedIds.size() >= 2) {
+                    Integer firstId = remainingUndersizedIds.remove(0);
+                    Integer secondId = remainingUndersizedIds.remove(0);
+                    
+                    // Skip if either community no longer exists (already merged)
+                    if (!communities.containsKey(firstId) || !communities.containsKey(secondId)) {
+                        continue;
+                    }
+                    
+                    List<Node> firstCommunity = communities.get(firstId);
+                    List<Node> secondCommunity = communities.get(secondId);
+                    
+                    // Merge second into first
+                    System.out.println("Combining undersized communities: " + firstId + 
+                                     " (" + firstCommunity.size() + " nodes) and " + 
+                                     secondId + " (" + secondCommunity.size() + " nodes)");
+                    
+                    firstCommunity.addAll(secondCommunity);
+                    communities.remove(secondId);
+                    
+                    // If the combined community now meets the minimum size, remove from list
+                    if (firstCommunity.size() >= minCommunitySize) {
+                        System.out.println("Combined community now has " + firstCommunity.size() + 
+                                         " nodes, which meets minimum size requirement");
+                    } else {
+                        // Still undersized, put back in list for further merging
+                        remainingUndersizedIds.add(firstId);
+                    }
+                }
+            }
+        }
+        
+        // Final check - print community sizes
+        System.out.println("Final community sizes after enforcing all constraints:");
+        int countOverMax = 0;
+        int countUnderMin = 0;
+        
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int size = entry.getValue().size();
+            
+            if (size > maxCommunitySize) {
+                System.out.println("  Community " + entry.getKey() + ": " + size + " nodes (OVER MAX)");
+                countOverMax++;
+            } else if (size < minCommunitySize) {
+                System.out.println("  Community " + entry.getKey() + ": " + size + " nodes (UNDER MIN)");
+                countUnderMin++;
+            }
+        }
+        
+        if (countOverMax > 0 || countUnderMin > 0) {
+            System.out.println("Warning: " + countOverMax + " communities exceed the maximum size and " +
+                             countUnderMin + " communities are below the minimum size.");
+        } else {
+            System.out.println("All communities are within the size limits (" + minCommunitySize + 
+                             " to " + maxCommunitySize + " nodes).");
+        }
+        
+        // Update the clustering based on the final communities
+        updateClusteringFromCommunities();
+    }
+    
+    /**
+     * Find the best community to merge with a small community
+     * 
+     * @param smallCommunityId The ID of the small community to merge
+     * @return The ID of the best community to merge with, or -1 if none found
+     */
+    private int findBestMergeTarget(int smallCommunityId) {
+        List<Node> smallCommunity = communities.get(smallCommunityId);
+        if (smallCommunity == null) {
+            return -1;
+        }
+        
+        double[] smallCentroid = calculateCentroid(smallCommunity);
+        if (smallCentroid == null) {
+            return -1;
+        }
+        
+        int bestTargetId = -1;
+        double bestScore = Double.MAX_VALUE;
+        Graph<Node, DefaultWeightedEdge> graph = transportationGraph.getGraph();
+        
+        // Calculate a centroid for the small community
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int targetId = entry.getKey();
+            
+            // Skip self
+            if (targetId == smallCommunityId) {
+                continue;
+            }
+            
+            List<Node> targetCommunity = entry.getValue();
+            
+            // Calculate geographic proximity
+            double[] targetCentroid = calculateCentroid(targetCommunity);
+            if (targetCentroid == null) {
+                continue;
+            }
+            
+            // Calculate distance between centroids
+            double distance = Math.sqrt(
+                Math.pow(smallCentroid[0] - targetCentroid[0], 2) +
+                Math.pow(smallCentroid[1] - targetCentroid[1], 2)
+            );
+            
+            // Calculate connectivity between communities
+            double connectivity = calculateConnectivity(smallCommunity, targetCommunity, graph);
+            
+            // Higher connectivity and lower distance is better
+            double score = distance * (1.0 - connectivity);
+            
+            if (score < bestScore) {
+                bestScore = score;
+                bestTargetId = targetId;
+            }
+        }
+        
+        return bestTargetId;
+    }
+    
+    /**
+     * Find the best community to merge with a small community, with size constraint
+     * 
+     * @param smallCommunityId The ID of the small community to merge
+     * @param maxSize The maximum combined size allowed
+     * @return The ID of the best community to merge with, or -1 if none found
+     */
+    private int findBestMergeTargetWithSizeConstraint(int smallCommunityId, int maxSize) {
+        List<Node> smallCommunity = communities.get(smallCommunityId);
+        if (smallCommunity == null) {
+            return -1;
+        }
+        
+        double[] smallCentroid = calculateCentroid(smallCommunity);
+        if (smallCentroid == null) {
+            return -1;
+        }
+        
+        int bestTargetId = -1;
+        double bestScore = Double.MAX_VALUE;
+        Graph<Node, DefaultWeightedEdge> graph = transportationGraph.getGraph();
+        
+        // Calculate a centroid for the small community
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int targetId = entry.getKey();
+            
+            // Skip self
+            if (targetId == smallCommunityId) {
+                continue;
+            }
+            
+            List<Node> targetCommunity = entry.getValue();
+            
+            // Skip if combining would exceed maximum size
+            if (targetCommunity.size() + smallCommunity.size() > maxSize) {
+                continue;
+            }
+            
+            // Calculate geographic proximity
+            double[] targetCentroid = calculateCentroid(targetCommunity);
+            if (targetCentroid == null) {
+                continue;
+            }
+            
+            // Calculate distance between centroids
+            double distance = Math.sqrt(
+                Math.pow(smallCentroid[0] - targetCentroid[0], 2) +
+                Math.pow(smallCentroid[1] - targetCentroid[1], 2)
+            );
+            
+            // Calculate connectivity between communities
+            double connectivity = calculateConnectivity(smallCommunity, targetCommunity, graph);
+            
+            // Higher connectivity and lower distance is better
+            double score = distance * (1.0 - connectivity);
+            
+            if (score < bestScore) {
+                bestScore = score;
+                bestTargetId = targetId;
+            }
+        }
+        
+        return bestTargetId;
+    }
+    
+    /**
+     * Calculate connectivity between two communities
+     * 
+     * @param community1 First community
+     * @param community2 Second community
+     * @param graph The graph
+     * @return Connectivity score (0-1)
+     */
+    private double calculateConnectivity(List<Node> community1, List<Node> community2, Graph<Node, DefaultWeightedEdge> graph) {
+        int connections = 0;
+        int maxConnections = community1.size() * community2.size();
+        
+        if (maxConnections == 0) {
+            return 0.0;
+        }
+        
+        for (Node node1 : community1) {
+            for (Node node2 : community2) {
+                if (graph.containsEdge(node1, node2)) {
+                    connections++;
+                }
+            }
+        }
+        
+        return (double) connections / maxConnections;
+    }
+    
+    /**
+     * Force split a community into chunks that don't exceed maxCommunitySize
+     * This is a last resort method when other splitting methods aren't working
+     * 
+     * @param communityId The ID of the community to split
+     */
+    private void forceSplitOversizedCommunity(int communityId) {
+        List<Node> nodes = communities.get(communityId);
+        if (nodes == null || nodes.size() <= maxCommunitySize) {
+            return; // Nothing to do
+        }
+        
+        System.out.println("Force splitting community " + communityId + " with " + nodes.size() + " nodes");
+        
+        // Randomly shuffle nodes for better distribution
+        List<Node> shuffledNodes = new ArrayList<>(nodes);
+        Collections.shuffle(shuffledNodes, new Random(42));
+        
+        // Create new communities by simple chunking
+        int highestCommunityId = findNextAvailableCommunityId();
+        Map<Integer, List<Node>> subCommunities = new HashMap<>();
+        
+        // Keep the original community ID for the first chunk
+        subCommunities.put(communityId, new ArrayList<>());
+        
+        int currentCommunityId = communityId;
+        int count = 0;
+        
+        for (Node node : shuffledNodes) {
+            // If current community is full, create a new one
+            if (subCommunities.get(currentCommunityId).size() >= maxCommunitySize) {
+                currentCommunityId = highestCommunityId++;
+                subCommunities.put(currentCommunityId, new ArrayList<>());
+            }
+            
+            // Add the node to the current community
+            subCommunities.get(currentCommunityId).add(node);
+        }
+        
+        // Remove the original community
+        communities.remove(communityId);
+        
+        // Add the new sub-communities
+        communities.putAll(subCommunities);
+        
+        // Create a simple summary of community sizes
+        StringBuilder sizesSummary = new StringBuilder();
+        for (List<Node> community : subCommunities.values()) {
+            if (sizesSummary.length() > 0) {
+                sizesSummary.append(", ");
+            }
+            sizesSummary.append(community.size());
+        }
+        
+        System.out.println("Force split community " + communityId + " into " + subCommunities.size() + 
+                         " sub-communities, sizes: " + sizesSummary.toString());
+    }
+    
+    /**
+     * Split a community that exceeds the maximum size into smaller communities
+     * 
+     * @param communityId The ID of the community to split
+     */
+    private void splitLargeCommunity(int communityId) {
+        List<Node> nodes = communities.get(communityId);
+        if (nodes == null || nodes.size() <= maxCommunitySize) {
+            return; // Nothing to do
+        }
+        
+        System.out.println("Splitting community " + communityId + " with " + nodes.size() + " nodes");
+        
+        // Create a subgraph for this community
+        Graph<Node, DefaultWeightedEdge> subgraph = createSubgraph(nodes, transportationGraph.getGraph());
+        
+        // Use geographic clustering to split the community
+        Map<Node, Integer> newCommunities;
+        
+        if (subgraph.edgeSet().size() > 0) {
+            // Try to use network structure if available
+            newCommunities = splitCommunityGeographically(subgraph, nodes);
+        } else {
+            // Fallback to pure geographic split
+            newCommunities = splitCommunityByLocation(nodes);
+        }
+        
+        // Create new communities from the split
+        int highestCommunityId = findNextAvailableCommunityId();
+        Map<Integer, Integer> subToGlobalId = new HashMap<>();
+        subToGlobalId.put(0, communityId); // Keep the original ID for the first sub-community
+        
+        // Group nodes by their new sub-community ID
+        Map<Integer, List<Node>> subCommunities = new HashMap<>();
+        for (Map.Entry<Node, Integer> entry : newCommunities.entrySet()) {
+            Node node = entry.getKey();
+            int subCommunityId = entry.getValue();
+            
+            if (!subToGlobalId.containsKey(subCommunityId)) {
+                subToGlobalId.put(subCommunityId, highestCommunityId++);
+            }
+            
+            int globalCommunityId = subToGlobalId.get(subCommunityId);
+            
+            if (!subCommunities.containsKey(globalCommunityId)) {
+                subCommunities.put(globalCommunityId, new ArrayList<>());
+            }
+            subCommunities.get(globalCommunityId).add(node);
+        }
+        
+        // Remove the original community
+        communities.remove(communityId);
+        
+        // Add the new sub-communities
+        communities.putAll(subCommunities);
+        
+        System.out.println("Split community " + communityId + " into " + subCommunities.size() + " sub-communities");
+    }
+    
+    /**
+     * Split a community by geographic location when network structure is not available
+     * 
+     * @param nodes The nodes to split
+     * @return Map of nodes to their new community IDs
+     */
+    private Map<Node, Integer> splitCommunityByLocation(List<Node> nodes) {
+        Map<Node, Integer> result = new HashMap<>();
+        
+        // Sort by X coordinate for more geographically coherent communities
+        List<Node> sortedNodes = new ArrayList<>(nodes);
+        sortedNodes.sort((a, b) -> Double.compare(a.getLocation().getX(), b.getLocation().getX()));
+        
+        int communityId = 0;
+        int count = 0;
+        
+        // Ensure we don't exceed maxCommunitySize
+        int targetSize = Math.min(maxCommunitySize, (int)Math.ceil((double)nodes.size() / 2));
+        // But don't make communities too small either
+        targetSize = Math.max(minCommunitySize, targetSize);
+        
+        for (Node node : sortedNodes) {
+            result.put(node, communityId);
+            count++;
+            
+            // Start a new community when we reach the target size
+            if (count >= targetSize) {
+                communityId++;
+                count = 0;
+            }
+        }
+        
+        return result;
     }
 } 
