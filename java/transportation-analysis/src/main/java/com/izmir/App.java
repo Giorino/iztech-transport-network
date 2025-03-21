@@ -38,7 +38,7 @@ public class App
             GraphConstructionService.GraphStrategy.COMPLETE; // Using Gabriel graph
     private static final int K_VALUE = 50; // K value for K-nearest neighbors strategy
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using Infomap algorithm
+            ClusteringService.ClusteringAlgorithm.MVAGC; // Using Infomap algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
@@ -46,16 +46,24 @@ public class App
     private static final boolean SAVE_GRAPH = true; // Whether to save the graph for future use
     
     // Clustering configuration - now loaded from properties file
-    private static int MAX_CLUSTERS = 40; // Increased from 12 back to 40 to ensure each community can be within 50-node limit
+    private static int MAX_CLUSTERS = 55; // Increased from 12 back to 40 to ensure each community can be within 50-node limit
     private static final double COMMUNITY_SCALING_FACTOR = 0.5; // Increased to create more balanced communities
     private static final boolean USE_ADAPTIVE_RESOLUTION = true; // Adaptive resolution based on network size
-    private static int MIN_CLUSTER_SIZE = 40; // Increased from 10 to 40 for efficient bus utilization (minimum passengers)
-    private static int MAX_CLUSTER_SIZE = 50; // Strict maximum - bus capacity
-    private static final double GEOGRAPHIC_WEIGHT = 0.7; // Higher weight for geographic proximity
-    private static final double MAX_COMMUNITY_DIAMETER = 5000.0; // Maximum allowed diameter for a community in meters
+    private static int MIN_CLUSTER_SIZE = 30; // Minimum efficient bus occupancy
+    private static int MAX_CLUSTER_SIZE = 45; // Maximum bus capacity (reduced from 50 for better balance)
+    private static final double GEOGRAPHIC_WEIGHT = 0.9; // Increased from 0.7 for more geographically cohesive communities
+    private static final double MAX_COMMUNITY_DIAMETER = 2500.0; // Maximum allowed diameter for a community in meters (reduced from 5000.0m)
    
-    // Spectral clustering specific configuration
-    private static SpectralClusteringConfig SPECTRAL_CONFIG; // Will be initialized with properties
+    // Spectral clustering specific configuration - Initialize with default values to prevent NullPointerException
+    private static SpectralClusteringConfig SPECTRAL_CONFIG = new SpectralClusteringConfig()
+            .setNumberOfClusters(MAX_CLUSTERS)
+            .setMinCommunitySize(MIN_CLUSTER_SIZE)
+            .setPreventSingletons(true)
+            .setSigma(300)
+            .setGeographicWeight(0.9)
+            .setMaxClusterSize(MAX_CLUSTER_SIZE)
+            .setForceNumClusters(true)
+            .setMaxCommunityDiameter(MAX_COMMUNITY_DIAMETER);
     
     // Girvan-Newman specific configuration
     private static final boolean USE_MODULARITY_MAXIMIZATION = true; // Disable modularity maximization to force finding more communities
@@ -188,7 +196,10 @@ public class App
                              .setNumAnchors(MVAGC_NUM_ANCHORS)
                              .setFilterOrder(MVAGC_FILTER_ORDER)
                              .setAlpha(MVAGC_ALPHA)
-                             .setImportanceSamplingPower(MVAGC_SAMPLING_POWER);
+                             .setImportanceSamplingPower(MVAGC_SAMPLING_POWER)
+                             .setMinClusterSize(MIN_CLUSTER_SIZE)
+                             .setMaxClusterSize(MAX_CLUSTER_SIZE)
+                             .setForceMinClusters(true);
                 
                 // Run the algorithm
                 Map<Integer, List<Node>> communities = mvagcAlgorithm.detectCommunities();
@@ -239,18 +250,21 @@ public class App
             properties.load(input);
             
             // Load clustering configuration
-            MAX_CLUSTERS = Integer.parseInt(properties.getProperty("transportation.services.count", "40"));
-            MIN_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.min.seats", "10"));
+            MAX_CLUSTERS = Integer.parseInt(properties.getProperty("transportation.services.count", "55"));
+            MIN_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.min.seats", "30"));
             MAX_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.max.seats", 
-                                                properties.getProperty("transportation.bus.capacity", "50")));
+                                                properties.getProperty("transportation.bus.capacity", "45")));
             
-            // Initialize spectral clustering config
+            // Update spectral clustering config with loaded properties
             SPECTRAL_CONFIG = new SpectralClusteringConfig()
                     .setNumberOfClusters(MAX_CLUSTERS)
                     .setMinCommunitySize(MIN_CLUSTER_SIZE)
                     .setPreventSingletons(true)
                     .setSigma(300)
-                    .setGeographicWeight(0.8);
+                    .setGeographicWeight(0.9)
+                    .setMaxClusterSize(MAX_CLUSTER_SIZE)
+                    .setForceNumClusters(true)
+                    .setMaxCommunityDiameter(MAX_COMMUNITY_DIAMETER);
             
         } catch (IOException ex) {
             LOGGER.warning("Error loading properties: " + ex.getMessage());

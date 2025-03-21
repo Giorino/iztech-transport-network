@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.EigenDecomposition;
@@ -215,32 +219,93 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
             // Create similarity matrix
             RealMatrix similarityMatrix = buildSimilarityMatrix(graph, nodes);
             
-            // Compute Laplacian
-            RealMatrix laplacian;
-            if (useNormalizedCut) {
-                laplacian = computeNormalizedLaplacian(similarityMatrix);
-            } else {
-                laplacian = computeUnnormalizedLaplacian(similarityMatrix);
+            // Get config values
+            int maxClusters = config != null ? config.getNumberOfClusters() : numberOfClusters;
+            int maxSize = config != null ? config.getMaxClusterSize() : 0;
+            boolean forceNumClusters = config != null && config.isForceNumClusters();
+            double maxDiameter = config != null ? config.getMaxCommunityDiameter() : 0.0;
+            int minSize = config != null ? config.getMinCommunitySize() : minCommunitySize;
+            
+            try {
+                // Compute Laplacian
+                RealMatrix laplacian;
+                if (useNormalizedCut) {
+                    laplacian = computeNormalizedLaplacian(similarityMatrix);
+                } else {
+                    laplacian = computeUnnormalizedLaplacian(similarityMatrix);
+                }
+                
+                // Add small perturbation for numerical stability
+                addNumericalStability(laplacian);
+                
+                // Compute eigendecomposition
+                System.out.println("Computing eigendecomposition...");
+                EigenDecomposition eigendecomposition = new EigenDecomposition(laplacian);
+                
+                // Get eigenvectors for embedding
+                RealMatrix embedding = getEigenvectorEmbedding(eigendecomposition);
+                
+                // Normalize rows if using normalized cut
+                if (useNormalizedCut) {
+                    normalizeRows(embedding);
+                }
+                
+                // Cluster the embedding
+                System.out.println("Clustering in eigenspace...");
+                communities = clusterEmbedding(embedding, nodes);
+            } catch (Exception e) {
+                System.err.println("Error in spectral decomposition: " + e.getMessage());
+                System.out.println("Using direct k-means clustering on geographic coordinates...");
+                
+                // Fall back to direct k-means clustering on geographic coordinates
+                communities = directGeographicClustering(nodes, maxClusters);
             }
             
-            // Add small perturbation for numerical stability
-            addNumericalStability(laplacian);
-            
-            // Compute eigendecomposition
-            System.out.println("Computing eigendecomposition...");
-            EigenDecomposition eigendecomposition = new EigenDecomposition(laplacian);
-            
-            // Get eigenvectors for embedding
-            RealMatrix embedding = getEigenvectorEmbedding(eigendecomposition);
-            
-            // Normalize rows if using normalized cut
-            if (useNormalizedCut) {
-                normalizeRows(embedding);
+            // Apply maximum diameter constraint first (if specified)
+            if (maxDiameter > 0) {
+                System.out.println("Enforcing maximum community diameter of " + maxDiameter + " meters");
+                communities = enforceMaximumDiameter(communities, maxDiameter);
             }
             
-            // Cluster the embedding
-            System.out.println("Clustering in eigenspace...");
-            communities = clusterEmbedding(embedding, nodes);
+            // If we need to enforce a specific number of clusters
+            if (forceNumClusters && communities.size() != maxClusters) {
+                System.out.println("Forcing " + maxClusters + " clusters (currently have " + communities.size() + ")");
+                communities = forceNumberOfClusters(communities, nodes, maxClusters);
+            }
+            
+            // Always apply maximum cluster size constraint
+            if (maxSize > 0) {
+                System.out.println("Enforcing maximum cluster size of " + maxSize);
+                communities = enforceMaximumClusterSize(communities, maxSize);
+                
+                // Check if we still have any oversize communities after the first pass
+                boolean hasOversizeCommunities = false;
+                for (List<Node> community : communities.values()) {
+                    if (community.size() > maxSize) {
+                        hasOversizeCommunities = true;
+                        System.out.println("Warning: Found community with size " + community.size() + " which exceeds maximum of " + maxSize);
+                    }
+                }
+                
+                // Run again if needed to handle any remaining oversized communities
+                if (hasOversizeCommunities) {
+                    System.out.println("Running additional pass to split remaining oversized communities");
+                    communities = enforceMaximumClusterSize(communities, maxSize);
+                }
+            }
+            
+            // Apply geographic post-processing
+            communities = improveGeographicCohesion(communities);
+            
+            // Add a new step to identify and split disconnected subgroups
+            System.out.println("Identifying and splitting disconnected subgroups within communities...");
+            communities = splitDisconnectedSubgroups(communities, graph, maxDiameter/2);
+            
+            // Final step: Balance community sizes by merging very small communities with nearby ones
+            if (minSize > 10) {
+                System.out.println("Performing final balancing by merging very small communities");
+                communities = balanceCommunitySize(communities, minSize, maxSize);
+            }
             
             // Calculate clustering quality metrics
             calculateClusteringMetrics(communities, graph);
@@ -251,7 +316,7 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
         } catch (Exception e) {
             System.err.println("Error during spectral clustering: " + e.getMessage());
             e.printStackTrace();
-            return fallbackClustering();
+            return geographicFallbackClustering(transportationGraph.getGraph().vertexSet(), 40);
         }
     }
     
@@ -289,6 +354,10 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
             }
         }
         
+        // Use a reasonable sigma value based on the data
+        double effectiveSigma = maxGeoDist / 20.0;
+        System.out.println("Using effective sigma of " + effectiveSigma + " based on max distance of " + maxGeoDist);
+        
         // Fill similarity matrix
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
@@ -300,6 +369,11 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
                 } else {
                     Node node1 = nodes.get(i);
                     Node node2 = nodes.get(j);
+                    
+                    // Calculate geographic similarity with more stable decay for distant nodes
+                    double geoDist = calculateGeoDistance(node1, node2);
+                    // Use standard Gaussian similarity with better numerical properties
+                    double geoSimilarity = Math.exp(-geoDist / effectiveSigma);
                     
                     // Check if there's a direct edge in the graph
                     DefaultWeightedEdge edge = graph.getEdge(node1, node2);
@@ -314,22 +388,19 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
                         } else {
                             // Fallback to graph edge weight
                             double weight = graph.getEdgeWeight(edge);
-                            networkSimilarity = Math.exp(-weight / sigma);
+                            networkSimilarity = Math.exp(-weight / effectiveSigma);
                         }
                         
-                        // Calculate geographic similarity (1.0 means close, 0.0 means far)
-                        double geoDist = calculateGeoDistance(node1, node2);
-                        double geoSimilarity = Math.exp(-geoDist / (sigma * maxGeoDist));
-                        
-                        // Combine network and geographic similarity
+                        // Combine network and geographic similarity with balanced geo emphasis
                         similarity = (1.0 - geoWeight) * networkSimilarity + geoWeight * geoSimilarity;
                     } else {
-                        // No direct edge, use distance-based similarity with steeper decay
-                        double geoDist = calculateGeoDistance(node1, node2);
-                        similarity = Math.exp(-geoDist / (sigma * maxGeoDist));
-                        
-                        // Apply additional penalty for non-connected nodes
-                        similarity *= 0.5;
+                        // No direct edge, use reduced distance-based similarity
+                        similarity = geoSimilarity * 0.5; // Apply moderate penalty for non-connected nodes
+                    }
+                    
+                    // Ensure similarity is numerically stable
+                    if (similarity < 1e-10) {
+                        similarity = 0.0; // Treat very small values as zero
                     }
                 }
                 
@@ -338,6 +409,17 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
                 similarityMatrix.setEntry(j, i, similarity);
             }
         }
+        
+        // Count non-zero entries for diagnostic purposes
+        int nonZeroEntries = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (similarityMatrix.getEntry(i, j) > 0.001) {
+                    nonZeroEntries++;
+                }
+            }
+        }
+        System.out.println("Created similarity matrix with " + nonZeroEntries + " non-zero entries out of " + (n * n) + " total");
         
         return similarityMatrix;
     }
@@ -1080,5 +1162,811 @@ public class SpectralClustering implements GraphClusteringAlgorithm {
         public int getIndex() {
             return index;
         }
+    }
+
+    /**
+     * Enforce maximum cluster size by splitting oversized clusters
+     *
+     * @param communities Current communities
+     * @param maxSize Maximum allowed cluster size
+     * @return Updated communities with no community larger than maxSize
+     */
+    private Map<Integer, List<Node>> enforceMaximumClusterSize(Map<Integer, List<Node>> communities, int maxSize) {
+        Map<Integer, List<Node>> result = new HashMap<>();
+        int nextId = communities.size();
+        
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            List<Node> community = entry.getValue();
+            
+            if (community.size() <= maxSize) {
+                // Community is already small enough
+                result.put(entry.getKey(), community);
+            } else {
+                // Community needs to be split
+                int numSplits = (int) Math.ceil((double) community.size() / maxSize);
+                
+                // Use k-means to split the community
+                double[][] points = new double[community.size()][2];
+                for (int i = 0; i < community.size(); i++) {
+                    Node node = community.get(i);
+                    points[i][0] = node.getLocation().getX();
+                    points[i][1] = node.getLocation().getY();
+                }
+                
+                // Create embedding points for clustering
+                List<EmbeddingPoint> embeddingPoints = new ArrayList<>();
+                for (int i = 0; i < community.size(); i++) {
+                    embeddingPoints.add(new EmbeddingPoint(points[i], i));
+                }
+                
+                // Use Apache Commons k-means clustering
+                KMeansPlusPlusClusterer<EmbeddingPoint> clusterer = 
+                    new KMeansPlusPlusClusterer<>(numSplits, maxIterations, new EuclideanDistance());
+                
+                List<CentroidCluster<EmbeddingPoint>> clusters = clusterer.cluster(embeddingPoints);
+                
+                // Create subcommunities
+                Map<Integer, List<Node>> subcommunities = new HashMap<>();
+                
+                for (int i = 0; i < clusters.size(); i++) {
+                    subcommunities.put(i, new ArrayList<>());
+                }
+                
+                // Assign nodes to subcommunities
+                for (int i = 0; i < clusters.size(); i++) {
+                    CentroidCluster<EmbeddingPoint> cluster = clusters.get(i);
+                    for (EmbeddingPoint point : cluster.getPoints()) {
+                        subcommunities.get(i).add(community.get(point.getIndex()));
+                    }
+                }
+                
+                // Add first subcommunity with original ID
+                boolean originalIdUsed = false;
+                
+                for (List<Node> subcommunity : subcommunities.values()) {
+                    if (!originalIdUsed) {
+                        result.put(entry.getKey(), subcommunity);
+                        originalIdUsed = true;
+                    } else {
+                        result.put(nextId++, subcommunity);
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    /**
+     * Force a specific number of clusters by merging or splitting as needed
+     *
+     * @param communities Current communities
+     * @param nodes All nodes in the graph
+     * @param targetCount Target number of clusters
+     * @return Updated communities with exactly targetCount clusters
+     */
+    private Map<Integer, List<Node>> forceNumberOfClusters(Map<Integer, List<Node>> communities, List<Node> nodes, int targetCount) {
+        int currentCount = communities.size();
+        
+        if (currentCount == targetCount) {
+            return communities;
+        }
+        
+        Map<Integer, List<Node>> result = new HashMap<>(communities);
+        
+        if (currentCount < targetCount) {
+            // Need to split communities to get more clusters
+            // Start with the largest communities
+            while (result.size() < targetCount) {
+                // Find largest community
+                Map.Entry<Integer, List<Node>> largest = null;
+                for (Map.Entry<Integer, List<Node>> entry : result.entrySet()) {
+                    if (largest == null || entry.getValue().size() > largest.getValue().size()) {
+                        largest = entry;
+                    }
+                }
+                
+                if (largest == null || largest.getValue().size() <= minCommunitySize * 1.4) {
+                    // Can't split any further without violating minimum size constraint
+                    System.out.println("Warning: Cannot create " + targetCount + " clusters without violating minimum size constraint");
+                    break;
+                }
+                
+                // Split the largest community in two
+                List<Node> community = largest.getValue();
+                
+                // Sort nodes by distance from centroid
+                double[] centroid = calculateCentroid(community);
+                community.sort((a, b) -> {
+                    double distA = pointDistance(a.getLocation().getX(), a.getLocation().getY(), centroid[0], centroid[1]);
+                    double distB = pointDistance(b.getLocation().getX(), b.getLocation().getY(), centroid[0], centroid[1]);
+                    return Double.compare(distA, distB);
+                });
+                
+                // Create two new communities
+                int splitPoint = community.size() / 2;
+                List<Node> community1 = new ArrayList<>(community.subList(0, splitPoint));
+                List<Node> community2 = new ArrayList<>(community.subList(splitPoint, community.size()));
+                
+                // Replace the original community with the first split
+                result.put(largest.getKey(), community1);
+                
+                // Add the second split as a new community
+                int newId = result.keySet().stream().max(Integer::compare).orElse(0) + 1;
+                result.put(newId, community2);
+            }
+        } else {
+            // Need to merge communities to reduce cluster count
+            // Merge smallest communities first
+            while (result.size() > targetCount) {
+                // Find two smallest communities
+                int smallest1 = -1, smallest2 = -1;
+                
+                for (Integer id : result.keySet()) {
+                    if (smallest1 == -1 || result.get(id).size() < result.get(smallest1).size()) {
+                        smallest2 = smallest1;
+                        smallest1 = id;
+                    } else if (smallest2 == -1 || result.get(id).size() < result.get(smallest2).size()) {
+                        smallest2 = id;
+                    }
+                }
+                
+                if (smallest1 != -1 && smallest2 != -1) {
+                    // Merge these two communities
+                    List<Node> merged = new ArrayList<>(result.get(smallest1));
+                    merged.addAll(result.get(smallest2));
+                    result.put(smallest1, merged);
+                    result.remove(smallest2);
+                } else {
+                    break; // Cannot merge further
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    /**
+     * Calculate Euclidean distance between two points
+     */
+    private double pointDistance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    }
+
+    /**
+     * Apply geographic post-processing to improve geographic cohesion
+     *
+     * @param communities Current communities
+     * @return Updated communities with improved geographic cohesion
+     */
+    private Map<Integer, List<Node>> improveGeographicCohesion(Map<Integer, List<Node>> communities) {
+        System.out.println("Improving geographic cohesion of communities...");
+        Map<Integer, List<Node>> improvedCommunities = new HashMap<>();
+        int nextCommunityId = communities.size() + 1;
+        
+        // For each community
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int communityId = entry.getKey();
+            List<Node> nodes = entry.getValue();
+            
+            // Skip small communities (they're already cohesive)
+            if (nodes.size() < 20) {
+                improvedCommunities.put(communityId, new ArrayList<>(nodes));
+                continue;
+            }
+            
+            // Calculate community centroid
+            double[] centroid = calculateCentroid(nodes);
+            
+            // Calculate distance from each node to centroid
+            List<NodeDistance> distances = new ArrayList<>();
+            for (Node node : nodes) {
+                double distance = calculateDistance(
+                    new double[] {node.getLocation().getX(), node.getLocation().getY()}, 
+                    centroid
+                );
+                distances.add(new NodeDistance(node, distance));
+            }
+            
+            // Sort by distance to centroid
+            distances.sort(Comparator.comparingDouble(NodeDistance::getDistance));
+            
+            // Check if we have outliers (nodes much further from centroid than others)
+            double medianDistance = distances.get(distances.size() / 2).getDistance();
+            double outlierThreshold = medianDistance * 3.0; // 3x median is considered an outlier
+            
+            List<Node> outliers = new ArrayList<>();
+            List<Node> coreNodes = new ArrayList<>();
+            
+            for (NodeDistance nd : distances) {
+                if (nd.getDistance() > outlierThreshold) {
+                    outliers.add(nd.getNode());
+                } else {
+                    coreNodes.add(nd.getNode());
+                }
+            }
+            
+            // If no outliers, keep the community as is
+            if (outliers.isEmpty()) {
+                improvedCommunities.put(communityId, nodes);
+                continue;
+            }
+            
+            System.out.println("Found " + outliers.size() + " geographic outliers in community " + communityId);
+            
+            // Put core nodes in the original community
+            improvedCommunities.put(communityId, coreNodes);
+            
+            // Group outliers into new communities based on proximity
+            Map<Integer, List<Node>> outlierGroups = clusterOutliers(outliers, nextCommunityId);
+            improvedCommunities.putAll(outlierGroups);
+            
+            nextCommunityId += outlierGroups.size();
+        }
+        
+        return improvedCommunities;
+    }
+    
+    /**
+     * Cluster outlier nodes into new communities based on geographic proximity
+     * 
+     * @param outliers List of outlier nodes
+     * @param startId Starting community ID for new communities
+     * @return Map of new community IDs to lists of nodes
+     */
+    private Map<Integer, List<Node>> clusterOutliers(List<Node> outliers, int startId) {
+        Map<Integer, List<Node>> result = new HashMap<>();
+        
+        // If only a few outliers, put them all in one new community
+        if (outliers.size() < 5) {
+            result.put(startId, outliers);
+            return result;
+        }
+        
+        // Perform simple agglomerative clustering based on geographic distance
+        // This is a greedy algorithm that works well for small numbers of nodes
+        
+        // Start with each node in its own cluster
+        Map<Integer, List<Node>> clusters = new HashMap<>();
+        for (int i = 0; i < outliers.size(); i++) {
+            List<Node> cluster = new ArrayList<>();
+            cluster.add(outliers.get(i));
+            clusters.put(i, cluster);
+        }
+        
+        // Repeatedly merge the closest clusters until we have a reasonable number
+        // or until no clusters are close enough to merge
+        double mergeThreshold = 2000.0; // 2km - maximum distance for merging
+        
+        while (clusters.size() > 1) {
+            // Find the closest pair of clusters
+            int bestI = -1;
+            int bestJ = -1;
+            double bestDistance = Double.MAX_VALUE;
+            
+            for (int i : clusters.keySet()) {
+                for (int j : clusters.keySet()) {
+                    if (i >= j) continue;
+                    
+                    // Calculate minimum distance between clusters
+                    double minDistance = Double.MAX_VALUE;
+                    for (Node ni : clusters.get(i)) {
+                        for (Node nj : clusters.get(j)) {
+                            double distance = calculateGeoDistance(ni, nj);
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    }
+                    
+                    if (minDistance < bestDistance) {
+                        bestDistance = minDistance;
+                        bestI = i;
+                        bestJ = j;
+                    }
+                }
+            }
+            
+            // If the closest clusters are too far apart, stop merging
+            if (bestDistance > mergeThreshold) {
+                break;
+            }
+            
+            // Merge the closest clusters
+            List<Node> merged = new ArrayList<>(clusters.get(bestI));
+            merged.addAll(clusters.get(bestJ));
+            clusters.remove(bestJ);
+            clusters.put(bestI, merged);
+        }
+        
+        // Convert to final community IDs
+        int id = startId;
+        for (List<Node> cluster : clusters.values()) {
+            result.put(id++, cluster);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Helper class to store a node and its distance to a reference point
+     */
+    private static class NodeDistance {
+        private final Node node;
+        private final double distance;
+        
+        public NodeDistance(Node node, double distance) {
+            this.node = node;
+            this.distance = distance;
+        }
+        
+        public Node getNode() {
+            return node;
+        }
+        
+        public double getDistance() {
+            return distance;
+        }
+    }
+
+    /**
+     * Enforce maximum diameter constraint
+     *
+     * @param communities Current communities
+     * @param maxDiameter Maximum allowed community diameter in meters
+     * @return Updated communities with no community larger than maxDiameter
+     */
+    private Map<Integer, List<Node>> enforceMaximumDiameter(Map<Integer, List<Node>> communities, double maxDiameter) {
+        System.out.println("Enforcing maximum community diameter of " + maxDiameter + " meters");
+        Map<Integer, List<Node>> result = new HashMap<>();
+        int nextCommunityId = communities.size() + 1;
+        
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int communityId = entry.getKey();
+            List<Node> nodes = entry.getValue();
+            
+            // Skip small communities (they're likely already within diameter constraints)
+            if (nodes.size() < 10) {
+                result.put(communityId, new ArrayList<>(nodes));
+                continue;
+            }
+            
+            // Calculate community diameter
+            double diameter = calculateCommunityDiameter(nodes);
+            
+            // If within limit, keep as is
+            if (diameter <= maxDiameter) {
+                result.put(communityId, new ArrayList<>(nodes));
+                continue;
+            }
+            
+            System.out.println("Community " + communityId + " has diameter " + String.format("%.2f", diameter) +
+                             " meters, exceeding limit of " + maxDiameter + " meters. Splitting.");
+            
+            // Split the community using spatial partitioning
+            Map<Integer, List<Node>> splitCommunities = spatialPartitioning(nodes, maxDiameter, nextCommunityId);
+            result.putAll(splitCommunities);
+            
+            // Update next ID
+            nextCommunityId += splitCommunities.size();
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Calculate the geographic diameter of a community (maximum distance between any two nodes)
+     * 
+     * @param nodes List of nodes in the community
+     * @return Diameter in meters
+     */
+    private double calculateCommunityDiameter(List<Node> nodes) {
+        double maxDistance = 0.0;
+        
+        for (int i = 0; i < nodes.size(); i++) {
+            for (int j = i + 1; j < nodes.size(); j++) {
+                double distance = calculateGeoDistance(nodes.get(i), nodes.get(j));
+                maxDistance = Math.max(maxDistance, distance);
+            }
+        }
+        
+        return maxDistance;
+    }
+    
+    /**
+     * Split a community into spatially coherent parts that respect the diameter constraint
+     * 
+     * @param nodes Nodes to split
+     * @param maxDiameter Maximum allowed diameter
+     * @param startId Starting ID for new communities
+     * @return Map of community IDs to node lists
+     */
+    private Map<Integer, List<Node>> spatialPartitioning(List<Node> nodes, double maxDiameter, int startId) {
+        Map<Integer, List<Node>> result = new HashMap<>();
+        
+        // Find the two most distant nodes
+        Node node1 = null;
+        Node node2 = null;
+        double maxDistance = 0.0;
+        
+        for (int i = 0; i < nodes.size(); i++) {
+            for (int j = i + 1; j < nodes.size(); j++) {
+                double distance = calculateGeoDistance(nodes.get(i), nodes.get(j));
+                if (distance > maxDistance) {
+                    maxDistance = distance;
+                    node1 = nodes.get(i);
+                    node2 = nodes.get(j);
+                }
+            }
+        }
+        
+        // Create two clusters with these nodes as seeds
+        List<Node> cluster1 = new ArrayList<>();
+        List<Node> cluster2 = new ArrayList<>();
+        
+        cluster1.add(node1);
+        cluster2.add(node2);
+        
+        // Assign each remaining node to the closest centroid
+        for (Node node : nodes) {
+            if (node != node1 && node != node2) {
+                double dist1 = calculateGeoDistance(node, node1);
+                double dist2 = calculateGeoDistance(node, node2);
+                
+                if (dist1 < dist2) {
+                    cluster1.add(node);
+                } else {
+                    cluster2.add(node);
+                }
+            }
+        }
+        
+        // Check if both clusters respect the diameter constraint
+        double diameter1 = calculateCommunityDiameter(cluster1);
+        double diameter2 = calculateCommunityDiameter(cluster2);
+        
+        // Recursively split clusters that are still too large
+        if (diameter1 > maxDiameter && cluster1.size() > 10) {
+            Map<Integer, List<Node>> split1 = spatialPartitioning(cluster1, maxDiameter, startId);
+            result.putAll(split1);
+            startId += split1.size();
+        } else {
+            result.put(startId++, cluster1);
+        }
+        
+        if (diameter2 > maxDiameter && cluster2.size() > 10) {
+            Map<Integer, List<Node>> split2 = spatialPartitioning(cluster2, maxDiameter, startId);
+            result.putAll(split2);
+        } else {
+            result.put(startId, cluster2);
+        }
+        
+        return result;
+    }
+
+    /**
+     * Performs a final balancing step to merge very small communities with nearby ones
+     * 
+     * @param communities Current communities
+     * @param minSize Minimum desired community size
+     * @param maxSize Maximum allowed community size
+     * @return Balanced communities
+     */
+    private Map<Integer, List<Node>> balanceCommunitySize(Map<Integer, List<Node>> communities, int minSize, int maxSize) {
+        Map<Integer, List<Node>> balancedCommunities = new HashMap<>();
+        List<Integer> communitiesToMerge = new ArrayList<>();
+        
+        // First pass: identify communities that are too small
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int communityId = entry.getKey();
+            List<Node> nodes = entry.getValue();
+            
+            if (nodes.size() < minSize * 0.6) { // Communities below 60% of min size
+                communitiesToMerge.add(communityId);
+                System.out.println("Community " + communityId + " with size " + nodes.size() + 
+                                 " is too small and will be merged");
+            } else {
+                balancedCommunities.put(communityId, new ArrayList<>(nodes));
+            }
+        }
+        
+        // Second pass: merge small communities with geographically closest communities
+        for (Integer smallCommunityId : communitiesToMerge) {
+            List<Node> smallCommunity = communities.get(smallCommunityId);
+            
+            // Find closest community based on distance between centroids
+            double[] smallCentroid = calculateCentroid(smallCommunity);
+            Integer closestCommunityId = null;
+            double closestDistance = Double.MAX_VALUE;
+            
+            // Consider only communities that won't exceed maxSize after merging
+            for (Map.Entry<Integer, List<Node>> entry : balancedCommunities.entrySet()) {
+                int communityId = entry.getKey();
+                List<Node> communityNodes = entry.getValue();
+                
+                // Skip if merging would exceed the maximum size
+                if (communityNodes.size() + smallCommunity.size() > maxSize) {
+                    continue;
+                }
+                
+                double[] centroid = calculateCentroid(communityNodes);
+                double distance = calculateDistance(smallCentroid, centroid);
+                
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestCommunityId = communityId;
+                }
+            }
+            
+            // If we found a suitable community to merge with
+            if (closestCommunityId != null) {
+                List<Node> targetCommunity = balancedCommunities.get(closestCommunityId);
+                targetCommunity.addAll(smallCommunity);
+                System.out.println("Merged community " + smallCommunityId + " into community " + 
+                                 closestCommunityId + " (new size: " + targetCommunity.size() + ")");
+            } else {
+                // If no suitable community found, keep it as is
+                System.out.println("Could not find suitable merge target for community " + 
+                                 smallCommunityId + ", keeping it separate");
+                balancedCommunities.put(smallCommunityId, smallCommunity);
+            }
+        }
+        
+        // Third pass: check if any communities are still too small and try node-by-node reassignment
+        Map<Integer, List<Node>> finalCommunities = new HashMap<>(balancedCommunities);
+        
+        for (Map.Entry<Integer, List<Node>> entry : balancedCommunities.entrySet()) {
+            int communityId = entry.getKey();
+            List<Node> nodes = entry.getValue();
+            
+            if (nodes.size() < minSize * 0.8 && nodes.size() > 1) { // Still small but not singleton
+                List<Node> nodesToReassign = new ArrayList<>(nodes);
+                finalCommunities.remove(communityId);
+                
+                // Reassign nodes one by one to the closest community
+                for (Node node : nodesToReassign) {
+                    Integer bestCommunityId = null;
+                    double bestDistance = Double.MAX_VALUE;
+                    
+                    for (Map.Entry<Integer, List<Node>> targetEntry : finalCommunities.entrySet()) {
+                        int targetId = targetEntry.getKey();
+                        List<Node> targetNodes = targetEntry.getValue();
+                        
+                        // Skip if target is already at max size
+                        if (targetNodes.size() >= maxSize) {
+                            continue;
+                        }
+                        
+                        // Calculate average distance to this community
+                        double avgDistance = calculateAverageDistanceToNodes(node, targetNodes);
+                        
+                        if (avgDistance < bestDistance) {
+                            bestDistance = avgDistance;
+                            bestCommunityId = targetId;
+                        }
+                    }
+                    
+                    // Assign to best community or create a new one if none found
+                    if (bestCommunityId != null) {
+                        finalCommunities.get(bestCommunityId).add(node);
+                    } else {
+                        // As last resort, put in a new community
+                        List<Node> newCommunity = new ArrayList<>();
+                        newCommunity.add(node);
+                        finalCommunities.put(communityId, newCommunity);
+                    }
+                }
+                
+                System.out.println("Reassigned nodes from small community " + communityId);
+            }
+        }
+        
+        return finalCommunities;
+    }
+    
+    /**
+     * Calculate average distance from a node to a list of nodes
+     * 
+     * @param node The node
+     * @param nodes List of target nodes
+     * @return Average distance in geographic units
+     */
+    private double calculateAverageDistanceToNodes(Node node, List<Node> nodes) {
+        double totalDistance = 0.0;
+        
+        for (Node targetNode : nodes) {
+            totalDistance += calculateGeoDistance(node, targetNode);
+        }
+        
+        return totalDistance / nodes.size();
+    }
+
+    /**
+     * Geographic fallback clustering method using k-means on coordinates
+     */
+    private Map<Integer, List<Node>> geographicFallbackClustering(Set<Node> nodeSet, int k) {
+        System.out.println("Using geographic fallback clustering with k=" + k);
+        List<Node> nodes = new ArrayList<>(nodeSet);
+        return directGeographicClustering(nodes, k);
+    }
+    
+    /**
+     * Direct k-means clustering on geographic coordinates
+     */
+    private Map<Integer, List<Node>> directGeographicClustering(List<Node> nodes, int k) {
+        int n = nodes.size();
+        
+        // Create data points for k-means
+        List<EmbeddingPoint> points = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            Node node = nodes.get(i);
+            Point location = node.getLocation();
+            double[] coords = new double[] {location.getX(), location.getY()};
+            points.add(new EmbeddingPoint(coords, i));
+        }
+        
+        // Perform k-means clustering
+        KMeansPlusPlusClusterer<EmbeddingPoint> clusterer = new KMeansPlusPlusClusterer<>(
+            k, 500, new EuclideanDistance());
+        
+        List<CentroidCluster<EmbeddingPoint>> clusters = clusterer.cluster(points);
+        
+        // Convert clusters to community map
+        Map<Integer, List<Node>> communities = new HashMap<>();
+        int communityId = 0;
+        
+        for (CentroidCluster<EmbeddingPoint> cluster : clusters) {
+            List<Node> community = new ArrayList<>();
+            
+            for (EmbeddingPoint point : cluster.getPoints()) {
+                community.add(nodes.get(point.getIndex()));
+            }
+            
+            if (!community.isEmpty()) {
+                communities.put(communityId++, community);
+            }
+        }
+        
+        return communities;
+    }
+
+    /**
+     * Identify and split disconnected subgroups within communities
+     * 
+     * @param communities Current communities
+     * @param graph The original graph
+     * @param proximityThreshold Maximum distance between nodes to be considered connected (meters)
+     * @return Updated communities with disconnected subgroups split
+     */
+    private Map<Integer, List<Node>> splitDisconnectedSubgroups(Map<Integer, List<Node>> communities, 
+                                                              Graph<Node, DefaultWeightedEdge> graph,
+                                                              double proximityThreshold) {
+        Map<Integer, List<Node>> result = new HashMap<>();
+        int nextCommunityId = communities.size();
+        
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int communityId = entry.getKey();
+            List<Node> nodes = entry.getValue();
+            
+            // Skip small communities
+            if (nodes.size() < 15) {
+                result.put(communityId, new ArrayList<>(nodes));
+                continue;
+            }
+            
+            // Create a proximity graph for this community
+            // Two nodes are connected if they are within proximityThreshold meters of each other
+            Map<Node, Set<Node>> proximityGraph = buildProximityGraph(nodes, proximityThreshold);
+            
+            // Find connected components in the proximity graph
+            List<List<Node>> connectedComponents = findConnectedComponents(proximityGraph);
+            
+            // If only one connected component, keep the community as is
+            if (connectedComponents.size() == 1) {
+                result.put(communityId, nodes);
+                continue;
+            }
+            
+            // Log information about the split
+            System.out.println("Found " + connectedComponents.size() + " disconnected subgroups in community " + 
+                            communityId + " (size " + nodes.size() + ")");
+            
+            // Sort connected components by size (largest first)
+            connectedComponents.sort((a, b) -> b.size() - a.size());
+            
+            // Keep the largest component with the original community ID
+            result.put(communityId, connectedComponents.get(0));
+            System.out.println("  - Keeping largest subgroup with " + connectedComponents.get(0).size() + 
+                            " nodes as community " + communityId);
+            
+            // Create new communities for the other components
+            for (int i = 1; i < connectedComponents.size(); i++) {
+                List<Node> component = connectedComponents.get(i);
+                
+                // Skip very small components (they'll be handled by the balancing step later)
+                if (component.size() < 5) {
+                    continue;
+                }
+                
+                result.put(nextCommunityId, component);
+                System.out.println("  - Creating new community " + nextCommunityId + 
+                                " with " + component.size() + " nodes");
+                nextCommunityId++;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Build a proximity graph where nodes are connected if they're within the specified distance
+     * 
+     * @param nodes List of nodes
+     * @param proximityThreshold Maximum distance for connection (meters)
+     * @return Map representing the proximity graph
+     */
+    private Map<Node, Set<Node>> buildProximityGraph(List<Node> nodes, double proximityThreshold) {
+        Map<Node, Set<Node>> graph = new HashMap<>();
+        
+        // Initialize graph
+        for (Node node : nodes) {
+            graph.put(node, new HashSet<>());
+        }
+        
+        // Connect nodes that are within the proximity threshold
+        for (int i = 0; i < nodes.size(); i++) {
+            Node node1 = nodes.get(i);
+            
+            for (int j = i + 1; j < nodes.size(); j++) {
+                Node node2 = nodes.get(j);
+                
+                double distance = calculateGeoDistance(node1, node2);
+                
+                if (distance <= proximityThreshold) {
+                    // Add bidirectional connection
+                    graph.get(node1).add(node2);
+                    graph.get(node2).add(node1);
+                }
+            }
+        }
+        
+        return graph;
+    }
+    
+    /**
+     * Find all connected components in a graph using BFS
+     * 
+     * @param graph The graph represented as a map of nodes to their adjacent nodes
+     * @return List of connected components
+     */
+    private List<List<Node>> findConnectedComponents(Map<Node, Set<Node>> graph) {
+        List<List<Node>> components = new ArrayList<>();
+        Set<Node> visited = new HashSet<>();
+        
+        for (Node node : graph.keySet()) {
+            if (!visited.contains(node)) {
+                // Found a new unvisited node, start a new component
+                List<Node> component = new ArrayList<>();
+                Queue<Node> queue = new LinkedList<>();
+                
+                queue.add(node);
+                visited.add(node);
+                
+                // BFS to find all nodes in this component
+                while (!queue.isEmpty()) {
+                    Node current = queue.poll();
+                    component.add(current);
+                    
+                    for (Node neighbor : graph.get(current)) {
+                        if (!visited.contains(neighbor)) {
+                            visited.add(neighbor);
+                            queue.add(neighbor);
+                        }
+                    }
+                }
+                
+                components.add(component);
+            }
+        }
+        
+        return components;
     }
 } 

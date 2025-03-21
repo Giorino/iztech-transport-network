@@ -66,7 +66,11 @@ public class TransportationCostAnalysis {
         
         // Step 4: Save optimized results to CSV
         try {
-            analyzer.saveAnalysisToCSV("transportation_cost_analysis.csv");
+            String filename = "transportation_cost_analysis.csv";
+            analyzer.saveAnalysisToCSV(filename);
+            System.out.println("\n===================================================");
+            System.out.println("Detailed transportation cost analysis saved to: " + System.getProperty("user.dir") + "/" + filename);
+            System.out.println("===================================================");
         } catch (IOException e) {
             System.err.println("Error saving analysis to CSV: " + e.getMessage());
         }

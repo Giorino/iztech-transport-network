@@ -17,6 +17,9 @@ public class SpectralClusteringConfig {
     private static final boolean DEFAULT_USE_NORMALIZED_CUT = true;
     private static final int DEFAULT_MIN_COMMUNITY_SIZE = 1; // Default does not enforce a minimum
     private static final boolean DEFAULT_PREVENT_SINGLETONS = false;
+    private static final int DEFAULT_MAX_CLUSTER_SIZE = 0; // 0 means no maximum size limit
+    private static final boolean DEFAULT_FORCE_NUM_CLUSTERS = false; // Don't force exact number by default
+    private static final double DEFAULT_MAX_COMMUNITY_DIAMETER = 0.0; // 0 means no maximum diameter constraint
     
     // Configuration parameters
     private int numberOfClusters = DEFAULT_NUM_CLUSTERS;
@@ -26,6 +29,9 @@ public class SpectralClusteringConfig {
     private double geoWeight = DEFAULT_GEO_WEIGHT;
     private int minCommunitySize = DEFAULT_MIN_COMMUNITY_SIZE;
     private boolean preventSingletons = DEFAULT_PREVENT_SINGLETONS;
+    private int maxClusterSize = DEFAULT_MAX_CLUSTER_SIZE;
+    private boolean forceNumClusters = DEFAULT_FORCE_NUM_CLUSTERS;
+    private double maxCommunityDiameter = DEFAULT_MAX_COMMUNITY_DIAMETER;
     
     /**
      * Default constructor with default parameters
@@ -125,6 +131,43 @@ public class SpectralClusteringConfig {
         return this;
     }
     
+    /**
+     * Sets the maximum community size. The algorithm will attempt to prevent
+     * communities larger than this size by splitting them.
+     * 
+     * @param maxSize Maximum community size (0 means no maximum)
+     * @return This config instance for method chaining
+     */
+    public SpectralClusteringConfig setMaxClusterSize(int maxSize) {
+        this.maxClusterSize = Math.max(0, maxSize);
+        return this;
+    }
+    
+    /**
+     * Sets whether to force the algorithm to create exactly the specified number of clusters.
+     * If true, the algorithm will ensure that exactly numberOfClusters communities are created.
+     * 
+     * @param force True to force the exact number of clusters
+     * @return This config instance for method chaining
+     */
+    public SpectralClusteringConfig setForceNumClusters(boolean force) {
+        this.forceNumClusters = force;
+        return this;
+    }
+    
+    /**
+     * Sets the maximum geographic diameter allowed for a community in meters.
+     * Communities exceeding this diameter will be split into smaller ones.
+     * A value of 0 means no maximum diameter constraint.
+     * 
+     * @param maxDiameter Maximum diameter in meters (0 for no constraint)
+     * @return This config instance for method chaining
+     */
+    public SpectralClusteringConfig setMaxCommunityDiameter(double maxDiameter) {
+        this.maxCommunityDiameter = Math.max(0, maxDiameter);
+        return this;
+    }
+    
     // Getters
     
     public int getNumberOfClusters() {
@@ -153,5 +196,32 @@ public class SpectralClusteringConfig {
     
     public boolean isPreventSingletons() {
         return preventSingletons;
+    }
+    
+    /**
+     * Gets the maximum community size limit
+     * 
+     * @return Maximum community size (0 means no maximum)
+     */
+    public int getMaxClusterSize() {
+        return maxClusterSize;
+    }
+    
+    /**
+     * Checks if the exact number of clusters should be forced
+     * 
+     * @return True if the exact number of clusters should be forced
+     */
+    public boolean isForceNumClusters() {
+        return forceNumClusters;
+    }
+    
+    /**
+     * Gets the maximum community diameter constraint
+     * 
+     * @return Maximum community diameter in meters (0 means no constraint)
+     */
+    public double getMaxCommunityDiameter() {
+        return maxCommunityDiameter;
     }
 } 

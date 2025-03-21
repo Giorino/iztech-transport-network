@@ -53,6 +53,9 @@ public class MvAGCClustering implements GraphClusteringAlgorithm {
     private double importanceSamplingPower = 1.0; // Default power for importance sampling
     private double gamma = -1.0; // Parameter for view fusion
     private double[] viewWeights = {1.0, 1.0}; // Default view weights
+    private int minClusterSize = 5; // Default minimum cluster size
+    private int maxClusterSize = 0; // Default maximum cluster size (0 means no limit)
+    private boolean forceMinClusters = false; // Whether to force minimum number of clusters
     
     /**
      * Constructor with the transportation graph
@@ -124,12 +127,50 @@ public class MvAGCClustering implements GraphClusteringAlgorithm {
     }
     
     /**
+     * Set the minimum size for a cluster
+     * 
+     * @param minSize Minimum number of nodes per cluster (at least 1)
+     * @return This clustering instance for method chaining
+     */
+    public MvAGCClustering setMinClusterSize(int minSize) {
+        this.minClusterSize = Math.max(1, minSize);
+        LOGGER.info("Minimum cluster size set to {}", this.minClusterSize);
+        return this;
+    }
+    
+    /**
+     * Set the maximum size for a cluster
+     * 
+     * @param maxSize Maximum number of nodes per cluster (0 means no limit)
+     * @return This clustering instance for method chaining
+     */
+    public MvAGCClustering setMaxClusterSize(int maxSize) {
+        this.maxClusterSize = Math.max(0, maxSize);
+        LOGGER.info("Maximum cluster size set to {}", this.maxClusterSize);
+        return this;
+    }
+    
+    /**
+     * Set whether to force the minimum number of clusters
+     * 
+     * @param force Whether to force at least numClusters clusters
+     * @return This clustering instance for method chaining
+     */
+    public MvAGCClustering setForceMinClusters(boolean force) {
+        this.forceMinClusters = force;
+        LOGGER.info("Force minimum clusters set to {}", this.forceMinClusters);
+        return this;
+    }
+    
+    /**
      * Determine the community/cluster assignment for each node in the graph
      * 
      * @return Map of community IDs to lists of nodes
      */
     public Map<Integer, List<Node>> detectCommunities() {
         LOGGER.info("Starting MvAGC clustering with {} clusters", numClusters);
+        LOGGER.info("Min cluster size: {}, Max cluster size: {}, Force min clusters: {}", 
+                   minClusterSize, maxClusterSize > 0 ? maxClusterSize : "unlimited", forceMinClusters);
         
         // Get the main graph and node features
         Graph<Node, DefaultWeightedEdge> graph = transportationGraph.getGraph();
@@ -273,8 +314,39 @@ public class MvAGCClustering implements GraphClusteringAlgorithm {
             communities.get(cluster).add(nodes.get(i));
         }
         
-        // Post-process to remove tiny communities
-        communities = removeSmallCommunities(communities, 5); // Minimum size of 5
+        // Apply minimum cluster size constraint
+        if (minClusterSize > 1) {
+            LOGGER.info("Enforcing minimum cluster size of {}", minClusterSize);
+            communities = removeSmallCommunities(communities, minClusterSize);
+        }
+        
+        // Force minimum number of clusters if needed
+        if (forceMinClusters && communities.size() < numClusters) {
+            LOGGER.info("Forcing at least {} clusters (currently have {})", numClusters, communities.size());
+            communities = forceMinimumClusters(communities, nodes, numClusters);
+        }
+        
+        // Apply maximum cluster size constraint
+        if (maxClusterSize > 0) {
+            LOGGER.info("Enforcing maximum cluster size of {}", maxClusterSize);
+            communities = enforceMaximumClusterSize(communities, maxClusterSize);
+            
+            // Check if we still have any oversized communities
+            boolean hasOversizedCommunities = false;
+            for (List<Node> community : communities.values()) {
+                if (community.size() > maxClusterSize) {
+                    hasOversizedCommunities = true;
+                    LOGGER.warn("Community still exceeds maximum size: {} > {}", 
+                               community.size(), maxClusterSize);
+                }
+            }
+            
+            // Apply a second pass if needed
+            if (hasOversizedCommunities) {
+                LOGGER.info("Applying second pass to split remaining oversized communities");
+                communities = enforceMaximumClusterSize(communities, maxClusterSize);
+            }
+        }
         
         LOGGER.info("MvAGC clustering completed, found {} communities", communities.size());
         
@@ -1193,6 +1265,164 @@ public class MvAGCClustering implements GraphClusteringAlgorithm {
         }
         
         return communities;
+    }
+    
+    /**
+     * Force a minimum number of clusters by splitting larger communities
+     * 
+     * @param communities Current communities
+     * @param nodes All nodes in the graph
+     * @param minClusters Minimum number of clusters required
+     * @return Updated communities with at least minClusters clusters
+     */
+    private Map<Integer, List<Node>> forceMinimumClusters(Map<Integer, List<Node>> communities, 
+                                                        List<Node> nodes, 
+                                                        int minClusters) {
+        Map<Integer, List<Node>> result = new HashMap<>(communities);
+        
+        // If we already have enough clusters, return as is
+        if (result.size() >= minClusters) {
+            return result;
+        }
+        
+        int nextClusterId = 0;
+        for (int id : result.keySet()) {
+            nextClusterId = Math.max(nextClusterId, id + 1);
+        }
+        
+        // Keep splitting largest communities until we have enough
+        while (result.size() < minClusters) {
+            // Find the largest community
+            Map.Entry<Integer, List<Node>> largest = null;
+            for (Map.Entry<Integer, List<Node>> entry : result.entrySet()) {
+                if (largest == null || entry.getValue().size() > largest.getValue().size()) {
+                    largest = entry;
+                }
+            }
+            
+            // If largest is too small to split, stop
+            if (largest == null || largest.getValue().size() < minClusterSize * 2) {
+                LOGGER.warn("Cannot create {} clusters without violating minimum size constraint", minClusters);
+                break;
+            }
+            
+            // Split the largest community using geographic distance
+            List<Node> communityNodes = largest.getValue();
+            
+            // Find the two nodes farthest apart
+            double maxDistance = 0;
+            Node farthest1 = null;
+            Node farthest2 = null;
+            
+            for (int i = 0; i < communityNodes.size(); i++) {
+                for (int j = i + 1; j < communityNodes.size(); j++) {
+                    double distance = calculateGeographicalDistance(
+                        communityNodes.get(i), communityNodes.get(j));
+                    if (distance > maxDistance) {
+                        maxDistance = distance;
+                        farthest1 = communityNodes.get(i);
+                        farthest2 = communityNodes.get(j);
+                    }
+                }
+            }
+            
+            // Split into two clusters based on distance to these two nodes
+            List<Node> cluster1 = new ArrayList<>();
+            List<Node> cluster2 = new ArrayList<>();
+            
+            for (Node node : communityNodes) {
+                double dist1 = calculateGeographicalDistance(node, farthest1);
+                double dist2 = calculateGeographicalDistance(node, farthest2);
+                
+                if (dist1 <= dist2) {
+                    cluster1.add(node);
+                } else {
+                    cluster2.add(node);
+                }
+            }
+            
+            // Replace original cluster with cluster1 and add cluster2
+            result.put(largest.getKey(), cluster1);
+            result.put(nextClusterId++, cluster2);
+            
+            LOGGER.info("Split community {} ({} nodes) into two: {} and {} nodes", 
+                      largest.getKey(), communityNodes.size(), cluster1.size(), cluster2.size());
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Enforce maximum cluster size by splitting oversized communities
+     * 
+     * @param communities Current communities
+     * @param maxSize Maximum allowed community size
+     * @return Updated communities with no community larger than maxSize
+     */
+    private Map<Integer, List<Node>> enforceMaximumClusterSize(Map<Integer, List<Node>> communities, 
+                                                             int maxSize) {
+        Map<Integer, List<Node>> result = new HashMap<>();
+        int nextClusterId = 0;
+        
+        // Find next available cluster ID
+        for (int id : communities.keySet()) {
+            nextClusterId = Math.max(nextClusterId, id + 1);
+        }
+        
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            int clusterId = entry.getKey();
+            List<Node> nodes = entry.getValue();
+            
+            // If size is within limit, keep as is
+            if (nodes.size() <= maxSize) {
+                result.put(clusterId, new ArrayList<>(nodes));
+                continue;
+            }
+            
+            // Otherwise, split into multiple communities
+            LOGGER.info("Splitting community {} with size {} to enforce max size {}", 
+                      clusterId, nodes.size(), maxSize);
+            
+            // Create geographically-based clusters
+            int numSubClusters = (int) Math.ceil((double) nodes.size() / maxSize);
+            
+            // K-means clustering based on geographic coordinates
+            double[][] coordinates = new double[nodes.size()][2];
+            for (int i = 0; i < nodes.size(); i++) {
+                Point location = nodes.get(i).getLocation();
+                coordinates[i][0] = location.getX();
+                coordinates[i][1] = location.getY();
+            }
+            
+            RealMatrix coordMatrix = MatrixUtils.createRealMatrix(coordinates);
+            int[] assignments = kMeansClustering(coordMatrix, numSubClusters);
+            
+            // Create new communities
+            Map<Integer, List<Node>> subCommunities = new HashMap<>();
+            for (int i = 0; i < assignments.length; i++) {
+                int subClusterId = assignments[i];
+                if (!subCommunities.containsKey(subClusterId)) {
+                    subCommunities.put(subClusterId, new ArrayList<>());
+                }
+                subCommunities.get(subClusterId).add(nodes.get(i));
+            }
+            
+            // Add first subcommunity with original ID
+            if (!subCommunities.isEmpty()) {
+                Integer firstKey = subCommunities.keySet().iterator().next();
+                result.put(clusterId, subCommunities.get(firstKey));
+                subCommunities.remove(firstKey);
+            }
+            
+            // Add other subcommunities with new IDs
+            for (List<Node> subCommunity : subCommunities.values()) {
+                result.put(nextClusterId++, subCommunity);
+            }
+            
+            LOGGER.info("Split community {} into {} sub-communities", clusterId, numSubClusters);
+        }
+        
+        return result;
     }
     
     /**
