@@ -15,6 +15,7 @@ import com.izmir.transportation.helper.strategy.CompleteGraphStrategy;
 import com.izmir.transportation.helper.strategy.DelaunayTriangulationStrategy;
 import com.izmir.transportation.helper.strategy.GabrielGraphStrategy;
 import com.izmir.transportation.helper.strategy.GraphConnectivityStrategy;
+import com.izmir.transportation.helper.strategy.GreedySpannerStrategy;
 import com.izmir.transportation.helper.strategy.KNearestNeighborsStrategy;
 import com.izmir.transportation.persistence.GraphPersistenceService;
 
@@ -34,7 +35,8 @@ public class GraphConstructionService {
         COMPLETE("complete"),
         K_NEAREST_NEIGHBORS("k_nearest_neighbors"),
         GABRIEL("gabriel"),
-        DELAUNAY("delaunay");
+        DELAUNAY("delaunay"),
+        GREEDY_SPANNER("greedy_spanner");
         
         private final String code;
         
@@ -80,6 +82,31 @@ public class GraphConstructionService {
             boolean visualize,
             boolean savePersistent) throws Exception {
         
+        return createGraph(points, strategyType, kValue, useParallel, visualize, savePersistent, null);
+    }
+    
+    /**
+     * Create a transportation graph using the specified strategy
+     *
+     * @param points List of points to include in the graph
+     * @param strategyType Graph construction strategy to use
+     * @param kValue K value for K-nearest neighbors strategy (if applicable)
+     * @param useParallel Whether to use parallel processing
+     * @param visualize Whether to visualize the graph after construction
+     * @param savePersistent Whether to save the graph for future use
+     * @param precomputedGraph An optional precomputed graph to use (e.g., complete graph for greedy spanner)
+     * @return The constructed transportation graph
+     * @throws Exception If an error occurs during graph construction
+     */
+    public TransportationGraph createGraph(
+            List<Point> points, 
+            GraphStrategy strategyType,
+            int kValue,
+            boolean useParallel,
+            boolean visualize,
+            boolean savePersistent,
+            TransportationGraph precomputedGraph) throws Exception {
+        
         LOGGER.info("Creating graph with {} nodes using {} strategy", points.size(), strategyType);
         
         // Check if the graph already exists in persistent storage
@@ -99,7 +126,16 @@ public class GraphConstructionService {
         Map<Point, Point> pointToNode = CreateRoadNetwork.snapPointsToNetwork(points, network);
         
         // Create the transportation graph
-        TransportationGraph transportationGraph = new TransportationGraph(points);
+        TransportationGraph transportationGraph;
+        
+        // If a precomputed graph is provided and this is a greedy spanner, use the precomputed graph
+        if (precomputedGraph != null && strategyType == GraphStrategy.GREEDY_SPANNER) {
+            LOGGER.info("Using precomputed graph for greedy spanner with {} edges", 
+                       precomputedGraph.getEdgeCount());
+            transportationGraph = new TransportationGraph(points);
+        } else {
+            transportationGraph = new TransportationGraph(points);
+        }
         
         // Set the graph construction method
         transportationGraph.setGraphConstructionMethod(strategyType.getCode());
@@ -112,7 +148,22 @@ public class GraphConstructionService {
         if (useParallel) {
             int numThreads = strategy.getRecommendedThreadCount();
             LOGGER.info("Using parallel processing with {} threads", numThreads);
-            paths = strategy.createConnectionsParallel(points, pointToNode, network, transportationGraph, numThreads);
+            
+            // If using greedy spanner with precomputed graph, pass it to the strategy
+            if (precomputedGraph != null && strategyType == GraphStrategy.GREEDY_SPANNER) {
+                // Need to cast to use the specialized method
+                GreedySpannerStrategy spannerStrategy = (GreedySpannerStrategy) strategy;
+                paths = spannerStrategy.createSpannerFromCompleteGraph(
+                    points, precomputedGraph, transportationGraph, numThreads);
+                
+                // If we got empty paths, fall back to the standard algorithm
+                if (paths.isEmpty()) {
+                    LOGGER.warn("Failed to create spanner from complete graph. Falling back to standard algorithm.");
+                    paths = strategy.createConnectionsParallel(points, pointToNode, network, transportationGraph, numThreads);
+                }
+            } else {
+                paths = strategy.createConnectionsParallel(points, pointToNode, network, transportationGraph, numThreads);
+            }
         } else {
             paths = strategy.createConnections(points, pointToNode, network, transportationGraph);
         }
@@ -153,6 +204,11 @@ public class GraphConstructionService {
                 return new GabrielGraphStrategy();
             case DELAUNAY:
                 return new DelaunayTriangulationStrategy();
+            case GREEDY_SPANNER:
+                // Use kValue as stretch factor if kValue >= 2, otherwise use default (3.0)
+                double stretchFactor = (kValue >= 2) ? kValue : 3.0;
+                // Pass true as the second parameter to use complete graph optimization
+                return new GreedySpannerStrategy(stretchFactor, true);
             default:
                 throw new IllegalArgumentException("Unknown strategy type: " + strategyType);
         }

@@ -276,7 +276,7 @@ public class ClusteringService {
         // Visualize the communities if requested
         if (visualize && !communities.isEmpty()) {
             List<List<Node>> communityList = new ArrayList<>(communities.values());
-            graph.visualizeCommunities(communityList, algorithm.toString(), false); // Hide community 0
+            graph.visualizeCommunities(communityList, algorithm.toString(), true); // Hide community 0
             
             // Save the community data
             //graph.saveCommunityData(communities, algorithm.toString());

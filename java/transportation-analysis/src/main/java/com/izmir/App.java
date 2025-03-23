@@ -35,10 +35,10 @@ public class App
     // Configuration properties
     private static final int NODE_COUNT = 2000; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
-            GraphConstructionService.GraphStrategy.COMPLETE; // Using Gabriel graph
-    private static final int K_VALUE = 50; // K value for K-nearest neighbors strategy
+            GraphConstructionService.GraphStrategy.COMPLETE; // Using Greedy Spanner graph
+    private static final int K_VALUE = 3; // K value for spanner's stretch factor (2k-1)
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.MVAGC; // Using Infomap algorithm
+            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using MVAGC algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
@@ -106,8 +106,38 @@ public class App
             // Step 2: Create transportation graph using specified strategy
             LOGGER.info("Step 2: Creating transportation graph using " + GRAPH_STRATEGY + " strategy...");
             GraphConstructionService graphService = new GraphConstructionService();
-            TransportationGraph graph = graphService.createGraph(
-                points, GRAPH_STRATEGY, K_VALUE, USE_PARALLEL, VISUALIZE_GRAPH, SAVE_GRAPH);
+            
+            TransportationGraph graph;
+            
+            // If using Greedy Spanner, first create a complete graph for optimization
+            if (GRAPH_STRATEGY == GraphConstructionService.GraphStrategy.GREEDY_SPANNER) {
+                LOGGER.info("Creating complete graph first for Greedy Spanner optimization...");
+                // Create a complete graph but don't visualize or save it
+                TransportationGraph completeGraph = graphService.createGraph(
+                    points, GraphConstructionService.GraphStrategy.COMPLETE, 
+                    K_VALUE, USE_PARALLEL, false, false);
+                
+                int expectedEdges = (points.size() * (points.size() - 1)) / 2;
+                int actualEdges = completeGraph.getEdgeCount();
+                LOGGER.info("Complete graph created with " + actualEdges + " edges out of expected " + expectedEdges);
+                
+                // Check if the complete graph was successfully created with all expected edges
+                if (actualEdges > 0 && completeGraph.isCompleteGraph()) {
+                    LOGGER.info("Now creating optimized Greedy Spanner...");
+                    
+                    // Now create the spanner using the complete graph
+                    graph = graphService.createGraph(
+                        points, GRAPH_STRATEGY, K_VALUE, USE_PARALLEL, VISUALIZE_GRAPH, SAVE_GRAPH, completeGraph);
+                } else {
+                    LOGGER.warning("Complete graph is incomplete or empty. Falling back to standard approach.");
+                    graph = graphService.createGraph(
+                        points, GRAPH_STRATEGY, K_VALUE, USE_PARALLEL, VISUALIZE_GRAPH, SAVE_GRAPH);
+                }
+            } else {
+                // For other strategies, create the graph directly
+                graph = graphService.createGraph(
+                    points, GRAPH_STRATEGY, K_VALUE, USE_PARALLEL, VISUALIZE_GRAPH, SAVE_GRAPH);
+            }
             
             // Step 3: Perform clustering using specified algorithm
             if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.SPECTRAL) {

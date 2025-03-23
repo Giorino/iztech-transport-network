@@ -1032,4 +1032,159 @@ public class TransportationGraph {
     public String getGraphConstructionMethod() {
         return this.graphConstructionMethod;
     }
+
+    /**
+     * Gets the weight of an edge between two points in the graph.
+     * 
+     * @param source The source point
+     * @param target The target point
+     * @return The weight of the edge, or Double.POSITIVE_INFINITY if no edge exists
+     */
+    public double getEdgeWeight(Point source, Point target) {
+        if (source == null || target == null) {
+            return Double.POSITIVE_INFINITY;
+        }
+        
+        Node sourceNode = pointToNode.get(source);
+        Node targetNode = pointToNode.get(target);
+        
+        if (sourceNode == null || targetNode == null) {
+            return Double.POSITIVE_INFINITY;
+        }
+        
+        try {
+            DefaultWeightedEdge edge = graph.getEdge(sourceNode, targetNode);
+            if (edge == null) {
+                return Double.POSITIVE_INFINITY;
+            }
+            
+            return graph.getEdgeWeight(edge);
+        } catch (Exception e) {
+            // If there's any issue, return POSITIVE_INFINITY
+            return Double.POSITIVE_INFINITY;
+        }
+    }
+    
+    /**
+     * Gets the number of edges in the graph.
+     * 
+     * @return The number of edges
+     */
+    public int getEdgeCount() {
+        return graph.edgeSet().size();
+    }
+    
+    /**
+     * Checks if this graph is a complete graph (every node is connected to every other node).
+     * 
+     * @return true if the graph is complete, false otherwise
+     */
+    public boolean isCompleteGraph() {
+        try {
+            int n = graph.vertexSet().size();
+            int maxEdges = (n * (n - 1)) / 2;
+            int actualEdges = graph.edgeSet().size();
+            
+            // First check if we have the expected number of edges
+            if (actualEdges != maxEdges) {
+                return false;
+            }
+            
+            // Double-check by sampling a few random vertex pairs to make sure they're connected
+            List<Node> vertices = new ArrayList<>(graph.vertexSet());
+            if (vertices.size() <= 1) {
+                return true; // Trivially complete
+            }
+            
+            // Check a random sample of vertex pairs (up to 100)
+            Random random = new Random();
+            int samplesToCheck = Math.min(100, maxEdges);
+            
+            for (int i = 0; i < samplesToCheck; i++) {
+                int idx1 = random.nextInt(vertices.size());
+                int idx2;
+                do {
+                    idx2 = random.nextInt(vertices.size());
+                } while (idx1 == idx2);
+                
+                Node n1 = vertices.get(idx1);
+                Node n2 = vertices.get(idx2);
+                
+                if (graph.getEdge(n1, n2) == null) {
+                    return false; // Found a missing edge
+                }
+            }
+            
+            return true;
+        } catch (Exception e) {
+            // If there's any issue, assume it's not complete
+            return false;
+        }
+    }
+
+    /**
+     * Checks if there exists a path between two points in the graph
+     * with weight at most the specified maximum weight.
+     * 
+     * @param source The source point
+     * @param target The target point
+     * @param maxWeight The maximum allowed weight of the path
+     * @return true if a path exists within the weight constraint, false otherwise
+     */
+    public boolean hasPathWithinFactor(Point source, Point target, double maxWeight) {
+        Node sourceNode = pointToNode.get(source);
+        Node targetNode = pointToNode.get(target);
+        
+        if (sourceNode == null || targetNode == null || sourceNode.equals(targetNode)) {
+            return sourceNode != null && targetNode != null && sourceNode.equals(targetNode);
+        }
+        
+        // Check if there's a direct edge
+        DefaultWeightedEdge edge = graph.getEdge(sourceNode, targetNode);
+        if (edge != null && graph.getEdgeWeight(edge) <= maxWeight) {
+            return true;
+        }
+        
+        // Using modified DFS to find a path within the weight constraint
+        Map<Node, Boolean> visited = new HashMap<>();
+        Map<Node, Double> distance = new HashMap<>();
+        for (Node node : graph.vertexSet()) {
+            visited.put(node, false);
+            distance.put(node, Double.MAX_VALUE);
+        }
+        
+        distance.put(sourceNode, 0.0);
+        return hasPathDFS(sourceNode, targetNode, visited, distance, maxWeight);
+    }
+    
+    /**
+     * Helper method for DFS to find a path within weight constraint.
+     */
+    private boolean hasPathDFS(Node current, Node target, Map<Node, Boolean> visited, 
+                              Map<Node, Double> distance, double maxWeight) {
+        if (current.equals(target)) {
+            return true;
+        }
+        
+        visited.put(current, true);
+        
+        for (DefaultWeightedEdge edge : graph.edgesOf(current)) {
+            Node neighbor = graph.getEdgeTarget(edge);
+            if (neighbor.equals(current)) {
+                neighbor = graph.getEdgeSource(edge);
+            }
+            
+            double edgeWeight = graph.getEdgeWeight(edge);
+            double newDistance = distance.get(current) + edgeWeight;
+            
+            if (!visited.get(neighbor) && newDistance <= maxWeight) {
+                distance.put(neighbor, newDistance);
+                if (hasPathDFS(neighbor, target, visited, distance, maxWeight)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 } 
