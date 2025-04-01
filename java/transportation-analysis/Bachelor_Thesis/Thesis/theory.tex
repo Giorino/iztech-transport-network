@@ -1,23 +1,28 @@
-\chapter{Theory \& Background}
+\chapter{Theoretical Background}
 \label{ch:basics}
-This chapter introduces the fundamental concepts and theories used in transportation network analysis. First, we explore various graph construction methods used to represent transportation networks. Then, we examine different clustering algorithms applied to identify communities within these networks. Finally, we discuss the mathematical foundations of these clustering algorithms, with a particular focus on eigenvectors and spectral methods.
+This chapter introduces the fundamental concepts and theories used in transportation network analysis. First, we explore basic graph theory concepts essential for understanding networks. Then, we examine how transportation systems can be represented as graphs. Finally, we discuss clustering algorithms applied to identify communities within these networks, with focus on their applications in transportation systems \cite{newman2010networks}.
 
-\section{Graph Theory and Transportation Networks}
-\label{se:GraphTheory}
-Transportation networks are naturally represented as graphs, where nodes typically represent locations or intersections, and edges represent the connections between them, such as roads, paths, or routes. Graph theory provides a powerful mathematical framework for analyzing and understanding the structure, patterns, and properties of these networks.
+\section{Fundamental Concepts in Graph Theory}
+\label{se:FundamentalConcepts}
 
-\subsection{Graph Representation and Terminology}
+\subsection{Basic Definitions}
+\label{subsec:BasicDefinitions}
 
-A graph $G$ is formally defined as an ordered pair $G = (V, E)$ comprising a set $V$ of vertices or nodes and a set $E$ of edges, which are 2-element subsets of $V$. In the context of transportation networks:
+A graph $G$ is formally defined as an ordered pair $G = (V, E)$ comprising a set $V$ of vertices or nodes and a set $E$ of edges, which are 2-element subsets of $V$ \cite{west2001introduction}. The fundamental components of a graph include:
 
 \begin{itemize}
-    \item \textbf{Vertices (Nodes):} Represent geographical locations such as intersections, bus stops, or points of interest.
-    \item \textbf{Edges:} Represent the connections between locations, such as roads, railway lines, or paths.
+    \item \textbf{Vertices (Nodes):} Represent distinct entities in the network.
+    \item \textbf{Edges:} Represent the connections or relationships between vertices.
     \item \textbf{Weight:} Edges can be weighted to represent distances, travel times, costs, or other metrics.
-    \item \textbf{Direction:} Edges can be directed (one-way streets) or undirected (two-way streets).
+    \item \textbf{Direction:} Edges can be directed (one-way) or undirected (two-way).
 \end{itemize}
 
-The adjacency matrix $A$ of a graph is a square matrix where each element $A_{ij}$ represents the connection between vertices $i$ and $j$:
+Graphs can be classified as directed or undirected, weighted or unweighted, simple or multi-graphs, depending on their properties \cite{bondy1976graph}.
+
+\subsection{Affinity Matrix Construction}
+\label{subsec:AffinityMatrix}
+
+The adjacency matrix (also known as the affinity matrix) $A$ of a graph is a square matrix where each element $A_{ij}$ represents the connection between vertices $i$ and $j$ \cite{godsil2001algebraic}:
 
 \begin{equation}
     A_{ij} = 
@@ -27,108 +32,143 @@ The adjacency matrix $A$ of a graph is a square matrix where each element $A_{ij
     \end{cases}
 \end{equation}
 
-For an unweighted graph, $w_{ij} = 1$ for all edges.
+For an unweighted graph, $w_{ij} = 1$ for all edges. The adjacency matrix provides a complete mathematical representation of the graph and serves as the foundation for many graph algorithms and analyses \cite{newman2010networks}.
 
-\subsection{Graph Construction Methods}
+Other important matrices derived from the adjacency matrix include:
+\begin{itemize}
+    \item \textbf{Degree Matrix ($D$):} A diagonal matrix where $D_{ii}$ is the degree of vertex $i$.
+    \item \textbf{Laplacian Matrix ($L$):} Defined as $L = D - A$, the Laplacian captures many structural properties of the graph \cite{chung1997spectral}.
+    \item \textbf{Normalized Laplacian:} Defined as $L_{\text{norm}} = D^{-1/2} L D^{-1/2} = I - D^{-1/2} A D^{-1/2}$, used in spectral clustering.
+\end{itemize}
+
+\section{Transportation Networks}
+\label{se:TransportationNetworks}
+
+Transportation networks are naturally represented as graphs, where nodes typically represent locations or intersections, and edges represent the connections between them, such as roads, paths, or routes \cite{rodrigue2020geography}. In transportation context:
+
+\begin{itemize}
+    \item \textbf{Vertices:} Represent geographical locations such as intersections, bus stops, or points of interest.
+    \item \textbf{Edges:} Represent the connections between locations, such as roads, railway lines, or paths.
+\end{itemize}
+
+\subsection{Graph Construction Methods for Transportation Networks}
 \label{subsec:GraphConstructionMethods}
 
-Multiple approaches exist for constructing graphs to represent transportation networks. The choice of method depends on the specific requirements and constraints of the analysis. Here, we discuss several common methods:
+Multiple approaches exist for constructing graphs to represent transportation networks \cite{barthélemy2011spatial}. The choice of method depends on the specific requirements and constraints of the analysis:
 
 \subsubsection{Complete Graph}
-A complete graph connects every pair of vertices with an edge. In a transportation context, this would represent a fully connected network where direct travel is possible between any two locations. While this approach is simple, it does not accurately represent real-world constraints and can lead to computationally intensive analyses for large networks.
+A complete graph connects every pair of vertices with an edge \cite{west2001introduction}. In a transportation context, this would represent a fully connected network where direct travel is possible between any two locations.
 
 \begin{equation}
     E = \{(u, v) \mid u, v \in V, u \neq v\}
 \end{equation}
 
 \subsubsection{K-Nearest Neighbors Graph}
-In this approach, each vertex is connected to its $k$ nearest neighbors according to some distance metric (typically Euclidean distance for geographic networks). This method creates a sparse graph where each location is connected only to its closest locations, which often better represents the local connectivity patterns of transportation networks.
+In this approach, each vertex is connected to its $k$ nearest neighbors according to some distance metric \cite{luxburg2007tutorial}. This method creates a sparse graph where each location is connected only to its closest locations.
 
 \begin{equation}
     E = \{(u, v) \mid v \in \text{kNN}(u) \text{ or } u \in \text{kNN}(v)\}
 \end{equation}
-
 where $\text{kNN}(u)$ represents the $k$ nearest neighbors of vertex $u$.
 
 \subsubsection{Delaunay Triangulation}
-Delaunay triangulation creates a graph by connecting vertices such that no vertex lies inside the circumcircle of any triangle formed by three connected vertices. This method preserves local connectivity while avoiding crossing edges, making it useful for geographic applications.
+Delaunay triangulation creates a graph by connecting vertices such that no vertex lies inside the circumcircle of any triangle formed by three connected vertices \cite{berg2008computational}. This method preserves local connectivity while avoiding crossing edges, making it useful for geographic applications.
 
 \subsubsection{Gabriel Graph}
-The Gabriel Graph is a subgraph of the Delaunay triangulation. An edge connects two vertices $u$ and $v$ if and only if the circle with diameter $uv$ contains no other vertices. The Gabriel Graph tends to preserve important connections while reducing the number of edges compared to a complete graph.
+The Gabriel Graph is a subgraph of the Delaunay triangulation \cite{gabriel1969new}. An edge connects two vertices $u$ and $v$ if and only if the circle with diameter $uv$ contains no other vertices.
 
 \begin{equation}
     E = \{(u, v) \mid d^2(u, v) < d^2(u, w) + d^2(v, w) \text{ for all } w \in V, w \neq u, w \neq v\}
 \end{equation}
-
 where $d(u, v)$ is the distance between vertices $u$ and $v$.
 
 \subsubsection{Road Network Extraction}
-For many transportation applications, the graph is constructed directly from existing road network data, such as OpenStreetMap (OSM). This approach creates a graph that accurately represents the actual road infrastructure, including one-way streets, turn restrictions, and different road types.
+For many transportation applications, the graph is constructed directly from existing road network data, such as OpenStreetMap (OSM) \cite{haklay2008openstreetmap}. This approach creates a graph that accurately represents the actual road infrastructure.
 
-\section{Clustering Methods in Transportation Networks}
+\section{Clustering Transportation Networks}
 \label{se:ClusteringMethods}
 
-Clustering in transportation networks involves partitioning the network into cohesive groups or communities based on connectivity patterns, geographical proximity, or other relevant factors. These clusters can represent neighborhoods, functional regions, or service areas within a transportation system.
-
-\subsection{Community Detection and Clustering}
-
-Community detection algorithms identify groups of nodes that are more densely connected internally than with the rest of the network. In transportation networks, these communities often correspond to natural geographic or functional regions. The quality of a clustering can be measured using metrics like modularity, which quantifies the density of connections within communities compared to connections between communities:
-
-\begin{equation}
-    Q = \frac{1}{2m} \sum_{i,j} \left[A_{ij} - \frac{k_i k_j}{2m}\right] \delta(c_i, c_j)
-\end{equation}
-
-where $A_{ij}$ is the edge weight between vertices $i$ and $j$, $k_i$ is the sum of weights of edges attached to vertex $i$, $m$ is the sum of all edge weights, $c_i$ is the community to which vertex $i$ belongs, and $\delta(c_i, c_j)$ is 1 if $c_i = c_j$ and 0 otherwise.
+Clustering in transportation networks involves partitioning the network into cohesive groups or communities based on connectivity patterns, geographical proximity, or other relevant factors \cite{fortunato2010community}. These clusters can represent neighborhoods, functional regions, or service areas within a transportation system.
 
 \subsection{Spectral Clustering}
 \label{subsec:SpectralClustering}
 
-Spectral clustering uses the eigenvalues and eigenvectors of matrices derived from the graph (such as the Laplacian matrix) to perform dimensionality reduction before clustering. This approach is particularly effective for finding natural clusters in complex networks.
+Spectral clustering uses the eigenvalues and eigenvectors of matrices derived from the graph to perform dimensionality reduction before clustering \cite{von2007tutorial}. This approach is particularly effective for finding natural clusters in complex networks.
 
-The Laplacian matrix $L$ of a graph is defined as $L = D - A$, where $A$ is the adjacency matrix and $D$ is the degree matrix (a diagonal matrix where $D_{ii}$ is the degree of vertex $i$). The normalized Laplacian is defined as:
+The spectral clustering algorithm typically involves the following steps \cite{ng2002spectral}:
+\begin{enumerate}
+    \item Construct the adjacency matrix $A$ and degree matrix $D$ of the graph
+    \item Calculate the Laplacian matrix $L = D - A$
+    \item Compute the normalized Laplacian $L_{\text{norm}} = D^{-1/2} L D^{-1/2}$
+    \item Find the $k$ eigenvectors corresponding to the $k$ smallest non-zero eigenvalues
+    \item Form a matrix using these eigenvectors as columns
+    \item Cluster the rows of this matrix using a standard algorithm like $k$-means
+\end{enumerate}
 
-\begin{equation}
-    L_{\text{norm}} = D^{-1/2} L D^{-1/2} = I - D^{-1/2} A D^{-1/2}
-\end{equation}
-
-The eigenvectors of the Laplacian matrix corresponding to the smallest non-zero eigenvalues provide a lower-dimensional embedding of the graph that preserves its clustering structure. This embedding is then clustered using a standard algorithm like $k$-means.
-
-\subsection{Community Detection in Transportation Networks}
-\label{subsec:CommunityDetection}
-
-Several algorithms have been specifically adapted or developed for community detection in transportation networks:
-
-\subsubsection{Leiden Algorithm}
-The Leiden algorithm improves upon the Louvain algorithm for community detection by ensuring well-connected communities. It uses a fast local move approach where nodes are moved to neighboring communities if this improves modularity, followed by a refinement phase to ensure well-connected communities.
-
-\subsubsection{Multi-view Anchor Graph-based Clustering (MVAGC)}
-MVAGC constructs multiple views of the graph using different features or distance metrics and then integrates these views through an anchor graph representation. This approach can effectively capture both geographic proximity and transportation connectivity patterns.
-
-\section{Mathematical Foundations of Clustering Algorithms}
-\label{se:MathematicalFoundations}
-
-The effectiveness of clustering algorithms often relies on fundamental mathematical concepts, particularly in linear algebra and spectral graph theory.
-
-\subsection{Eigenvectors and Eigenvalues in Graph Analysis}
-\label{subsec:Eigenvectors}
-
-Eigenvectors and eigenvalues play a crucial role in spectral clustering and community detection. For a square matrix $M$, an eigenvector $v$ and its corresponding eigenvalue $\lambda$ satisfy:
-
-\begin{equation}
-    M v = \lambda v
-\end{equation}
-
-In graph analysis, the eigenvectors of the adjacency matrix or Laplacian matrix capture important structural properties of the graph:
-
+The eigenvectors of the Laplacian matrix capture important structural properties of the graph \cite{chung1997spectral}:
 \begin{itemize}
-    \item The eigenvector corresponding to the largest eigenvalue of the adjacency matrix (the principal eigenvector) captures the centrality of nodes.
-    \item The eigenvectors corresponding to the smallest non-zero eigenvalues of the Laplacian matrix capture the community structure of the graph.
+    \item The multiplicity of the eigenvalue 0 equals the number of connected components in the graph
+    \item The second smallest eigenvalue (Fiedler value) measures how well-connected the graph is
+    \item The eigenvectors corresponding to the smallest non-zero eigenvalues reveal the community structure
 \end{itemize}
 
-\subsection{Spectral Graph Theory and the Laplacian Matrix}
-\label{subsec:SpectralGraphTheory}
+\subsection{Leiden Algorithm}
+\label{subsec:LeidenAlgorithm}
 
-Spectral graph theory studies the properties of a graph through the eigenvalues and eigenvectors of its associated matrices, primarily the Laplacian matrix.
+The Leiden algorithm improves upon the Louvain algorithm for community detection by ensuring well-connected communities \cite{traag2019louvain}. It optimizes modularity, which quantifies the density of connections within communities compared to connections between communities:
 
-The multiplicity of the eigenvalue 0 of the Laplacian matrix equals the number of connected components in the graph. The second smallest eigenvalue measures how well-connected the graph is, with larger values indicating better connectivity.
+\begin{equation}
+    Q = \frac{1}{2m} \sum_{i,j} \left[A_{ij} - \frac{k_i k_j}{2m}\right] \delta(c_i, c_j)
+\end{equation}
+where $A_{ij}$ is the edge weight between vertices $i$ and $j$, $k_i$ is the sum of weights of edges attached to vertex $i$, $m$ is the sum of all edge weights, $c_i$ is the community to which vertex $i$ belongs, and $\delta(c_i, c_j)$ is 1 if $c_i = c_j$ and 0 otherwise.
+
+The Leiden algorithm consists of two main parts \cite{traag2019louvain, traag2011narrow}, operating in an iterative process:
+
+\subsubsection{Local Moving Phase}
+In this phase, individual nodes are moved between communities to maximize the modularity gain. For each node, the algorithm:
+
+\begin{enumerate}
+    \item Calculates the modularity gain that would result from moving the node to each neighboring community
+    \item Moves the node to the community that results in the highest modularity gain (if positive)
+    \item Repeats the process until no further improvement can be made
+\end{enumerate}
+
+The modularity gain $\Delta Q$ when moving a node $i$ from community $C_i$ to community $C_j$ is calculated as \cite{blondel2008fast}:
+
+\begin{equation}
+    \Delta Q = \left[\frac{\Sigma_{in} + k_{i,in}}{2m} - \left(\frac{\Sigma_{tot} + k_i}{2m}\right)^2\right] - \left[\frac{\Sigma_{in}}{2m} - \left(\frac{\Sigma_{tot}}{2m}\right)^2 - \left(\frac{k_i}{2m}\right)^2\right]
+\end{equation}
+where $\Sigma_{in}$ is the sum of weights of edges inside community $C_j$, $\Sigma_{tot}$ is the sum of weights of edges incident to nodes in $C_j$, $k_i$ is the sum of weights of edges incident to node $i$, and $k_{i,in}$ is the sum of weights of edges connecting node $i$ to nodes in community $C_j$.
+
+This phase focuses on optimizing global modularity but may create poorly connected communities, which the second phase addresses.
+
+\subsubsection{Refinement Phase}
+This phase addresses a key limitation of the Louvain algorithm by ensuring that communities are well-connected internally. In the refinement phase:
+
+\begin{enumerate}
+    \item Each community is analyzed to identify subcommunities that may be poorly connected to the rest of the community
+    \item These subcommunities are separated into their own communities if doing so doesn't significantly reduce modularity
+    \item This process ensures that nodes within a community have sufficient connectivity paths to other nodes in the same community
+\end{enumerate}
+
+The refined partition is guaranteed to consist of communities that are connected subgraphs, which is particularly important for transportation network analysis where physical connectivity is essential \cite{traag2019louvain}.
+
+After these two main phases, the algorithm performs an aggregation step where nodes in the same community are collapsed into a single node, creating a new network. The algorithm then repeats the local moving and refinement phases on this new network until no further improvements can be made.
+
+The key innovations of the Leiden algorithm over its predecessors include \cite{traag2019louvain}:
+\begin{itemize}
+    \item Faster convergence due to more efficient community detection
+    \item Guaranteed well-connected communities through the refinement phase
+    \item Ability to avoid getting trapped in poor local optima by allowing more flexible node movement
+    \item Proven asymptotic guarantees for identifying optimal partitions
+\end{itemize}
+
+These properties make Leiden particularly suitable for analyzing transportation networks, where identifying meaningful, well-connected communities is essential for understanding regional connectivity patterns and service areas \cite{newman2010networks, fortunato2010community}.
+
+\subsection{Multi-view Anchor Graph-based Clustering (MVAGC)}
+\label{subsec:MVAGC}
+
+MVAGC constructs multiple views of the graph using different features or distance metrics and then integrates these views through an anchor graph representation \cite{liu2010large}. This approach can effectively capture both geographic proximity and transportation connectivity patterns.
+
+The algorithm employs anchor points to approximate the full graph, reducing computational complexity while preserving the essential structure of the data \cite{liu2010large, nie2011spectral}. This makes it particularly suitable for large-scale transportation networks where computational efficiency is important.
 
