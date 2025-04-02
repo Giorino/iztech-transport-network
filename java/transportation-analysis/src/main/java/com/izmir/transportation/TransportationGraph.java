@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -61,6 +62,7 @@ import com.izmir.transportation.helper.clustering.GraphClusteringAlgorithm;
  * @author yagizugurveren
  */
 public class TransportationGraph {
+    static Logger LOGGER = Logger.getLogger(TransportationGraph.class.getName());
     private final Graph<Node, DefaultWeightedEdge> graph;
     private final Map<Point, Node> pointToNode;
     private final GeometryFactory geometryFactory;
@@ -508,19 +510,18 @@ public class TransportationGraph {
                         continue;
                     }
 
-                    // Draw edge in gray if nodes belong to different communities
+                    // Draw edge only if nodes belong to the same community
                     if (sourceCommunity != null && targetCommunity != null && sourceCommunity.equals(targetCommunity)) {
                         g2d.setColor(communityColors.get(sourceCommunity % communityColors.size()));
-                    } else {
-                        g2d.setColor(Color.LIGHT_GRAY);
+                        
+                        // Calculate coordinates and draw the line only for intra-community edges
+                        int x1 = 20 + (int)((source.getLocation().getX() - minX) * scale);
+                        int y1 = getHeight() - 20 - (int)((source.getLocation().getY() - minY) * scale);
+                        int x2 = 20 + (int)((target.getLocation().getX() - minX) * scale);
+                        int y2 = getHeight() - 20 - (int)((target.getLocation().getY() - minY) * scale);
+
+                        g2d.drawLine(x1, y1, x2, y2);
                     }
-
-                    int x1 = 20 + (int)((source.getLocation().getX() - minX) * scale);
-                    int y1 = getHeight() - 20 - (int)((source.getLocation().getY() - minY) * scale);
-                    int x2 = 20 + (int)((target.getLocation().getX() - minX) * scale);
-                    int y2 = getHeight() - 20 - (int)((target.getLocation().getY() - minY) * scale);
-
-                    g2d.drawLine(x1, y1, x2, y2);
                 }
 
                 // Draw nodes on top
@@ -1186,5 +1187,38 @@ public class TransportationGraph {
         }
         
         return false;
+    }
+
+    /**
+     * Identifies and removes nodes with a degree of 0 (isolated nodes) from the graph.
+     * Logs the number of nodes removed.
+     */
+    public void removeIsolatedNodes() {
+        LOGGER.info("Checking for and removing isolated nodes from TransportationGraph...");
+        
+        List<Node> nodesToRemove = new ArrayList<>();
+        // It's safer to iterate over a copy of the vertex set if modifying the graph
+        List<Node> currentNodes = new ArrayList<>(this.graph.vertexSet()); 
+        for (Node node : currentNodes) {
+            if (this.graph.degreeOf(node) == 0) {
+                nodesToRemove.add(node);
+            }
+        }
+
+        if (!nodesToRemove.isEmpty()) {
+            LOGGER.info("Removing " + nodesToRemove.size() + " isolated nodes (nodes with no connections).");
+            boolean removed = this.graph.removeAllVertices(nodesToRemove);
+            if (removed) {
+                LOGGER.info("Successfully removed isolated nodes. Graph now contains " + this.graph.vertexSet().size() + " nodes.");
+                
+                // Optional: Update internal mappings if necessary, though likely not critical 
+                // for downstream clustering/visualization which use the graph object directly.
+                // nodesToRemove.forEach(node -> this.pointToNode.values().remove(node)); 
+            } else {
+                LOGGER.warning("Failed to remove one or more isolated nodes.");
+            }
+        } else {
+            LOGGER.info("No isolated nodes found in TransportationGraph.");
+        }
     }
 } 

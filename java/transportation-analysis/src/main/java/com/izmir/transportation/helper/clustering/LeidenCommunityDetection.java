@@ -1413,8 +1413,8 @@ public class LeidenCommunityDetection {
             communityCentroids = calculateCommunityCentroids();
         }
         
-        // Apply moderate spatial coherence - fewer passes to preserve more natural structures
-        int maxPasses = 2; // Reduced from 3 to be less aggressive
+        // Apply spatial coherence - More passes for potentially better geographic grouping
+        int maxPasses = 5; // Increased from 2 to allow more iterations for geographic refinement
         int totalReassignments = 0;
         
         for (int pass = 0; pass < maxPasses; pass++) {

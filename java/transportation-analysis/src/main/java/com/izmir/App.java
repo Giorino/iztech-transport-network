@@ -139,6 +139,9 @@ public class App
                     points, GRAPH_STRATEGY, K_VALUE, USE_PARALLEL, VISUALIZE_GRAPH, SAVE_GRAPH);
             }
             
+            // Remove isolated nodes before clustering
+            graph.removeIsolatedNodes();
+            
             // Step 3: Perform clustering using specified algorithm
             if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.SPECTRAL) {
                 LOGGER.info("Step 3: Performing Spectral Clustering with advanced configuration...");
