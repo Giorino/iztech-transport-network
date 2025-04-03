@@ -14,11 +14,14 @@ import com.izmir.transportation.ClusteringService;
 import com.izmir.transportation.GraphConstructionService;
 import com.izmir.transportation.IzmirBayGraph;
 import com.izmir.transportation.TransportationGraph;
+import com.izmir.transportation.cost.ClusterMetrics;
+import com.izmir.transportation.cost.TransportationCostAnalysis;
 import com.izmir.transportation.helper.Node;
 import com.izmir.transportation.helper.clustering.GirvanNewmanClustering;
 import com.izmir.transportation.helper.clustering.InfomapCommunityDetection;
 import com.izmir.transportation.helper.clustering.MvAGCClustering;
 import com.izmir.transportation.helper.clustering.SpectralClusteringConfig;
+import com.izmir.visualization.HistogramService;
 
 /**
  * Main application class for the Iztech Transportation Analysis project.
@@ -38,7 +41,7 @@ public class App
             GraphConstructionService.GraphStrategy.COMPLETE; // Using Greedy Spanner graph
     private static final int K_VALUE = 3; // K value for spanner's stretch factor (2k-1)
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using MVAGC algorithm
+            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using SPECTRAL algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
@@ -52,17 +55,17 @@ public class App
     private static int MIN_CLUSTER_SIZE = 30; // Minimum efficient bus occupancy
     private static int MAX_CLUSTER_SIZE = 45; // Maximum bus capacity (reduced from 50 for better balance)
     private static final double GEOGRAPHIC_WEIGHT = 0.9; // Increased from 0.7 for more geographically cohesive communities
-    private static final double MAX_COMMUNITY_DIAMETER = 2500.0; // Maximum allowed diameter for a community in meters (reduced from 5000.0m)
+    private static final double MAX_COMMUNITY_DIAMETER = 20000.0; // Maximum allowed diameter for a community in meters (Increased significantly from 2500.0m to disable problematic splitting)
    
     // Spectral clustering specific configuration - Initialize with default values to prevent NullPointerException
     private static SpectralClusteringConfig SPECTRAL_CONFIG = new SpectralClusteringConfig()
             .setNumberOfClusters(MAX_CLUSTERS)
             .setMinCommunitySize(MIN_CLUSTER_SIZE)
             .setPreventSingletons(true)
-            .setSigma(300)
+            .setSigma(100)
             .setGeographicWeight(0.9)
             .setMaxClusterSize(MAX_CLUSTER_SIZE)
-            .setForceNumClusters(true)
+            .setForceNumClusters(false)
             .setMaxCommunityDiameter(MAX_COMMUNITY_DIAMETER);
     
     // Girvan-Newman specific configuration
@@ -142,6 +145,10 @@ public class App
             // Remove isolated nodes before clustering
             graph.removeIsolatedNodes();
             
+            // Instantiate Histogram Service
+            HistogramService histogramService = new HistogramService();
+            Map<Integer, ClusterMetrics> clusterMetrics = null;
+            
             // Step 3: Perform clustering using specified algorithm
             if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.SPECTRAL) {
                 LOGGER.info("Step 3: Performing Spectral Clustering with advanced configuration...");
@@ -179,7 +186,7 @@ public class App
                 
                 // Perform transportation cost analysis
                 LOGGER.info("Performing transportation cost analysis...");
-                new com.izmir.transportation.cost.TransportationCostAnalysis().analyzeCosts(graph, communities);
+                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
                 // Infomap algorithm
                 LOGGER.info("Step 3: Performing Infomap clustering");
@@ -214,7 +221,7 @@ public class App
                 
                 // Perform transportation cost analysis
                 LOGGER.info("Performing transportation cost analysis...");
-                new com.izmir.transportation.cost.TransportationCostAnalysis().analyzeCosts(graph, communities);
+                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
                 // MvAGC algorithm
                 LOGGER.info("Step 3: Performing MvAGC clustering");
@@ -246,7 +253,7 @@ public class App
                 
                 // Perform transportation cost analysis
                 LOGGER.info("Performing transportation cost analysis...");
-                new com.izmir.transportation.cost.TransportationCostAnalysis().analyzeCosts(graph, communities);
+                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
             } else {
                 // Leiden algorithm
                 LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
@@ -258,7 +265,21 @@ public class App
                                 .setAdaptiveResolution(USE_ADAPTIVE_RESOLUTION)
                                 .setMinCommunitySize(MIN_CLUSTER_SIZE);
                 
-                clusteringService.performClustering(graph, CLUSTERING_ALGORITHM, VISUALIZE_CLUSTERS);
+                // Capture the communities map from performClustering
+                Map<Integer, List<Node>> communities = clusteringService.performClustering(
+                    graph, 
+                    CLUSTERING_ALGORITHM, 
+                    VISUALIZE_CLUSTERS
+                );
+                
+                // Perform transportation cost analysis after getting communities
+                LOGGER.info("Performing transportation cost analysis for Leiden...");
+                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+            }
+            
+            // Step 4: Generate Histograms if metrics were calculated
+            if (clusterMetrics != null) {
+                histogramService.generateHistograms(clusterMetrics, CLUSTERING_ALGORITHM.toString());
             }
             
             LOGGER.info("Iztech Transportation Analysis completed successfully.");
@@ -293,10 +314,10 @@ public class App
                     .setNumberOfClusters(MAX_CLUSTERS)
                     .setMinCommunitySize(MIN_CLUSTER_SIZE)
                     .setPreventSingletons(true)
-                    .setSigma(300)
+                    .setSigma(100)
                     .setGeographicWeight(0.9)
                     .setMaxClusterSize(MAX_CLUSTER_SIZE)
-                    .setForceNumClusters(true)
+                    .setForceNumClusters(false)
                     .setMaxCommunityDiameter(MAX_COMMUNITY_DIAMETER);
             
         } catch (IOException ex) {

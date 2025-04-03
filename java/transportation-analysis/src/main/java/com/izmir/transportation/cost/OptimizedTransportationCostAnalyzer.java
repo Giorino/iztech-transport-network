@@ -127,8 +127,8 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
             List<Node> communityNodes = entry.getValue();
             
             // Calculate costs for this community using optimized methods
-            CommunityTransportationCost cost = calculateOptimizedCommunityTransportationCost(communityId, communityNodes);
-            getCommunityCosts().put(communityId, cost);
+            CommunityTransportationCost communityCost = calculateOptimizedCommunityTransportationCost(communityId, communityNodes);
+            getCommunityCosts().put(communityId, communityCost);
         }
         
         System.out.println("Optimized transportation cost analysis completed.");

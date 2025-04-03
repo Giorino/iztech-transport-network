@@ -1,6 +1,7 @@
 package com.izmir.transportation.cost;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +49,11 @@ public class TransportationCostAnalysis {
      * 
      * @param transportationGraph The transportation graph to analyze
      * @param communities The communities to analyze
+     * @return A map of community ID to ClusterMetrics containing cost and distance information.
      */
-    public static void analyzeCosts(TransportationGraph transportationGraph, Map<Integer, List<Node>> communities) {
+    public static Map<Integer, ClusterMetrics> analyzeCosts(
+            TransportationGraph transportationGraph, 
+            Map<Integer, List<Node>> communities) {
         System.out.println("Starting transportation cost analysis with pre-detected communities...");
         
         // Step 1: Print community information
@@ -59,6 +63,26 @@ public class TransportationCostAnalysis {
         System.out.println("\nAnalyzing transportation costs with optimized analyzer...");
         OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(transportationGraph);
         analyzer.analyzeTransportationCosts(communities);
+        
+        // Step 2.5: Extract metrics after analysis
+        Map<Integer, ClusterMetrics> clusterMetricsMap = new HashMap<>();
+        Map<Integer, TransportationCostAnalyzer.CommunityTransportationCost> communityCosts = analyzer.getCommunityCosts();
+        
+        for (Map.Entry<Integer, TransportationCostAnalyzer.CommunityTransportationCost> entry : communityCosts.entrySet()) {
+            int communityId = entry.getKey();
+            TransportationCostAnalyzer.CommunityTransportationCost costData = entry.getValue();
+            
+            // Extract total distance and total fuel cost
+            double totalDistance = costData.getTotalDistanceKm();
+            double totalCost = costData.getTotalFuelCost();
+            
+            ClusterMetrics metrics = new ClusterMetrics(
+                communityId, 
+                totalDistance, 
+                totalCost
+            );
+            clusterMetricsMap.put(communityId, metrics);
+        }
         
         // Step 3: Print summary of optimized analysis results
         System.out.println("\nPrinting cost analysis summary...");
@@ -76,6 +100,7 @@ public class TransportationCostAnalysis {
         }
         
         System.out.println("Transportation cost analysis completed.");
+        return clusterMetricsMap;
     }
     
     /**
