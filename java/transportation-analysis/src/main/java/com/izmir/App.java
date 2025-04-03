@@ -41,7 +41,7 @@ public class App
             GraphConstructionService.GraphStrategy.COMPLETE; // Using Greedy Spanner graph
     private static final int K_VALUE = 3; // K value for spanner's stretch factor (2k-1)
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using SPECTRAL algorithm
+            ClusteringService.ClusteringAlgorithm.MVAGC; // Using SPECTRAL algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
@@ -158,7 +158,18 @@ public class App
                 
                 ClusteringService clusteringService = new ClusteringService();
                 clusteringService.setSpectralConfig(SPECTRAL_CONFIG);
-                clusteringService.performClustering(graph, CLUSTERING_ALGORITHM, VISUALIZE_CLUSTERS);
+                
+                // Capture the communities map from performClustering
+                Map<Integer, List<Node>> communities = clusteringService.performClustering(
+                    graph, 
+                    CLUSTERING_ALGORITHM, 
+                    VISUALIZE_CLUSTERS
+                );
+                
+                // Perform transportation cost analysis after getting communities
+                LOGGER.info("Performing transportation cost analysis for Spectral...");
+                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+                
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
                 // Girvan-Newman algorithm
                 LOGGER.info("Step 3: Performing Girvan-Newman clustering");
