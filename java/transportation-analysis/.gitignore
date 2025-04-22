@@ -8,3 +8,6 @@ transportation_cost_analysis.csv
 **_community_data.csv
 generated_points.csv
 output/
+csv_files/
+**/cost_analysis/** 
+venv/
