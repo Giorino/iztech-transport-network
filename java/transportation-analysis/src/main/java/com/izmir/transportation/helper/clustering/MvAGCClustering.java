@@ -314,10 +314,26 @@ public class MvAGCClustering implements GraphClusteringAlgorithm {
             communities.get(cluster).add(nodes.get(i));
         }
         
-        // Apply minimum cluster size constraint
+        int originalCommunitiesCount = communities.size();
+        LOGGER.info("Initial clustering created {} communities", originalCommunitiesCount);
+        
+        // Log community sizes before enforcing constraints
+        StringBuilder sizesBuilder = new StringBuilder("Initial community sizes: ");
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            sizesBuilder.append(entry.getKey()).append(": ").append(entry.getValue().size());
+            sizesBuilder.append(", ");
+        }
+        LOGGER.info(sizesBuilder.toString());
+        
+        // Apply minimum cluster size constraint - run multiple times to ensure enforcement
         if (minClusterSize > 1) {
-            LOGGER.info("Enforcing minimum cluster size of {}", minClusterSize);
+            LOGGER.info("Enforcing strict minimum cluster size of {}", minClusterSize);
+            
+            // Apply twice to ensure all orphaned nodes find a home in valid communities
             communities = removeSmallCommunities(communities, minClusterSize);
+            communities = removeSmallCommunities(communities, minClusterSize);
+            
+            LOGGER.info("After minimum size enforcement: {} communities", communities.size());
         }
         
         // Force minimum number of clusters if needed
@@ -348,7 +364,34 @@ public class MvAGCClustering implements GraphClusteringAlgorithm {
             }
         }
         
+        // Final check for minimum community size - add a third pass for additional safety
+        if (minClusterSize > 1) {
+            Map<Integer, List<Node>> finalCheck = new HashMap<>();
+            boolean hasSmallCommunities = false;
+            
+            for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+                if (entry.getValue().size() < minClusterSize) {
+                    hasSmallCommunities = true;
+                    LOGGER.warn("Community {} still below minimum size: {} < {}", 
+                               entry.getKey(), entry.getValue().size(), minClusterSize);
+                }
+                finalCheck.put(entry.getKey(), entry.getValue());
+            }
+            
+            if (hasSmallCommunities) {
+                LOGGER.info("Performing final pass to enforce minimum cluster size");
+                communities = removeSmallCommunities(finalCheck, minClusterSize);
+            }
+        }
+        
+        // Log final community sizes
         LOGGER.info("MvAGC clustering completed, found {} communities", communities.size());
+        StringBuilder finalSizesBuilder = new StringBuilder("Final community sizes: ");
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            finalSizesBuilder.append(entry.getKey()).append(": ").append(entry.getValue().size());
+            finalSizesBuilder.append(", ");
+        }
+        LOGGER.info(finalSizesBuilder.toString());
         
         // Force at least 2 communities if we ended up with only 1
         if (communities.size() == 1 && nodes.size() > 10) {
@@ -1193,11 +1236,13 @@ public class MvAGCClustering implements GraphClusteringAlgorithm {
             if (largest != null) {
                 result.put(largest.getKey(), largest.getValue());
                 orphanNodes.removeAll(largest.getValue());
+                LOGGER.info("Keeping largest community of size {} despite being below minimum size", largest.getValue().size());
             }
         }
         
         // Assign orphan nodes to the closest community
         if (!orphanNodes.isEmpty() && !result.isEmpty()) {
+            LOGGER.info("Reassigning {} orphan nodes to existing communities", orphanNodes.size());
             for (Node node : orphanNodes) {
                 int bestCommunity = -1;
                 double bestDistance = Double.MAX_VALUE;

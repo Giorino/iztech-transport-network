@@ -267,10 +267,18 @@ public class GreedySpannerStrategy implements GraphConnectivityStrategy {
         
         // If useCompleteGraph is true and we already have a complete transportation graph,
         // use it to build the spanner more efficiently
-        if (useCompleteGraph && transportationGraph.getEdgeCount() > 0 && 
-            transportationGraph.isCompleteGraph()) {
-            return createSpannerFromCompleteGraph(points, transportationGraph, 
-                                              new TransportationGraph(points), numThreads);
+        if (useCompleteGraph && transportationGraph.getEdgeCount() > 0) {
+            // Check if the graph is nearly complete (has at least 90% of the expected edges)
+            long expectedEdges = calculateTotalConnections(points);
+            long actualEdges = transportationGraph.getEdgeCount();
+            
+            if (actualEdges >= 0.9 * expectedEdges) {
+                System.out.println("Using nearly complete graph with " + actualEdges + 
+                                  " edges out of expected " + expectedEdges + 
+                                  " (" + (actualEdges * 100 / expectedEdges) + "%) for spanner optimization.");
+                return createSpannerFromCompleteGraph(points, transportationGraph, 
+                                                  new TransportationGraph(points), numThreads);
+            }
         }
         
         System.out.println("Creating greedy spanner with " + numThreads + " threads and stretch factor " + stretchFactor);

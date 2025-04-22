@@ -15,9 +15,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -454,6 +458,57 @@ public class TransportationGraph {
         // This prevents black nodes in visualization
         assignMissingCommunities(nodeCommunities);
 
+        // Instead of just identifying disconnected nodes, identify the largest connected component
+        // for each community and only show those nodes
+        Set<Node> nodesToHide = new HashSet<>();
+        Map<Integer, Set<Node>> communityComponents = new HashMap<>();
+        
+        // For each community, find all connected components
+        for (int communityId = 0; communityId < communities.size(); communityId++) {
+            // Skip community 0 if showCommunityZero is false
+            if (!showCommunityZero && communityId == 0) {
+                continue;
+            }
+            
+            // Get all nodes in this community
+            Set<Node> communityNodes = new HashSet<>();
+            for (Map.Entry<Node, Integer> entry : nodeCommunities.entrySet()) {
+                if (entry.getValue() == communityId) {
+                    communityNodes.add(entry.getKey());
+                }
+            }
+            
+            // Find connected components within this community
+            List<Set<Node>> components = findConnectedComponents(communityNodes, communityId, nodeCommunities);
+            
+            // If there are multiple components, keep only the largest one
+            if (components.size() > 1) {
+                // Find the largest component
+                Set<Node> largestComponent = components.get(0);
+                for (Set<Node> component : components) {
+                    if (component.size() > largestComponent.size()) {
+                        largestComponent = component;
+                    }
+                }
+                
+                // Add all nodes from smaller components to nodesToHide
+                for (Set<Node> component : components) {
+                    if (component != largestComponent) {
+                        nodesToHide.addAll(component);
+                    }
+                }
+                
+                communityComponents.put(communityId, largestComponent);
+                LOGGER.info("Community " + communityId + ": Keeping largest component with " + 
+                           largestComponent.size() + " nodes, hiding " + 
+                           (communityNodes.size() - largestComponent.size()) + " nodes from smaller components");
+            } else if (components.size() == 1) {
+                communityComponents.put(communityId, components.get(0));
+            }
+        }
+        
+        LOGGER.info("Found " + nodesToHide.size() + " nodes in smaller components that will be hidden in visualization");
+
         // Generate distinct colors for each community (max 20 unique colors)
         List<Color> communityColors = generateCommunityColors(communities.size());
 
@@ -496,10 +551,46 @@ public class TransportationGraph {
 
                 // Draw edges first
                 g2d.setStroke(new BasicStroke(1.0f));
+                
+                // First pass: Draw ALL edges in light gray (including inter-community edges)
+                g2d.setColor(new Color(230, 230, 230)); // Very light gray
                 for (DefaultWeightedEdge edge : graph.edgeSet()) {
                     Node source = graph.getEdgeSource(edge);
                     Node target = graph.getEdgeTarget(edge);
 
+                    // Skip edges connected to disconnected nodes or nodes in smaller components
+                    if (nodesToHide.contains(source) || nodesToHide.contains(target)) {
+                        continue;
+                    }
+                    
+                    // Skip edges connected to community 0 if we're hiding it
+                    Integer sourceCommunity = nodeCommunities.get(source);
+                    Integer targetCommunity = nodeCommunities.get(target);
+                    if (!showCommunityZero && (sourceCommunity != null && sourceCommunity == 0 || 
+                        targetCommunity != null && targetCommunity == 0)) {
+                        continue;
+                    }
+
+                    // Calculate coordinates and draw the line for ALL valid edges
+                    int x1 = 20 + (int)((source.getLocation().getX() - minX) * scale);
+                    int y1 = getHeight() - 20 - (int)((source.getLocation().getY() - minY) * scale);
+                    int x2 = 20 + (int)((target.getLocation().getX() - minX) * scale);
+                    int y2 = getHeight() - 20 - (int)((target.getLocation().getY() - minY) * scale);
+
+                    g2d.drawLine(x1, y1, x2, y2);
+                }
+                
+                // Second pass: Draw intra-community edges with community colors
+                g2d.setStroke(new BasicStroke(1.5f)); // Slightly thicker for community edges
+                for (DefaultWeightedEdge edge : graph.edgeSet()) {
+                    Node source = graph.getEdgeSource(edge);
+                    Node target = graph.getEdgeTarget(edge);
+
+                    // Skip edges connected to disconnected nodes or nodes in smaller components
+                    if (nodesToHide.contains(source) || nodesToHide.contains(target)) {
+                        continue;
+                    }
+                    
                     // Get community IDs for source and target
                     Integer sourceCommunity = nodeCommunities.get(source);
                     Integer targetCommunity = nodeCommunities.get(target);
@@ -526,6 +617,11 @@ public class TransportationGraph {
 
                 // Draw nodes on top
                 for (Node node : graph.vertexSet()) {
+                    // Skip disconnected nodes or nodes in smaller components
+                    if (nodesToHide.contains(node)) {
+                        continue;
+                    }
+                    
                     Integer communityId = nodeCommunities.get(node);
                     
                     // Skip nodes in community 0 if we're hiding it
@@ -1220,5 +1316,65 @@ public class TransportationGraph {
         } else {
             LOGGER.info("No isolated nodes found in TransportationGraph.");
         }
+    }
+
+    /**
+     * Finds all connected components within a set of nodes belonging to the same community.
+     * Uses BFS algorithm to explore connected components.
+     * 
+     * @param communityNodes Set of nodes in the community
+     * @param communityId The ID of the community
+     * @param nodeCommunities Map of nodes to their community IDs
+     * @return A list of sets, where each set is a connected component
+     */
+    private List<Set<Node>> findConnectedComponents(Set<Node> communityNodes, int communityId, Map<Node, Integer> nodeCommunities) {
+        List<Set<Node>> components = new ArrayList<>();
+        Set<Node> unvisited = new HashSet<>(communityNodes);
+        
+        while (!unvisited.isEmpty()) {
+            // Start a new component
+            Set<Node> component = new HashSet<>();
+            Queue<Node> queue = new LinkedList<>();
+            
+            // Get the first unvisited node
+            Node startNode = unvisited.iterator().next();
+            queue.add(startNode);
+            unvisited.remove(startNode);
+            component.add(startNode);
+            
+            // BFS to find all connected nodes in this component
+            while (!queue.isEmpty()) {
+                Node current = queue.poll();
+                
+                for (DefaultWeightedEdge edge : graph.edgesOf(current)) {
+                    Node neighbor = getNeighbor(current, edge);
+                    
+                    // Check if the neighbor is in the same community and not yet visited
+                    Integer neighborCommunity = nodeCommunities.get(neighbor);
+                    if (neighborCommunity != null && neighborCommunity == communityId && unvisited.contains(neighbor)) {
+                        queue.add(neighbor);
+                        unvisited.remove(neighbor);
+                        component.add(neighbor);
+                    }
+                }
+            }
+            
+            components.add(component);
+        }
+        
+        return components;
+    }
+    
+    /**
+     * Gets the neighboring node connected by the given edge
+     * 
+     * @param node The current node
+     * @param edge The edge connecting to the neighbor
+     * @return The neighboring node
+     */
+    private Node getNeighbor(Node node, DefaultWeightedEdge edge) {
+        Node source = graph.getEdgeSource(edge);
+        Node target = graph.getEdgeTarget(edge);
+        return (node.equals(source)) ? target : source;
     }
 } 

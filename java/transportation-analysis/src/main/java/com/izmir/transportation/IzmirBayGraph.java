@@ -199,8 +199,8 @@ public class IzmirBayGraph {
         Random random = new Random();
 
         // Add hardcoded IYTE point
-        Point iytePoint = geometryFactory.createPoint(new Coordinate(26.643221256222105, 38.319147501994145));
-        points.add(iytePoint);
+        //Point iytePoint = geometryFactory.createPoint(new Coordinate(26.643221256222105, 38.319147501994145));
+        //points.add(iytePoint);
 
         while (points.size() < numPoints) {
             // generate points relative to population centers

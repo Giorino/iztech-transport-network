@@ -3,6 +3,7 @@ package com.izmir;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -36,12 +37,12 @@ public class App
     static Logger LOGGER = Logger.getLogger(App.class.getName());
     
     // Configuration properties
-    private static final int NODE_COUNT = 2000; // Number of nodes to generate
+    private static final int NODE_COUNT = 50; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
-            GraphConstructionService.GraphStrategy.COMPLETE; // Using Greedy Spanner graph
-    private static final int K_VALUE = 3; // K value for spanner's stretch factor (2k-1)
+            GraphConstructionService.GraphStrategy.DELAUNAY; // Using Greedy Spanner graph
+    private static final int K_VALUE = 30; // K value for spanner's stretch factor (2k-1)
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.MVAGC; // Using SPECTRAL algorithm
+            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using SPECTRAL algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
@@ -52,7 +53,7 @@ public class App
     private static int MAX_CLUSTERS = 55; // Increased from 12 back to 40 to ensure each community can be within 50-node limit
     private static final double COMMUNITY_SCALING_FACTOR = 0.5; // Increased to create more balanced communities
     private static final boolean USE_ADAPTIVE_RESOLUTION = true; // Adaptive resolution based on network size
-    private static int MIN_CLUSTER_SIZE = 30; // Minimum efficient bus occupancy
+    private static int MIN_CLUSTER_SIZE = 10; // Minimum efficient bus occupancy
     private static int MAX_CLUSTER_SIZE = 45; // Maximum bus capacity (reduced from 50 for better balance)
     private static final double GEOGRAPHIC_WEIGHT = 0.9; // Increased from 0.7 for more geographically cohesive communities
     private static final double MAX_COMMUNITY_DIAMETER = 20000.0; // Maximum allowed diameter for a community in meters (Increased significantly from 2500.0m to disable problematic splitting)
@@ -65,7 +66,7 @@ public class App
             .setSigma(100)
             .setGeographicWeight(0.9)
             .setMaxClusterSize(MAX_CLUSTER_SIZE)
-            .setForceNumClusters(false)
+            .setForceNumClusters(false) // Changed to false to preserve natural community structure
             .setMaxCommunityDiameter(MAX_COMMUNITY_DIAMETER);
     
     // Girvan-Newman specific configuration
@@ -124,8 +125,9 @@ public class App
                 int actualEdges = completeGraph.getEdgeCount();
                 LOGGER.info("Complete graph created with " + actualEdges + " edges out of expected " + expectedEdges);
                 
-                // Check if the complete graph was successfully created with all expected edges
-                if (actualEdges > 0 && completeGraph.isCompleteGraph()) {
+                // Check if the complete graph was successfully created with a sufficient number of edges
+                // Allow graphs with at least 90% of the expected edges to be considered "complete enough"
+                if (actualEdges > 0 && (actualEdges >= 0.9 * expectedEdges)) {
                     LOGGER.info("Now creating optimized Greedy Spanner...");
                     
                     // Now create the spanner using the complete graph
@@ -142,12 +144,45 @@ public class App
                     points, GRAPH_STRATEGY, K_VALUE, USE_PARALLEL, VISUALIZE_GRAPH, SAVE_GRAPH);
             }
             
+            // Log edge count before removing isolated nodes
+            LOGGER.info("Graph created with " + graph.getEdgeCount() + " edges.");
+            
             // Remove isolated nodes before clustering
-            graph.removeIsolatedNodes();
+            int nodesBeforeRemoval = 0; // We don't have direct access to count
+            try {
+                graph.removeIsolatedNodes();
+                
+                // Check if the graph has edges after removing isolated nodes
+                if (graph.getEdgeCount() == 0) {
+                    LOGGER.severe("Error: Graph has no edges after removing isolated nodes. This suggests all nodes were isolated.");
+                    LOGGER.info("Attempting to recover by using a different graph strategy...");
+                    
+                    // Try with a fallback strategy (Delaunay triangulation is usually reliable)
+                    LOGGER.info("Creating fallback graph using DELAUNAY triangulation...");
+                    graph = graphService.createGraph(
+                        points, GraphConstructionService.GraphStrategy.DELAUNAY, 
+                        K_VALUE, USE_PARALLEL, VISUALIZE_GRAPH, SAVE_GRAPH);
+                    
+                    // Check if the fallback graph has edges
+                    if (graph.getEdgeCount() == 0) {
+                        LOGGER.severe("Error: Fallback graph creation also failed. Cannot proceed with analysis.");
+                        throw new IllegalStateException("Graph creation failed - fallback also failed");
+                    }
+                    
+                    LOGGER.info("Fallback graph created successfully with " + graph.getEdgeCount() + " edges.");
+                    
+                    // Make sure to remove any isolated nodes in the fallback graph
+                    graph.removeIsolatedNodes();
+                }
+            } catch (Exception e) {
+                LOGGER.severe("Error during graph preparation: " + e.getMessage());
+                throw e;
+            }
             
             // Instantiate Histogram Service
             HistogramService histogramService = new HistogramService();
             Map<Integer, ClusterMetrics> clusterMetrics = null;
+            Map<Integer, List<Node>> communities = null; // Declare communities map here
             
             // Step 3: Perform clustering using specified algorithm
             if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.SPECTRAL) {
@@ -160,7 +195,7 @@ public class App
                 clusteringService.setSpectralConfig(SPECTRAL_CONFIG);
                 
                 // Capture the communities map from performClustering
-                Map<Integer, List<Node>> communities = clusteringService.performClustering(
+                communities = clusteringService.performClustering(
                     graph, 
                     CLUSTERING_ALGORITHM, 
                     VISUALIZE_CLUSTERS
@@ -170,6 +205,10 @@ public class App
                 LOGGER.info("Performing transportation cost analysis for Spectral...");
                 clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
                 
+                // Save the cost analysis with metadata
+                LOGGER.info("Saving transportation cost analysis with metadata...");
+                TransportationCostAnalysis.saveAnalysisWithMetadata(
+                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
                 // Girvan-Newman algorithm
                 LOGGER.info("Step 3: Performing Girvan-Newman clustering");
@@ -183,10 +222,16 @@ public class App
                          .setMaxIterations(GN_MAX_ITERATIONS)
                          .setEarlyStop(GN_EARLY_STOP)
                          .setMinCommunitySize(MIN_CLUSTER_SIZE)
+                         .setMaxCommunitySize(MAX_CLUSTER_SIZE)
                          .setUseModularityMaximization(USE_MODULARITY_MAXIMIZATION);
                 
                 // Run the algorithm
-                Map<Integer, List<Node>> communities = gnAlgorithm.detectCommunities();
+                communities = gnAlgorithm.detectCommunities();
+                
+                // ADDITIONAL POST-PROCESSING: Enforce maximum community size
+                LOGGER.info("Performing post-processing to enforce community size constraints");
+                communities = enforceCommunityConstraints(communities, graph, MIN_CLUSTER_SIZE, MAX_CLUSTER_SIZE);
+                LOGGER.info("After post-processing: " + communities.size() + " communities");
                 
                 // Visualize if requested
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
@@ -198,6 +243,11 @@ public class App
                 // Perform transportation cost analysis
                 LOGGER.info("Performing transportation cost analysis...");
                 clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                
+                // Save the cost analysis with metadata
+                LOGGER.info("Saving transportation cost analysis with metadata...");
+                TransportationCostAnalysis.saveAnalysisWithMetadata(
+                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
                 // Infomap algorithm
                 LOGGER.info("Step 3: Performing Infomap clustering");
@@ -221,7 +271,7 @@ public class App
                                .setGeographicImportance(INFOMAP_GEOGRAPHIC_IMPORTANCE) // Add geographic importance
                                .setMaxGeographicDistance(INFOMAP_MAX_GEOGRAPHIC_DISTANCE); // Set max geographic distance
                 
-                Map<Integer, List<Node>> communities = infomapAlgorithm.detectCommunities();
+                communities = infomapAlgorithm.detectCommunities();
                 
                 // Visualize the communities
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
@@ -233,6 +283,11 @@ public class App
                 // Perform transportation cost analysis
                 LOGGER.info("Performing transportation cost analysis...");
                 clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                
+                // Save the cost analysis with metadata
+                LOGGER.info("Saving transportation cost analysis with metadata...");
+                TransportationCostAnalysis.saveAnalysisWithMetadata(
+                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
             } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
                 // MvAGC algorithm
                 LOGGER.info("Step 3: Performing MvAGC clustering");
@@ -252,8 +307,11 @@ public class App
                              .setMaxClusterSize(MAX_CLUSTER_SIZE)
                              .setForceMinClusters(true);
                 
+                // Log the configuration
+                LOGGER.info("MvAGC configured with minClusterSize=" + MIN_CLUSTER_SIZE + ", loaded from application.properties");
+                
                 // Run the algorithm
-                Map<Integer, List<Node>> communities = mvagcAlgorithm.detectCommunities();
+                communities = mvagcAlgorithm.detectCommunities();
                 
                 // Visualize if requested
                 if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
@@ -265,6 +323,11 @@ public class App
                 // Perform transportation cost analysis
                 LOGGER.info("Performing transportation cost analysis...");
                 clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                
+                // Save the cost analysis with metadata
+                LOGGER.info("Saving transportation cost analysis with metadata...");
+                TransportationCostAnalysis.saveAnalysisWithMetadata(
+                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
             } else {
                 // Leiden algorithm
                 LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
@@ -277,7 +340,7 @@ public class App
                                 .setMinCommunitySize(MIN_CLUSTER_SIZE);
                 
                 // Capture the communities map from performClustering
-                Map<Integer, List<Node>> communities = clusteringService.performClustering(
+                communities = clusteringService.performClustering(
                     graph, 
                     CLUSTERING_ALGORITHM, 
                     VISUALIZE_CLUSTERS
@@ -286,6 +349,11 @@ public class App
                 // Perform transportation cost analysis after getting communities
                 LOGGER.info("Performing transportation cost analysis for Leiden...");
                 clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+                
+                // Save the cost analysis with metadata
+                LOGGER.info("Saving transportation cost analysis with metadata...");
+                TransportationCostAnalysis.saveAnalysisWithMetadata(
+                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
             }
             
             // Step 4: Generate Histograms if metrics were calculated
@@ -316,9 +384,13 @@ public class App
             
             // Load clustering configuration
             MAX_CLUSTERS = Integer.parseInt(properties.getProperty("transportation.services.count", "55"));
-            MIN_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.min.seats", "30"));
+            MIN_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.min.seats", "10"));
             MAX_CLUSTER_SIZE = Integer.parseInt(properties.getProperty("transportation.bus.max.seats", 
                                                 properties.getProperty("transportation.bus.capacity", "45")));
+            
+            LOGGER.info("Loaded configuration from properties: MAX_CLUSTERS=" + MAX_CLUSTERS + 
+                       ", MIN_CLUSTER_SIZE=" + MIN_CLUSTER_SIZE + 
+                       ", MAX_CLUSTER_SIZE=" + MAX_CLUSTER_SIZE);
             
             // Update spectral clustering config with loaded properties
             SPECTRAL_CONFIG = new SpectralClusteringConfig()
@@ -328,7 +400,7 @@ public class App
                     .setSigma(100)
                     .setGeographicWeight(0.9)
                     .setMaxClusterSize(MAX_CLUSTER_SIZE)
-                    .setForceNumClusters(false)
+                    .setForceNumClusters(false) // Changed to false to preserve natural community structure
                     .setMaxCommunityDiameter(MAX_COMMUNITY_DIAMETER);
             
         } catch (IOException ex) {
@@ -336,5 +408,187 @@ public class App
         } catch (NumberFormatException ex) {
             LOGGER.warning("Error parsing property value: " + ex.getMessage());
         }
+    }
+
+    /**
+     * Enforces minimum and maximum size constraints on communities.
+     * Large communities (exceeding maxSize) are split, and small communities (below minSize) are merged.
+     * 
+     * @param communities The original communities map
+     * @param graph The transportation graph
+     * @param minSize Minimum allowed community size
+     * @param maxSize Maximum allowed community size
+     * @return A new map of communities respecting the size constraints
+     */
+    private static Map<Integer, List<Node>> enforceCommunityConstraints(
+            Map<Integer, List<Node>> communities, 
+            TransportationGraph graph,
+            int minSize, 
+            int maxSize) {
+        
+        LOGGER.info("Enforcing community constraints: min=" + minSize + ", max=" + maxSize);
+        
+        // Create a new map to hold the processed communities
+        Map<Integer, List<Node>> result = new HashMap<>();
+        int nextId = communities.size();
+        
+        // Find communities exceeding the maximum size
+        List<Map.Entry<Integer, List<Node>>> toProcess = new ArrayList<>();
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            if (entry.getValue().size() > maxSize) {
+                LOGGER.info("Community " + entry.getKey() + " exceeds max size: " + entry.getValue().size());
+                toProcess.add(entry);
+            } else {
+                // Keep communities that are already within bounds
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        
+        // Process each oversized community
+        for (Map.Entry<Integer, List<Node>> entry : toProcess) {
+            List<Node> community = entry.getValue();
+            int size = community.size();
+            
+            // Calculate how many subcommunities we need
+            int numSubCommunities = (int) Math.ceil((double) size / maxSize);
+            LOGGER.info("Splitting community " + entry.getKey() + " into " + numSubCommunities + " parts");
+            
+            // Use a simple geographic division strategy
+            List<List<Node>> subCommunities = splitByGeography(community, numSubCommunities);
+            
+            // Add the subcommunities to the result
+            for (List<Node> subCommunity : subCommunities) {
+                if (subCommunity.size() >= minSize) {
+                    result.put(nextId++, subCommunity);
+                    LOGGER.info("Created subcommunity with size " + subCommunity.size());
+                } else {
+                    // For small subcommunities, find the closest community to merge with
+                    mergeWithClosestCommunity(subCommunity, result, maxSize);
+                }
+            }
+        }
+        
+        // Check for any remaining communities below min size
+        toProcess = new ArrayList<>();
+        for (Map.Entry<Integer, List<Node>> entry : result.entrySet()) {
+            if (entry.getValue().size() < minSize) {
+                toProcess.add(entry);
+            }
+        }
+        
+        // Merge small communities
+        for (Map.Entry<Integer, List<Node>> entry : toProcess) {
+            result.remove(entry.getKey());
+            mergeWithClosestCommunity(entry.getValue(), result, maxSize);
+        }
+        
+        LOGGER.info("Final community count after enforcing constraints: " + result.size());
+        return result;
+    }
+    
+    /**
+     * Merges a list of nodes with the geographically closest community.
+     * 
+     * @param nodes The nodes to merge
+     * @param communities The map of communities
+     * @param maxSize Maximum allowed community size
+     */
+    private static void mergeWithClosestCommunity(
+            List<Node> nodes, 
+            Map<Integer, List<Node>> communities,
+            int maxSize) {
+        
+        if (nodes.isEmpty() || communities.isEmpty()) {
+            return;
+        }
+        
+        // Calculate centroid of the nodes to merge
+        double avgLat = 0, avgLon = 0;
+        for (Node node : nodes) {
+            avgLat += node.getLocation().getY();
+            avgLon += node.getLocation().getX();
+        }
+        avgLat /= nodes.size();
+        avgLon /= nodes.size();
+        
+        // Find the closest community that has room
+        Integer closestCommunity = null;
+        double minDistance = Double.MAX_VALUE;
+        
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            List<Node> community = entry.getValue();
+            
+            // Skip if adding would exceed max size
+            if (community.size() + nodes.size() > maxSize) {
+                continue;
+            }
+            
+            // Calculate centroid of this community
+            double comLat = 0, comLon = 0;
+            for (Node node : community) {
+                comLat += node.getLocation().getY();
+                comLon += node.getLocation().getX();
+            }
+            comLat /= community.size();
+            comLon /= community.size();
+            
+            // Calculate distance between centroids
+            double distance = Math.sqrt(
+                Math.pow(avgLat - comLat, 2) + 
+                Math.pow(avgLon - comLon, 2)
+            );
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestCommunity = entry.getKey();
+            }
+        }
+        
+        // Merge with the closest community, or create a new one if none found
+        if (closestCommunity != null) {
+            communities.get(closestCommunity).addAll(nodes);
+            LOGGER.info("Merged " + nodes.size() + " nodes with community " + closestCommunity);
+        } else {
+            // If no suitable community found, create a new one
+            int newId = communities.keySet().stream().max(Integer::compare).orElse(0) + 1;
+            communities.put(newId, new ArrayList<>(nodes));
+            LOGGER.info("Created new community " + newId + " with " + nodes.size() + " nodes");
+        }
+    }
+    
+    /**
+     * Splits a community into subcommunities based on geographical position.
+     * 
+     * @param community The community to split
+     * @param numParts The number of parts to split into
+     * @return A list of subcommunities
+     */
+    private static List<List<Node>> splitByGeography(List<Node> community, int numParts) {
+        // Sort nodes by latitude (north to south)
+        List<Node> sortedNodes = new ArrayList<>(community);
+        sortedNodes.sort((n1, n2) -> Double.compare(n1.getLocation().getY(), n2.getLocation().getY()));
+        
+        // Calculate part size
+        int partSize = (int) Math.ceil((double) community.size() / numParts);
+        
+        // Create parts
+        List<List<Node>> parts = new ArrayList<>();
+        List<Node> currentPart = new ArrayList<>();
+        
+        for (Node node : sortedNodes) {
+            currentPart.add(node);
+            
+            if (currentPart.size() >= partSize && parts.size() < numParts - 1) {
+                parts.add(currentPart);
+                currentPart = new ArrayList<>();
+            }
+        }
+        
+        // Add the last part if it's not empty
+        if (!currentPart.isEmpty()) {
+            parts.add(currentPart);
+        }
+        
+        return parts;
     }
 }

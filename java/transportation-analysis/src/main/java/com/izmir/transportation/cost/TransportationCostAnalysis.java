@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.izmir.transportation.TransportationGraph;
+import com.izmir.transportation.cost.OptimizedTransportationCostAnalyzer.OptimizedCommunityTransportationCost;
+import com.izmir.transportation.cost.OptimizedTransportationCostAnalyzer.VehicleType;
 import com.izmir.transportation.helper.Node;
 import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
 
@@ -16,6 +19,7 @@ import com.izmir.transportation.helper.clustering.LeidenCommunityDetection;
  * @author yagizugurveren
  */
 public class TransportationCostAnalysis {
+    private static final Logger LOGGER = Logger.getLogger(TransportationCostAnalysis.class.getName());
 
     /**
      * Performs transportation cost analysis on the given transportation graph
@@ -74,13 +78,33 @@ public class TransportationCostAnalysis {
             
             // Extract total distance and total fuel cost
             double totalDistance = costData.getTotalDistanceKm();
-            double totalCost = costData.getTotalFuelCost();
+            double totalFuelCost = costData.getTotalFuelLiters() * OptimizedTransportationCostAnalyzer.FUEL_COST_PER_LITER;
             
+            // Get vehicle type if available
+            String vehicleType = "BUS"; // Default
+            double fixedCost = costData.getBusCount() * OptimizedTransportationCostAnalyzer.ADDITIONAL_COST_PER_BUS;
+            
+            if (costData instanceof OptimizedCommunityTransportationCost) {
+                OptimizedCommunityTransportationCost optimizedCostData = (OptimizedCommunityTransportationCost) costData;
+                VehicleType vType = optimizedCostData.getVehicleType();
+                vehicleType = vType.name();
+                
+                // Calculate fixed cost based on vehicle type
+                fixedCost = costData.getBusCount() * vType.getFixedCost();
+            }
+            
+            double totalCost = totalFuelCost + fixedCost;
+            
+            // Create enhanced ClusterMetrics with vehicle type information
             ClusterMetrics metrics = new ClusterMetrics(
                 communityId, 
                 totalDistance, 
-                totalCost
+                totalFuelCost,
+                fixedCost,
+                vehicleType,
+                costData.getBusCount()
             );
+            
             clusterMetricsMap.put(communityId, metrics);
         }
         
@@ -101,6 +125,35 @@ public class TransportationCostAnalysis {
         
         System.out.println("Transportation cost analysis completed.");
         return clusterMetricsMap;
+    }
+    
+    /**
+     * Saves the transportation cost analysis with metadata to a structured folder.
+     * 
+     * @param graph The transportation graph
+     * @param communities Map of community IDs to lists of nodes in each community
+     * @param clusteringAlgorithm The clustering algorithm used in the analysis
+     * @param graphStrategy The graph construction strategy used
+     * @param kValue The k value used for graph construction (if applicable)
+     */
+    public static void saveAnalysisWithMetadata(
+            TransportationGraph graph, Map<Integer, List<Node>> communities,
+            String clusteringAlgorithm, String graphStrategy, int kValue) {
+        
+        LOGGER.info("Saving transportation cost analysis with metadata");
+        
+        // Use the optimized analyzer 
+        OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(graph);
+        
+        // Make sure we have the latest analysis
+        analyzer.analyzeTransportationCosts(communities);
+        
+        try {
+            // Save with metadata
+            analyzer.saveAnalysisWithMetadata(clusteringAlgorithm, graphStrategy, kValue);
+        } catch (IOException e) {
+            LOGGER.warning("Failed to save cost analysis with metadata: " + e.getMessage());
+        }
     }
     
     /**

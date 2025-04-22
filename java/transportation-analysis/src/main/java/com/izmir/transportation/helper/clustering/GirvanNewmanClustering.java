@@ -1,6 +1,7 @@
 package com.izmir.transportation.helper.clustering;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -42,6 +43,7 @@ public class GirvanNewmanClustering implements GraphClusteringAlgorithm {
     private int maxIterations = 100; // Maximum number of edge removals
     private boolean earlyStop = true; // Whether to stop when target communities reached
     private int minCommunitySize = 3; // Minimum size of a community
+    private int maxCommunitySize = 45; // Maximum size of a community
     private boolean useModularityMaximization = false; // Whether to use modularity maximization
     
     // Variables to track the best community division based on modularity
@@ -102,6 +104,18 @@ public class GirvanNewmanClustering implements GraphClusteringAlgorithm {
     public GirvanNewmanClustering setMinCommunitySize(int size) {
         this.minCommunitySize = Math.max(1, size);
         LOGGER.info("Minimum community size set to {}", this.minCommunitySize);
+        return this;
+    }
+    
+    /**
+     * Sets the maximum community size. Communities larger than this will be split.
+     * 
+     * @param size Maximum community size (must be at least minCommunitySize)
+     * @return This GirvanNewmanClustering instance for method chaining
+     */
+    public GirvanNewmanClustering setMaxCommunitySize(int size) {
+        this.maxCommunitySize = Math.max(this.minCommunitySize, size);
+        LOGGER.info("Maximum community size set to {}", this.maxCommunitySize);
         return this;
     }
     
@@ -283,6 +297,10 @@ public class GirvanNewmanClustering implements GraphClusteringAlgorithm {
             communities = mergeSmallCommunities(communities, workingGraph);
             LOGGER.info("After merging small communities: {} communities remain", communities.size());
         }
+        
+        // Handle large communities
+        communities = splitLargeCommunities(communities, workingGraph);
+        LOGGER.info("After splitting large communities: {} communities remain", communities.size());
         
         return communities;
     }
@@ -1265,6 +1283,809 @@ public class GirvanNewmanClustering implements GraphClusteringAlgorithm {
             LOGGER.info("After merging small communities: {} communities remain", communities.size());
         }
         
+        return communities;
+    }
+    
+    /**
+     * Splits communities that exceed the maximum size into smaller communities.
+     * 
+     * @param communities The initial community assignments
+     * @param graph The original graph (used to create subgraphs for large communities)
+     * @return A new map with large communities split into smaller ones
+     */
+    private Map<Integer, List<Node>> splitLargeCommunities(
+            Map<Integer, List<Node>> communities, 
+            Graph<Node, DefaultWeightedEdge> graph) {
+        
+        // Identify large communities
+        List<Integer> largeCommunityIds = new ArrayList<>();
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            if (entry.getValue().size() > maxCommunitySize) {
+                largeCommunityIds.add(entry.getKey());
+            }
+        }
+        
+        LOGGER.info("Found {} communities larger than maximum size {}", 
+                largeCommunityIds.size(), maxCommunitySize);
+        
+        if (largeCommunityIds.isEmpty()) {
+            return communities;
+        }
+        
+        // Create a new map to hold the split communities
+        Map<Integer, List<Node>> splitCommunities = new HashMap<>(communities);
+        int nextCommunityId = communities.size();
+        
+        // Process each large community
+        for (Integer largeCommunityId : largeCommunityIds) {
+            List<Node> largeCommunity = splitCommunities.get(largeCommunityId);
+            
+            if (largeCommunity == null || largeCommunity.isEmpty()) {
+                continue; // Skip if already processed
+            }
+            
+            int communitySize = largeCommunity.size();
+            LOGGER.info("Splitting community {} with size {}", largeCommunityId, communitySize);
+            
+            // For very large communities (> 5x max size), use hierarchical splitting
+            if (communitySize > maxCommunitySize * 5) {
+                LOGGER.info("Very large community detected ({}x max size). Using hierarchical splitting.", 
+                         communitySize / maxCommunitySize);
+                
+                // Remove the original large community
+                splitCommunities.remove(largeCommunityId);
+                
+                // Use hierarchical splitting approach
+                List<List<Node>> subCommunities = splitLargeCommunityHierarchically(
+                        largeCommunity, graph, maxCommunitySize, minCommunitySize);
+                
+                // Add all valid subcommunities to the result
+                for (List<Node> subCommunity : subCommunities) {
+                    if (subCommunity.size() >= minCommunitySize) {
+                        splitCommunities.put(nextCommunityId++, subCommunity);
+                        LOGGER.info("Created subcommunity with size {}", subCommunity.size());
+                    }
+                }
+                
+                continue; // Skip to next large community
+            }
+            
+            // For moderately large communities, use standard splitting
+            
+            // Calculate how many subcommunities we need
+            int numSubCommunities = (int) Math.ceil((double) communitySize / maxCommunitySize);
+            LOGGER.info("Creating {} subcommunities", numSubCommunities);
+            
+            // Create a subgraph of just this community
+            Graph<Node, DefaultWeightedEdge> subgraph = createSubgraph(largeCommunity, graph);
+            
+            // If community is at least twice the minimum size, we can safely split it
+            if (communitySize >= minCommunitySize * 2) {
+                List<List<Node>> subCommunities;
+                
+                // First try to use edge betweenness for better community preservation
+                LOGGER.info("Attempting to split community using edge betweenness");
+                subCommunities = splitByEdgeBetweenness(subgraph, numSubCommunities, minCommunitySize);
+                
+                // Check if the split produced valid subcommunities and none exceed max size
+                boolean validSplit = true;
+                for (List<Node> subCommunity : subCommunities) {
+                    if (subCommunity.size() < minCommunitySize || subCommunity.size() > maxCommunitySize) {
+                        validSplit = false;
+                        break;
+                    }
+                }
+                
+                // If edge betweenness didn't work well, try spatial clustering
+                if (!validSplit) {
+                    LOGGER.info("Edge betweenness produced invalid subcommunities, trying spatial clustering");
+                    subCommunities = splitBySpatialClustering(largeCommunity, numSubCommunities);
+                    
+                    // Verify spatial clusters are valid
+                    validSplit = true;
+                    for (List<Node> subCommunity : subCommunities) {
+                        if (subCommunity.size() < minCommunitySize || subCommunity.size() > maxCommunitySize) {
+                            validSplit = false;
+                            break;
+                        }
+                    }
+                    
+                    // If still not valid, try direct partitioning as last resort
+                    if (!validSplit) {
+                        LOGGER.info("Spatial clustering failed. Using direct partitioning as last resort.");
+                        subCommunities = partitionCommunityDirectly(largeCommunity, maxCommunitySize, minCommunitySize);
+                    }
+                }
+                
+                // Add the new subcommunities to our map
+                splitCommunities.remove(largeCommunityId);
+                
+                for (List<Node> subCommunity : subCommunities) {
+                    if (subCommunity.size() >= minCommunitySize) {
+                        splitCommunities.put(nextCommunityId++, subCommunity);
+                        LOGGER.info("Created subcommunity with size {}", subCommunity.size());
+                    } else {
+                        LOGGER.info("Discarding subcommunity with size {} < minimum {}", 
+                                  subCommunity.size(), minCommunitySize);
+                    }
+                }
+            } else {
+                // If the community is too small to split safely, leave it as is
+                LOGGER.info("Community {} is too small to split while respecting minimum size, keeping as is", 
+                          largeCommunityId);
+            }
+        }
+        
+        // Check if we still have communities exceeding maximum size
+        boolean hasLargeCommunities = false;
+        for (List<Node> community : splitCommunities.values()) {
+            if (community.size() > maxCommunitySize) {
+                hasLargeCommunities = true;
+                LOGGER.info("Still have community with size {} > max size {}", 
+                         community.size(), maxCommunitySize);
+                break;
+            }
+        }
+        
+        // If we still have large communities, recursively split them
+        if (hasLargeCommunities) {
+            LOGGER.info("Some communities still exceed maximum size. Performing another round of splitting.");
+            return splitLargeCommunities(splitCommunities, graph);
+        }
+        
+        return splitCommunities;
+    }
+    
+    /**
+     * Hierarchically splits a very large community into subcommunities.
+     * This uses a divide-and-conquer approach for very large communities.
+     * 
+     * @param community The large community to split
+     * @param graph The original graph for edge information
+     * @param maxSize Maximum community size
+     * @param minSize Minimum community size
+     * @return A list of subcommunities
+     */
+    private List<List<Node>> splitLargeCommunityHierarchically(
+            List<Node> community, 
+            Graph<Node, DefaultWeightedEdge> graph, 
+            int maxSize, 
+            int minSize) {
+        
+        int communitySize = community.size();
+        LOGGER.info("Hierarchically splitting community with {} nodes", communitySize);
+        
+        // Base case: If community is small enough, return it as is
+        if (communitySize <= maxSize) {
+            return List.of(community);
+        }
+        
+        // Create a subgraph for this community
+        Graph<Node, DefaultWeightedEdge> subgraph = createSubgraph(community, graph);
+        
+        // For very large communities, first split into a small number of large subcommunities
+        int initialDivisions = Math.min(10, (int)Math.ceil(communitySize / (double)(maxSize * 3)));
+        LOGGER.info("First dividing into {} intermediate communities", initialDivisions);
+        
+        // Use edge betweenness to split into initial divisions (better preserves structure)
+        List<List<Node>> intermediateCommunities = splitByEdgeBetweenness(
+                subgraph, initialDivisions, minSize);
+        
+        // If edge betweenness fails or creates poor divisions, try spatial clustering
+        if (intermediateCommunities.size() < 2) {
+            LOGGER.info("Edge betweenness failed, trying spatial clustering for initial division");
+            intermediateCommunities = new ArrayList<>(splitBySpatialClustering(community, initialDivisions));
+            
+            // Check if spatial clustering produced valid results
+            boolean hasInvalidCommunities = false;
+            for (List<Node> comm : intermediateCommunities) {
+                if (comm.size() < minSize) {
+                    hasInvalidCommunities = true;
+                    break;
+                }
+            }
+            
+            // If spatial clustering fails or creates too few communities, use geographical partitioning
+            if (hasInvalidCommunities || intermediateCommunities.size() < 2) {
+                LOGGER.info("Spatial clustering failed for initial division, using geographical partitioning");
+                intermediateCommunities = new ArrayList<>(partitionByGeography(community, initialDivisions));
+            }
+        }
+        
+        // Recursively split each intermediate community if it's still too large
+        List<List<Node>> finalCommunities = new ArrayList<>();
+        
+        for (List<Node> intermediateComm : intermediateCommunities) {
+            if (intermediateComm.size() <= maxSize) {
+                // If this community is already within size limits, add it directly
+                finalCommunities.add(intermediateComm);
+            } else {
+                // Recursively split this intermediate community
+                List<List<Node>> splitResults = splitLargeCommunityHierarchically(
+                        intermediateComm, graph, maxSize, minSize);
+                finalCommunities.addAll(splitResults);
+            }
+        }
+        
+        // Ensure no tiny communities are created
+        List<List<Node>> validCommunities = new ArrayList<>();
+        List<Node> nodesInTinyCommunities = new ArrayList<>();
+        
+        for (List<Node> comm : finalCommunities) {
+            if (comm.size() >= minSize) {
+                validCommunities.add(comm);
+            } else {
+                nodesInTinyCommunities.addAll(comm);
+            }
+        }
+        
+        // Handle any leftover nodes from tiny communities
+        if (!nodesInTinyCommunities.isEmpty()) {
+            LOGGER.info("Redistributing {} nodes from tiny communities", nodesInTinyCommunities.size());
+            
+            if (validCommunities.isEmpty()) {
+                // If we have no valid communities, create one from the tiny community nodes
+                if (nodesInTinyCommunities.size() >= minSize) {
+                    validCommunities.add(nodesInTinyCommunities);
+                } else {
+                    // If we can't even form one valid community, return the original (this shouldn't happen)
+                    LOGGER.warn("Failed to create valid communities. Returning original community.");
+                    return List.of(community);
+                }
+            } else {
+                // Add leftover nodes to the smallest valid communities
+                redistributeLeftoverNodes(nodesInTinyCommunities, validCommunities, maxSize);
+            }
+        }
+        
+        LOGGER.info("Hierarchical splitting completed. Created {} subcommunities", validCommunities.size());
+        return validCommunities;
+    }
+    
+    /**
+     * Redistributes leftover nodes to the smallest valid communities.
+     * 
+     * @param leftoverNodes Nodes to redistribute
+     * @param validCommunities List of valid communities
+     * @param maxSize Maximum community size
+     */
+    private void redistributeLeftoverNodes(
+            List<Node> leftoverNodes, 
+            List<List<Node>> validCommunities,
+            int maxSize) {
+        
+        // Sort communities by size (smallest first)
+        validCommunities.sort(Comparator.comparingInt(List::size));
+        
+        // Add leftover nodes to the smallest communities
+        for (Node node : leftoverNodes) {
+            // Find the smallest community that has room
+            for (List<Node> community : validCommunities) {
+                if (community.size() < maxSize) {
+                    community.add(node);
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Partitions a community directly into approximately equal-sized subcommunities.
+     * This is a last resort when other clustering methods fail.
+     * 
+     * @param community The community to partition
+     * @param maxSize Maximum allowed size for a subcommunity
+     * @param minSize Minimum allowed size for a subcommunity
+     * @return A list of subcommunities
+     */
+    private List<List<Node>> partitionCommunityDirectly(
+            List<Node> community, 
+            int maxSize, 
+            int minSize) {
+        
+        LOGGER.info("Directly partitioning community with {} nodes", community.size());
+        
+        int numPartitions = (int) Math.ceil(community.size() / (double)maxSize);
+        int targetSize = community.size() / numPartitions;
+        
+        LOGGER.info("Creating {} partitions with target size ~{}", numPartitions, targetSize);
+        
+        // Sort by geographic location for more sensible partitioning
+        List<Node> sortedNodes = new ArrayList<>(community);
+        sortedNodes.sort((n1, n2) -> {
+            double lat1 = n1.getLocation().getY();
+            double lat2 = n2.getLocation().getY();
+            if (Math.abs(lat1 - lat2) < 0.01) {
+                // If latitudes are close, sort by longitude
+                return Double.compare(n1.getLocation().getX(), n2.getLocation().getX());
+            }
+            return Double.compare(lat1, lat2);
+        });
+        
+        // Create partitions
+        List<List<Node>> partitions = new ArrayList<>();
+        List<Node> currentPartition = new ArrayList<>();
+        
+        for (Node node : sortedNodes) {
+            currentPartition.add(node);
+            
+            // When partition reaches target size, start a new one
+            if (currentPartition.size() >= targetSize && partitions.size() < numPartitions - 1) {
+                partitions.add(currentPartition);
+                currentPartition = new ArrayList<>();
+            }
+        }
+        
+        // Add the last partition
+        if (!currentPartition.isEmpty()) {
+            partitions.add(currentPartition);
+        }
+        
+        // Validate partitions
+        List<List<Node>> validPartitions = new ArrayList<>();
+        List<Node> nodesInInvalidPartitions = new ArrayList<>();
+        
+        for (List<Node> partition : partitions) {
+            if (partition.size() >= minSize) {
+                validPartitions.add(partition);
+            } else {
+                nodesInInvalidPartitions.addAll(partition);
+            }
+        }
+        
+        // Redistribute nodes from invalid partitions
+        if (!nodesInInvalidPartitions.isEmpty() && !validPartitions.isEmpty()) {
+            redistributeLeftoverNodes(nodesInInvalidPartitions, validPartitions, maxSize);
+        } else if (!nodesInInvalidPartitions.isEmpty()) {
+            // If all partitions are invalid, create one partition with all nodes
+            validPartitions.add(new ArrayList<>(community));
+        }
+        
+        return validPartitions;
+    }
+    
+    /**
+     * Partitions a community based on geographical areas.
+     * Divides the area into a grid and assigns nodes to cells.
+     * 
+     * @param community The community to partition
+     * @param numPartitions Approximate number of partitions to create
+     * @return A list of subcommunities
+     */
+    private List<List<Node>> partitionByGeography(List<Node> community, int numPartitions) {
+        LOGGER.info("Partitioning community by geography into ~{} partitions", numPartitions);
+        
+        // Find the geographical bounds of the community
+        double minLat = Double.MAX_VALUE;
+        double maxLat = Double.MIN_VALUE;
+        double minLon = Double.MAX_VALUE;
+        double maxLon = Double.MIN_VALUE;
+        
+        for (Node node : community) {
+            double lat = node.getLocation().getY();
+            double lon = node.getLocation().getX();
+            
+            minLat = Math.min(minLat, lat);
+            maxLat = Math.max(maxLat, lat);
+            minLon = Math.min(minLon, lon);
+            maxLon = Math.max(maxLon, lon);
+        }
+        
+        // Calculate grid dimensions
+        // We'll create a grid with cells that are roughly square in shape
+        double latRange = maxLat - minLat;
+        double lonRange = maxLon - minLon;
+        
+        // Adjust for Earth's coordinate system (longitude degrees vary in distance by latitude)
+        // Rough approximation: at latitude φ, 1° longitude = cos(φ) * 111.32 km
+        double midLat = (minLat + maxLat) / 2;
+        double lonAdjustment = Math.cos(Math.toRadians(midLat));
+        double adjustedLonRange = lonRange * lonAdjustment;
+        
+        // Calculate the number of rows and columns for our grid
+        int rows, cols;
+        if (latRange >= adjustedLonRange) {
+            rows = (int) Math.ceil(Math.sqrt(numPartitions * latRange / adjustedLonRange));
+            cols = (int) Math.ceil(numPartitions / (double) rows);
+        } else {
+            cols = (int) Math.ceil(Math.sqrt(numPartitions * adjustedLonRange / latRange));
+            rows = (int) Math.ceil(numPartitions / (double) cols);
+        }
+        
+        LOGGER.info("Created geographical grid with {} rows and {} columns", rows, cols);
+        
+        // Create partitions grid
+        Map<String, List<Node>> grid = new HashMap<>();
+        
+        // Assign nodes to grid cells
+        for (Node node : community) {
+            double lat = node.getLocation().getY();
+            double lon = node.getLocation().getX();
+            
+            // Calculate grid cell
+            int row = Math.min(rows - 1, (int) Math.floor((lat - minLat) / latRange * rows));
+            int col = Math.min(cols - 1, (int) Math.floor((lon - minLon) / lonRange * cols));
+            
+            String cellId = row + "," + col;
+            grid.computeIfAbsent(cellId, k -> new ArrayList<>()).add(node);
+        }
+        
+        // Convert grid cells to partitions
+        List<List<Node>> partitions = new ArrayList<>(grid.values());
+        
+        // Filter out empty partitions
+        partitions.removeIf(List::isEmpty);
+        
+        LOGGER.info("Created {} geographical partitions", partitions.size());
+        
+        // Merge very small partitions with neighbors
+        if (minCommunitySize > 1) {
+            partitions = mergeSmallPartitions(partitions, community, minCommunitySize);
+        }
+        
+        return partitions;
+    }
+    
+    /**
+     * Merges small partitions with their geographical neighbors.
+     * 
+     * @param partitions List of partitions
+     * @param originalCommunity The original community (for centroid calculation)
+     * @param minSize Minimum allowed size for a partition
+     * @return List of merged partitions
+     */
+    private List<List<Node>> mergeSmallPartitions(
+            List<List<Node>> partitions, 
+            List<Node> originalCommunity, 
+            int minSize) {
+        
+        // Filter partitions
+        List<List<Node>> validPartitions = new ArrayList<>();
+        List<List<Node>> smallPartitions = new ArrayList<>();
+        
+        for (List<Node> partition : partitions) {
+            if (partition.size() >= minSize) {
+                validPartitions.add(partition);
+            } else {
+                smallPartitions.add(partition);
+            }
+        }
+        
+        LOGGER.info("Found {} partitions below minimum size {}", smallPartitions.size(), minSize);
+        
+        // If all partitions are small, combine them all
+        if (validPartitions.isEmpty() && !smallPartitions.isEmpty()) {
+            List<Node> combined = new ArrayList<>();
+            for (List<Node> partition : smallPartitions) {
+                combined.addAll(partition);
+            }
+            return List.of(combined);
+        }
+        
+        // For each small partition, merge with the closest valid partition
+        for (List<Node> smallPartition : smallPartitions) {
+            if (smallPartition.isEmpty()) continue;
+            
+            // Find the closest valid partition
+            double bestDistance = Double.MAX_VALUE;
+            List<Node> closestPartition = null;
+            
+            // Calculate centroid of small partition
+            double smallLat = 0, smallLon = 0;
+            for (Node node : smallPartition) {
+                smallLat += node.getLocation().getY();
+                smallLon += node.getLocation().getX();
+            }
+            smallLat /= smallPartition.size();
+            smallLon /= smallPartition.size();
+            
+            // Find closest valid partition
+            for (List<Node> validPartition : validPartitions) {
+                // Calculate centroid of valid partition
+                double validLat = 0, validLon = 0;
+                for (Node node : validPartition) {
+                    validLat += node.getLocation().getY();
+                    validLon += node.getLocation().getX();
+                }
+                validLat /= validPartition.size();
+                validLon /= validPartition.size();
+                
+                // Calculate distance between centroids
+                double distance = Math.sqrt(
+                    Math.pow(smallLat - validLat, 2) + 
+                    Math.pow(smallLon - validLon, 2)
+                );
+                
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    closestPartition = validPartition;
+                }
+            }
+            
+            // Merge with closest partition
+            if (closestPartition != null) {
+                closestPartition.addAll(smallPartition);
+            }
+        }
+        
+        LOGGER.info("After merging small partitions: {} partitions remain", validPartitions.size());
+        return validPartitions;
+    }
+    
+    /**
+     * Creates a subgraph containing only the specified nodes and edges between them.
+     * 
+     * @param nodes The nodes to include in the subgraph
+     * @param graph The original graph
+     * @return A new graph containing only the specified nodes and edges between them
+     */
+    private Graph<Node, DefaultWeightedEdge> createSubgraph(List<Node> nodes, Graph<Node, DefaultWeightedEdge> graph) {
+        Graph<Node, DefaultWeightedEdge> subgraph = new org.jgrapht.graph.SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+        
+        // Add all nodes
+        for (Node node : nodes) {
+            subgraph.addVertex(node);
+        }
+        
+        // Add edges between nodes
+        for (int i = 0; i < nodes.size(); i++) {
+            Node source = nodes.get(i);
+            for (int j = i + 1; j < nodes.size(); j++) {
+                Node target = nodes.get(j);
+                DefaultWeightedEdge edge = graph.getEdge(source, target);
+                if (edge != null) {
+                    DefaultWeightedEdge newEdge = subgraph.addEdge(source, target);
+                    if (newEdge != null) {
+                        subgraph.setEdgeWeight(newEdge, graph.getEdgeWeight(edge));
+                    }
+                }
+            }
+        }
+        
+        return subgraph;
+    }
+    
+    /**
+     * Splits a community into subcommunities based on spatial clustering.
+     * Uses K-means clustering on the geographical coordinates.
+     * 
+     * @param community The community to split
+     * @param numSubCommunities The target number of subcommunities
+     * @return A list of subcommunities
+     */
+    private List<List<Node>> splitBySpatialClustering(List<Node> community, int numSubCommunities) {
+        LOGGER.info("Splitting community by spatial clustering into {} subcommunities", numSubCommunities);
+        
+        // Use a simple K-means approach for spatial clustering
+        
+        // 1. Initialize K centroids randomly
+        List<double[]> centroids = new ArrayList<>();
+        for (int i = 0; i < numSubCommunities; i++) {
+            Node randomNode = community.get((int) (Math.random() * community.size()));
+            double[] centroid = new double[] {
+                randomNode.getLocation().getX(),
+                randomNode.getLocation().getY()
+            };
+            centroids.add(centroid);
+        }
+        
+        // 2. Create K empty clusters
+        List<List<Node>> clusters = new ArrayList<>();
+        for (int i = 0; i < numSubCommunities; i++) {
+            clusters.add(new ArrayList<>());
+        }
+        
+        // 3. Assign nodes to clusters based on distance to centroids
+        boolean changed = true;
+        int iterations = 0;
+        int maxIterations = 100;
+        
+        while (changed && iterations < maxIterations) {
+            changed = false;
+            iterations++;
+            
+            // Clear clusters
+            for (List<Node> cluster : clusters) {
+                cluster.clear();
+            }
+            
+            // Assign each node to nearest centroid
+            for (Node node : community) {
+                int closestCentroidIndex = 0;
+                double minDistance = Double.MAX_VALUE;
+                
+                for (int i = 0; i < centroids.size(); i++) {
+                    double[] centroid = centroids.get(i);
+                    double distance = Math.pow(node.getLocation().getX() - centroid[0], 2) +
+                                     Math.pow(node.getLocation().getY() - centroid[1], 2);
+                    
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestCentroidIndex = i;
+                    }
+                }
+                
+                clusters.get(closestCentroidIndex).add(node);
+            }
+            
+            // Calculate new centroids
+            for (int i = 0; i < numSubCommunities; i++) {
+                if (clusters.get(i).isEmpty()) {
+                    continue;
+                }
+                
+                double sumX = 0;
+                double sumY = 0;
+                
+                for (Node node : clusters.get(i)) {
+                    sumX += node.getLocation().getX();
+                    sumY += node.getLocation().getY();
+                }
+                
+                double[] newCentroid = new double[] {
+                    sumX / clusters.get(i).size(),
+                    sumY / clusters.get(i).size()
+                };
+                
+                // Check if centroid has moved
+                if (Math.abs(newCentroid[0] - centroids.get(i)[0]) > 0.0001 ||
+                    Math.abs(newCentroid[1] - centroids.get(i)[1]) > 0.0001) {
+                    changed = true;
+                }
+                
+                centroids.set(i, newCentroid);
+            }
+        }
+        
+        LOGGER.info("Spatial clustering completed in {} iterations", iterations);
+        
+        // If we have empty clusters or clusters below min size, try to redistribute
+        boolean hasBadClusters = false;
+        for (List<Node> cluster : clusters) {
+            if (cluster.size() < minCommunitySize) {
+                hasBadClusters = true;
+                break;
+            }
+        }
+        
+        if (hasBadClusters) {
+            LOGGER.info("Some clusters are below minimum size, attempting to redistribute");
+            clusters = redistributeNodes(clusters);
+        }
+        
+        return clusters;
+    }
+    
+    /**
+     * Redistributes nodes from overpopulated clusters to underpopulated ones.
+     * 
+     * @param clusters The initial clusters
+     * @return Redistributed clusters
+     */
+    private List<List<Node>> redistributeNodes(List<List<Node>> clusters) {
+        // Create clones of the original clusters
+        List<List<Node>> redistributed = new ArrayList<>();
+        for (List<Node> cluster : clusters) {
+            redistributed.add(new ArrayList<>(cluster));
+        }
+        
+        // Sort clusters by size (largest first)
+        redistributed.sort((c1, c2) -> Integer.compare(c2.size(), c1.size()));
+        
+        // Calculate average cluster size
+        int totalNodes = 0;
+        for (List<Node> cluster : redistributed) {
+            totalNodes += cluster.size();
+        }
+        int avgSize = totalNodes / redistributed.size();
+        
+        // Try to balance the clusters while respecting minimum size
+        for (int i = 0; i < redistributed.size(); i++) {
+            List<Node> cluster = redistributed.get(i);
+            
+            // If this cluster is too small, transfer nodes from larger clusters
+            if (cluster.size() < minCommunitySize) {
+                int needed = minCommunitySize - cluster.size();
+                
+                // Try to get nodes from clusters above average size
+                for (int j = 0; j < redistributed.size() && needed > 0; j++) {
+                    if (i == j) continue;
+                    
+                    List<Node> donor = redistributed.get(j);
+                    if (donor.size() > avgSize) {
+                        int toTransfer = Math.min(needed, donor.size() - avgSize);
+                        
+                        // Only transfer if the donor would still respect minimum size
+                        if (donor.size() - toTransfer >= minCommunitySize) {
+                            for (int k = 0; k < toTransfer; k++) {
+                                Node node = donor.remove(donor.size() - 1);
+                                cluster.add(node);
+                                needed--;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return redistributed;
+    }
+    
+    /**
+     * Splits a graph into subcommunities using the edge betweenness approach.
+     * 
+     * @param graph The graph to split
+     * @param numSubCommunities The target number of subcommunities
+     * @param minSize The minimum size of a subcommunity
+     * @return A list of subcommunities
+     */
+    private List<List<Node>> splitByEdgeBetweenness(
+            Graph<Node, DefaultWeightedEdge> graph, 
+            int numSubCommunities, 
+            int minSize) {
+        
+        LOGGER.info("Splitting community by edge betweenness into {} subcommunities", numSubCommunities);
+        
+        // Create a mutable copy of the graph that we can modify
+        Graph<Node, DefaultWeightedEdge> graphCopy = cloneGraph(graph);
+        
+        // Keep removing edges with highest betweenness until we have enough communities
+        int iteration = 0;
+        int maxIterations = 100;
+        
+        while (iteration < maxIterations) {
+            iteration++;
+            
+            // Calculate edge betweenness for all edges
+            Map<DefaultWeightedEdge, Double> edgeBetweenness = calculateEdgeBetweenness(graphCopy);
+            
+            // Find edge with maximum betweenness
+            DefaultWeightedEdge maxEdge = findMaxBetweennessEdge(edgeBetweenness);
+            
+            if (maxEdge == null) {
+                LOGGER.info("No more edges to remove, stopping algorithm");
+                break;
+            }
+            
+            // Remove the edge with highest betweenness
+            graphCopy.removeEdge(maxEdge);
+            
+            // Check if we've reached the target number of communities
+            ConnectivityInspector<Node, DefaultWeightedEdge> inspector = 
+                    new ConnectivityInspector<>(graphCopy);
+            List<Set<Node>> connectedSets = inspector.connectedSets();
+            
+            // Check if we have enough valid communities (above minimum size)
+            int validCommunities = 0;
+            for (Set<Node> community : connectedSets) {
+                if (community.size() >= minSize) {
+                    validCommunities++;
+                }
+            }
+            
+            LOGGER.debug("Iteration {}: {} connected components, {} valid communities",
+                      iteration, connectedSets.size(), validCommunities);
+            
+            if (validCommunities >= numSubCommunities) {
+                LOGGER.info("Reached target number of valid communities: {}", validCommunities);
+                break;
+            }
+        }
+        
+        // Get the final communities
+        ConnectivityInspector<Node, DefaultWeightedEdge> inspector = 
+                new ConnectivityInspector<>(graphCopy);
+        List<Set<Node>> connectedSets = inspector.connectedSets();
+        
+        // Convert to the expected return format and filter by minimum size
+        List<List<Node>> communities = new ArrayList<>();
+        for (Set<Node> community : connectedSets) {
+            if (community.size() >= minSize) {
+                communities.add(new ArrayList<>(community));
+            }
+        }
+        
+        LOGGER.info("Edge betweenness splitting found {} communities", communities.size());
         return communities;
     }
     

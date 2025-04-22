@@ -4,8 +4,12 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,15 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
     public static final double FUEL_COST_PER_LITER = loadDoubleProperty("transportation.fuel.cost.per.liter", 1.8);
     public static final double ADDITIONAL_COST_PER_BUS = loadDoubleProperty("transportation.bus.fixed.cost", 100.0);
     public static final double MAX_BUS_DISTANCE_KM = loadDoubleProperty("transportation.bus.max.distance.km", 150.0);
+    
+    // Minibus configuration values
+    public static final int MINIBUS_CAPACITY = loadIntProperty("transportation.minibus.capacity", 25);
+    public static final double MINIBUS_FUEL_EFFICIENCY = loadDoubleProperty("transportation.minibus.fuel.efficiency", 0.25);
+    public static final double ADDITIONAL_COST_PER_MINIBUS = loadDoubleProperty("transportation.minibus.fixed.cost", 60.0);
+    
+    // Vehicle type threshold
+    public static final int VEHICLE_TYPE_THRESHOLD = loadIntProperty("transportation.vehicle.type.threshold", 25);
+    
     private static final boolean USE_CLUSTERING_FOR_BUS_ASSIGNMENT = true; // Whether to use clustering for bus assignment
     
     /**
@@ -95,7 +108,11 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
         System.out.println("Fuel Efficiency: " + FUEL_EFFICIENCY + " liters/km");
         System.out.println("Fuel Cost: " + FUEL_COST_PER_LITER + " per liter");
         System.out.println("Fixed Cost per Bus: " + ADDITIONAL_COST_PER_BUS);
-        System.out.println("Max Bus Distance: " + MAX_BUS_DISTANCE_KM + " km\n");
+        System.out.println("Max Bus Distance: " + MAX_BUS_DISTANCE_KM + " km");
+        System.out.println("Minibus Capacity: " + MINIBUS_CAPACITY);
+        System.out.println("Minibus Fuel Efficiency: " + MINIBUS_FUEL_EFFICIENCY + " liters/km");
+        System.out.println("Fixed Cost per Minibus: " + ADDITIONAL_COST_PER_MINIBUS);
+        System.out.println("Vehicle Type Threshold: " + VEHICLE_TYPE_THRESHOLD + " nodes\n");
     }
     
     /**
@@ -142,18 +159,23 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
      * @return The transportation cost analysis for the community
      */
     private CommunityTransportationCost calculateOptimizedCommunityTransportationCost(int communityId, List<Node> nodes) {
-        // Step 1: Determine number of buses needed based on node count and max distance
-        int nodeCount = nodes.size();
-        int busesNeeded = (int) Math.ceil((double) nodeCount / BUS_CAPACITY);
-        // Create the cost object
-        CommunityTransportationCost cost = new CommunityTransportationCost(communityId, nodeCount, busesNeeded);
+        // Step 1: Determine the vehicle type based on community size
+        VehicleType vehicleType = determineVehicleType(nodes.size());
         
-        // Step 2: Use advanced techniques to optimize bus routes and assignments
-        if (busesNeeded > 0) {
-            if (USE_CLUSTERING_FOR_BUS_ASSIGNMENT && busesNeeded > 1) {
-                assignNodesToBusesWithClustering(nodes, busesNeeded, cost);
+        // Step 2: Determine number of vehicles needed based on node count and vehicle capacity
+        int nodeCount = nodes.size();
+        int vehiclesNeeded = (int) Math.ceil((double) nodeCount / vehicleType.getCapacity());
+        
+        // Create the cost object with vehicle type information
+        OptimizedCommunityTransportationCost cost = new OptimizedCommunityTransportationCost(communityId, nodeCount, vehiclesNeeded);
+        cost.setVehicleType(vehicleType);
+        
+        // Step 3: Use advanced techniques to optimize routes and assignments
+        if (vehiclesNeeded > 0) {
+            if (USE_CLUSTERING_FOR_BUS_ASSIGNMENT && vehiclesNeeded > 1) {
+                assignNodesToVehiclesWithClustering(nodes, vehiclesNeeded, cost, vehicleType);
             } else {
-                assignNodesToBusesWithTSP(nodes, busesNeeded, cost);
+                assignNodesToVehiclesWithTSP(nodes, vehiclesNeeded, cost, vehicleType);
             }
         }
         
@@ -161,15 +183,32 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
     }
     
     /**
-     * Assigns nodes to buses using a spatial clustering approach to group nearby nodes.
+     * Determines the appropriate vehicle type based on community size.
+     * 
+     * @param communitySize The number of nodes in the community
+     * @return The appropriate vehicle type
+     */
+    private VehicleType determineVehicleType(int communitySize) {
+        if (communitySize <= VEHICLE_TYPE_THRESHOLD) {
+            return VehicleType.MINIBUS;
+        } else {
+            return VehicleType.BUS;
+        }
+    }
+    
+    /**
+     * Assigns nodes to vehicles using a spatial clustering approach to group nearby nodes.
      * This method tries to create balanced clusters that minimize travel distances.
      * 
-     * @param nodes The nodes to assign to buses
-     * @param busCount The number of buses available
-     * @param cost The cost object to update with bus data
+     * @param nodes The nodes to assign to vehicles
+     * @param vehicleCount The number of vehicles available
+     * @param cost The cost object to update with vehicle data
+     * @param vehicleType The type of vehicle to use
      */
-    private void assignNodesToBusesWithClustering(List<Node> nodes, int busCount, CommunityTransportationCost cost) {
-        System.out.println("Using spatial clustering to assign " + nodes.size() + " nodes to " + busCount + " buses");
+    private void assignNodesToVehiclesWithClustering(List<Node> nodes, int vehicleCount, 
+                                              OptimizedCommunityTransportationCost cost, VehicleType vehicleType) {
+        System.out.println("Using spatial clustering to assign " + nodes.size() + " nodes to " + 
+                           vehicleCount + " " + vehicleType.name().toLowerCase() + "es");
         
         // Step 1: Find a central point (centroid) for the community
         double[] centroid = calculateCentroid(nodes);
@@ -186,19 +225,19 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
         List<List<Node>> clusters = new ArrayList<>();
         
         // Create empty clusters
-        for (int i = 0; i < busCount; i++) {
+        for (int i = 0; i < vehicleCount; i++) {
             clusters.add(new ArrayList<>());
         }
         
         // Assign nodes to clusters based on their angle from centroid
         for (Node node : sortedNodes) {
             double angle = calculateAngle(node, centroid[0], centroid[1]);
-            int clusterIndex = (int) ((angle / (2 * Math.PI)) * busCount) % busCount;
+            int clusterIndex = (int) ((angle / (2 * Math.PI)) * vehicleCount) % vehicleCount;
             clusters.get(clusterIndex).add(node);
         }
         
-        // Step 4: Balance clusters to ensure no bus is overloaded
-        balanceClusters(clusters, nodes.size() / busCount);
+        // Step 4: Balance clusters to ensure no vehicle is overloaded
+        balanceClusters(clusters, nodes.size() / vehicleCount);
         
         // Step 5: For each cluster, calculate an optimal route
         for (int i = 0; i < clusters.size(); i++) {
@@ -211,49 +250,53 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
             // Calculate an optimal route for this cluster using TSP
             BusRoute route = calculateOptimalTSPRoute(clusterNodes);
             
-            // Add the bus to the cost object
-            cost.addBus(new BusInfo(i + 1, clusterNodes.size(), route));
+            // Add the bus/minibus to the cost object
+            OptimizedBusInfo vehicleInfo = new OptimizedBusInfo(i + 1, clusterNodes.size(), route, vehicleType);
+            cost.addBus(vehicleInfo);
             
-            System.out.println("Bus " + (i + 1) + ": " + clusterNodes.size() + 
-                              " nodes, route distance: " + String.format("%.2f", route.getDistanceKm()) + " km");
+            System.out.println(vehicleType.name() + " " + (i + 1) + ": " + clusterNodes.size() + 
+                               " nodes, route distance: " + String.format("%.2f", route.getDistanceKm()) + " km");
         }
     }
     
     /**
-     * Assigns nodes to buses using TSP (Traveling Salesman Problem) optimization
-     * to find the shortest route for each bus.
+     * Assigns nodes to vehicles using TSP (Traveling Salesman Problem) optimization
+     * to find the shortest route for each vehicle.
      * 
-     * @param nodes The nodes to assign to buses
-     * @param busCount The number of buses available
-     * @param cost The cost object to update with bus data
+     * @param nodes The nodes to assign to vehicles
+     * @param vehicleCount The number of vehicles available
+     * @param cost The cost object to update with vehicle data
+     * @param vehicleType The type of vehicle to use
      */
-    private void assignNodesToBusesWithTSP(List<Node> nodes, int busCount, CommunityTransportationCost cost) {
+    private void assignNodesToVehiclesWithTSP(List<Node> nodes, int vehicleCount, 
+                                      OptimizedCommunityTransportationCost cost, VehicleType vehicleType) {
         
-        // Simple assignment strategy: divide nodes evenly among buses
-        int nodesPerBus = (int) Math.ceil((double) nodes.size() / busCount);
+        // Simple assignment strategy: divide nodes evenly among vehicles
+        int nodesPerVehicle = (int) Math.ceil((double) nodes.size() / vehicleCount);
         
-        for (int busIndex = 0; busIndex < busCount; busIndex++) {
-            // Get the subset of nodes for this bus
-            int startIndex = busIndex * nodesPerBus;
-            int endIndex = Math.min(startIndex + nodesPerBus, nodes.size());
+        for (int vehicleIndex = 0; vehicleIndex < vehicleCount; vehicleIndex++) {
+            // Get the subset of nodes for this vehicle
+            int startIndex = vehicleIndex * nodesPerVehicle;
+            int endIndex = Math.min(startIndex + nodesPerVehicle, nodes.size());
             
             if (startIndex >= nodes.size()) {
                 // No more nodes to assign
                 break;
             }
             
-            List<Node> busNodes = new ArrayList<>(nodes.subList(startIndex, endIndex));
+            List<Node> vehicleNodes = new ArrayList<>(nodes.subList(startIndex, endIndex));
             
-            // Calculate optimal route for this bus using TSP
-            BusRoute route = calculateOptimalTSPRoute(busNodes);
+            // Calculate optimal route for this vehicle using TSP
+            BusRoute route = calculateOptimalTSPRoute(vehicleNodes);
             
-            // Add the bus to the cost object
-            cost.addBus(new BusInfo(busIndex + 1, busNodes.size(), route));
+            // Add the vehicle to the cost object
+            OptimizedBusInfo vehicleInfo = new OptimizedBusInfo(vehicleIndex + 1, vehicleNodes.size(), route, vehicleType);
+            cost.addBus(vehicleInfo);
         }
     }
     
     /**
-     * Calculates an optimal route for a bus to visit all assigned nodes using TSP algorithms.
+     * Calculates an optimal route for a vehicle to visit all assigned nodes using TSP algorithms.
      * This method attempts to use the best available TSP solver based on the number of nodes.
      * 
      * @param nodes The nodes to visit
@@ -643,7 +686,7 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
     
     /**
      * Prints a detailed summary of the transportation cost analysis to the console.
-     * This version includes additional optimization details.
+     * This version includes additional optimization details and vehicle types.
      */
     @Override
     public void printCostSummary() {
@@ -655,24 +698,36 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
         DecimalFormat df = new DecimalFormat("#,##0.00");
         
         System.out.println("\n=== OPTIMIZED TRANSPORTATION COST ANALYSIS SUMMARY ===");
-        System.out.println(String.format("%-15s %-15s %-15s %-15s %-15s %-15s",
-                "Community ID", "Node Count", "Buses", "Distance (km)", "Fuel (L)", "Cost"));
-        System.out.println(String.format("%-15s %-15s %-15s %-15s %-15s %-15s",
-                "------------", "----------", "-----", "-------------", "--------", "----"));
+        System.out.println(String.format("%-15s %-15s %-15s %-15s %-15s %-15s %-15s",
+                "Community ID", "Node Count", "Vehicle Type", "Vehicles", "Distance (km)", "Fuel (L)", "Cost"));
+        System.out.println(String.format("%-15s %-15s %-15s %-15s %-15s %-15s %-15s",
+                "------------", "----------", "------------", "--------", "-------------", "--------", "----"));
         
         double totalDistance = 0;
         double totalFuel = 0;
         double totalCost = 0;
         int totalBuses = 0;
+        int totalMinibuses = 0;
         int totalNodes = 0;
         
         for (CommunityTransportationCost cost : getCommunityCosts().values()) {
-            // Include fixed costs per bus
-            double busCost = cost.getTotalFuelCost() + (cost.getBusCount() * ADDITIONAL_COST_PER_BUS);
+            // Get vehicle type
+            VehicleType vehicleType = VehicleType.BUS; // Default
             
-            System.out.println(String.format("%-15d %-15d %-15d %-15s %-15s %-15s",
+            if (cost instanceof OptimizedCommunityTransportationCost) {
+                vehicleType = ((OptimizedCommunityTransportationCost) cost).getVehicleType();
+            }
+            
+            String vehicleTypeStr = vehicleType.name();
+            
+            // Calculate fixed cost based on vehicle type
+            double fixedCostPerVehicle = vehicleType.getFixedCost();
+            double busCost = cost.getTotalFuelCost() + (cost.getBusCount() * fixedCostPerVehicle);
+            
+            System.out.println(String.format("%-15d %-15d %-15s %-15d %-15s %-15s %-15s",
                     cost.getCommunityId(),
                     cost.getNodeCount(),
+                    vehicleTypeStr,
                     cost.getBusCount(),
                     df.format(cost.getTotalDistanceKm()),
                     df.format(cost.getTotalFuelLiters()),
@@ -681,49 +736,99 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
             totalDistance += cost.getTotalDistanceKm();
             totalFuel += cost.getTotalFuelLiters();
             totalCost += busCost;
-            totalBuses += cost.getBusCount();
+            
+            if (vehicleType == VehicleType.MINIBUS) {
+                totalMinibuses += cost.getBusCount();
+            } else {
+                totalBuses += cost.getBusCount();
+            }
+            
             totalNodes += cost.getNodeCount();
         }
         
-        System.out.println(String.format("%-15s %-15s %-15s %-15s %-15s %-15s",
-                "------------", "----------", "-----", "-------------", "--------", "----"));
-        System.out.println(String.format("%-15s %-15d %-15d %-15s %-15s %-15s",
+        System.out.println(String.format("%-15s %-15s %-15s %-15s %-15s %-15s %-15s",
+                "------------", "----------", "------------", "--------", "-------------", "--------", "----"));
+        System.out.println(String.format("%-15s %-15d %-15s %-15s %-15s %-15s %-15s",
                 "TOTAL",
                 totalNodes,
-                totalBuses,
+                "",
+                "B:" + totalBuses + " M:" + totalMinibuses,
                 df.format(totalDistance),
                 df.format(totalFuel),
                 df.format(totalCost)));
         
         System.out.println("\nFixed cost per bus: " + ADDITIONAL_COST_PER_BUS);
-        System.out.println("Total fixed cost: " + df.format(totalBuses * ADDITIONAL_COST_PER_BUS));
+        System.out.println("Fixed cost per minibus: " + ADDITIONAL_COST_PER_MINIBUS);
+        System.out.println("Total fixed cost: " + df.format((totalBuses * ADDITIONAL_COST_PER_BUS) + 
+                                                          (totalMinibuses * ADDITIONAL_COST_PER_MINIBUS)));
         System.out.println("Total fuel cost: " + df.format(totalFuel * FUEL_COST_PER_LITER));
         System.out.println("Total cost: " + df.format(totalCost));
     }
     
     /**
-     * Saves the optimized transportation cost analysis to a CSV file.
-     * This version includes additional optimization details.
+     * Saves the transportation cost analysis with metadata (clustering algorithm, graph strategy, etc.)
+     * to a CSV file in a structured folder.
      * 
-     * @param filename The name of the file to save to
+     * @param clusteringAlgorithm The clustering algorithm used in the analysis
+     * @param graphStrategy The graph construction strategy used
+     * @param kValue The k value used for graph construction (if applicable)
      * @throws IOException If there is an error writing to the file
      */
-    @Override
-    public void saveAnalysisToCSV(String filename) throws IOException {
+    public void saveAnalysisWithMetadata(String clusteringAlgorithm, String graphStrategy, int kValue) throws IOException {
+        // Create a timestamp for the filename
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
+        String timestamp = dateFormat.format(new Date());
+        
+        // Create directory structure: results/cost_analysis/YYYY-MM-DD/
+        String dateOnly = timestamp.split("_")[0];
+        String baseDir = "results/cost_analysis/" + dateOnly;
+        
+        // Create directories if they don't exist
+        Files.createDirectories(Paths.get(baseDir));
+        
+        // Create filename with metadata
+        String filename = baseDir + "/transportation_cost_" + clusteringAlgorithm + "_" + 
+                         graphStrategy + "_K" + kValue + "_" + timestamp + ".csv";
+        
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            // Write metadata header
+            writer.write("# Analysis Metadata\n");
+            writer.write("# Timestamp: " + timestamp + "\n");
+            writer.write("# Clustering Algorithm: " + clusteringAlgorithm + "\n");
+            writer.write("# Graph Construction Strategy: " + graphStrategy + "\n");
+            writer.write("# K Value: " + kValue + "\n");
+            writer.write("# Bus Capacity: " + BUS_CAPACITY + "\n");
+            writer.write("# Minibus Capacity: " + MINIBUS_CAPACITY + "\n");
+            writer.write("# Fuel Efficiency (Bus): " + FUEL_EFFICIENCY + " liters/km\n");
+            writer.write("# Fuel Efficiency (Minibus): " + MINIBUS_FUEL_EFFICIENCY + " liters/km\n");
+            writer.write("# Fuel Cost: " + FUEL_COST_PER_LITER + " per liter\n");
+            writer.write("# Fixed Cost (Bus): " + ADDITIONAL_COST_PER_BUS + "\n");
+            writer.write("# Fixed Cost (Minibus): " + ADDITIONAL_COST_PER_MINIBUS + "\n\n");
+            
+            // Write regular CSV content
             // Write header
-            writer.write("Community_ID,Node_Count,Buses_Required,Total_Distance_Km,Total_Fuel_Liters," +
+            writer.write("Community_ID,Node_Count,Vehicle_Type,Vehicles_Required,Total_Distance_Km,Total_Fuel_Liters," +
                         "Fuel_Cost,Fixed_Cost,Total_Cost\n");
             
             // Write each community's data
             for (CommunityTransportationCost cost : getCommunityCosts().values()) {
-                double fixedCost = cost.getBusCount() * ADDITIONAL_COST_PER_BUS;
+                VehicleType vehicleType = VehicleType.BUS; // Default
+                
+                if (cost instanceof OptimizedCommunityTransportationCost) {
+                    vehicleType = ((OptimizedCommunityTransportationCost) cost).getVehicleType();
+                }
+                
+                String vehicleTypeStr = vehicleType.name();
+                
+                double fixedCostPerVehicle = vehicleType.getFixedCost();
+                double fixedCost = cost.getBusCount() * fixedCostPerVehicle;
                 double fuelCost = cost.getTotalFuelLiters() * FUEL_COST_PER_LITER;
                 double totalCost = fuelCost + fixedCost;
                 
-                writer.write(String.format("%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%.2f\n",
+                writer.write(String.format("%d,%d,%s,%d,%.2f,%.2f,%.2f,%.2f,%.2f\n",
                         cost.getCommunityId(),
                         cost.getNodeCount(),
+                        vehicleTypeStr,
                         cost.getBusCount(),
                         cost.getTotalDistanceKm(),
                         cost.getTotalFuelLiters(),
@@ -732,32 +837,135 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
                         totalCost));
             }
             
-            // Add a blank line before bus details
+            // Add a blank line before vehicle details
             writer.write("\n");
-            writer.write("Community_ID,Bus_Number,Nodes_Carried,Distance_Km,Fuel_Liters," +
+            writer.write("Community_ID,Vehicle_Type,Vehicle_Number,Nodes_Carried,Distance_Km,Fuel_Liters," +
                         "Fuel_Cost,Fixed_Cost,Total_Cost\n");
             
-            // Write detailed bus data for each community
+            // Write detailed vehicle data for each community
             for (CommunityTransportationCost cost : getCommunityCosts().values()) {
                 int communityId = cost.getCommunityId();
                 
-                for (BusInfo bus : cost.getBuses()) {
-                    double fuelCost = bus.getFuelLiters() * FUEL_COST_PER_LITER;
-                    double totalCost = fuelCost + ADDITIONAL_COST_PER_BUS;
+                for (BusInfo vehicle : cost.getBuses()) {
+                    VehicleType vehicleType = VehicleType.BUS; // Default
                     
-                    writer.write(String.format("%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%.2f\n",
+                    if (vehicle instanceof OptimizedBusInfo) {
+                        vehicleType = ((OptimizedBusInfo) vehicle).getVehicleType();
+                    }
+                    
+                    String vehicleTypeStr = vehicleType.name();
+                    
+                    double fixedCostPerVehicle = vehicleType.getFixedCost();
+                    double fuelCost = vehicle.getFuelLiters() * FUEL_COST_PER_LITER;
+                    double totalCost = fuelCost + fixedCostPerVehicle;
+                    
+                    writer.write(String.format("%d,%s,%d,%d,%.2f,%.2f,%.2f,%.2f,%.2f\n",
                             communityId,
-                            bus.getBusNumber(),
-                            bus.getNodeCount(),
-                            bus.getRouteDistanceKm(),
-                            bus.getFuelLiters(),
+                            vehicleTypeStr,
+                            vehicle.getBusNumber(),
+                            vehicle.getNodeCount(),
+                            vehicle.getRouteDistanceKm(),
+                            vehicle.getFuelLiters(),
                             fuelCost,
-                            ADDITIONAL_COST_PER_BUS,
+                            fixedCostPerVehicle,
                             totalCost));
                 }
             }
         }
         
-        System.out.println("Optimized transportation cost analysis saved to " + filename);
+        System.out.println("Optimized transportation cost analysis with metadata saved to " + filename);
+    }
+    
+    /**
+     * Enum representing the types of vehicles available for transportation.
+     */
+    public enum VehicleType {
+        BUS(BUS_CAPACITY, FUEL_EFFICIENCY, ADDITIONAL_COST_PER_BUS),
+        MINIBUS(MINIBUS_CAPACITY, MINIBUS_FUEL_EFFICIENCY, ADDITIONAL_COST_PER_MINIBUS);
+        
+        private final int capacity;
+        private final double fuelEfficiency;
+        private final double fixedCost;
+        
+        VehicleType(int capacity, double fuelEfficiency, double fixedCost) {
+            this.capacity = capacity;
+            this.fuelEfficiency = fuelEfficiency;
+            this.fixedCost = fixedCost;
+        }
+        
+        public int getCapacity() {
+            return capacity;
+        }
+        
+        public double getFuelEfficiency() {
+            return fuelEfficiency;
+        }
+        
+        public double getFixedCost() {
+            return fixedCost;
+        }
+    }
+    
+    /**
+     * Extended version of CommunityTransportationCost that includes vehicle type information.
+     */
+    public class OptimizedCommunityTransportationCost extends CommunityTransportationCost {
+        private VehicleType vehicleType = VehicleType.BUS; // Default to standard bus
+        
+        public OptimizedCommunityTransportationCost(int communityId, int nodeCount, int busCount) {
+            super(communityId, nodeCount, busCount);
+        }
+        
+        public VehicleType getVehicleType() {
+            return vehicleType;
+        }
+        
+        public void setVehicleType(VehicleType vehicleType) {
+            this.vehicleType = vehicleType;
+        }
+        
+        @Override
+        public void addBus(BusInfo bus) {
+            super.addBus(bus);
+        }
+        
+        @Override
+        public double getTotalFuelLiters() {
+            double total = 0;
+            for (BusInfo bus : getBuses()) {
+                if (bus instanceof OptimizedBusInfo) {
+                    total += ((OptimizedBusInfo) bus).getFuelLiters();
+                } else {
+                    total += bus.getFuelLiters();
+                }
+            }
+            return total;
+        }
+    }
+    
+    /**
+     * Extended version of BusInfo that includes vehicle type information.
+     */
+    public class OptimizedBusInfo extends BusInfo {
+        private VehicleType vehicleType = VehicleType.BUS; // Default to standard bus
+        
+        public OptimizedBusInfo(int busNumber, int nodeCount, BusRoute route, VehicleType vehicleType) {
+            super(busNumber, nodeCount, route);
+            this.vehicleType = vehicleType;
+        }
+        
+        public VehicleType getVehicleType() {
+            return vehicleType;
+        }
+        
+        @Override
+        public double getFuelLiters() {
+            return getRouteDistanceKm() * vehicleType.getFuelEfficiency();
+        }
+        
+        @Override
+        public double getFuelCost() {
+            return getFuelLiters() * FUEL_COST_PER_LITER;
+        }
     }
 } 
