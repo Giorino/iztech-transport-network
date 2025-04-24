@@ -8,7 +8,7 @@ Our approach leverages graph theory, treating student locations as nodes and pot
 \section{Graph Representation of Transportation Map of IZTECH}
 \label{sec:graph_representation}
 
-The foundation of our analysis is a dataset comprising the geographical coordinates of approximately 2000 students located throughout the Izmir metropolitan area. In our graph-based model, each student's location is represented as a distinct node (or vertex) $v$ within a set $V$. The set $V$ thus encapsulates all student locations considered in the transportation network, where $|V| \approx 2000$. 
+The foundation of our analysis is a dataset comprising the geographical coordinates of approximately 2000 synthetically generated student locations throughout Izmir. These points were created by applying a Gaussian distribution based on the actual population data for each district in Izmir. Figure \ref{fig:student_map} illustrates the geographical distribution of these student locations. In our graph-based model, each student's location is represented as a distinct node (or vertex) $v$ within a set $V$. The set $V$ thus encapsulates all student locations considered in the transportation network, where $|V| \approx 2000$. 
 
 % Placeholder for Map Visualization
 \begin{figure}[!htbp]
@@ -18,26 +18,21 @@ The foundation of our analysis is a dataset comprising the geographical coordina
 \label{fig:student_map}
 \end{figure}
 
-\subsection{Complete Graph Representation}
+\subsection{Complete Graph of Transportation Map}
 \label{subsec:complete_graph}
 
-The complete graph connects every pair of distinct student locations, representing maximum potential connectivity as detailed in Section~\ref{subsec:GraphConstructionMethods}. Edge weights $w_{uv}$ represent the estimated travel cost between locations $u$ and $v$.
+A complete graph is the natural mathematical representation of a transportation network where every location is directly connected to every other location. Formally, for our set of student locations $V$, the complete graph $G_{complete} = (V, E_{complete})$ contains an edge $e_{uv} \in E_{complete}$ for every pair of distinct vertices $u, v \in V$, resulting in $|E_{complete}| = {|V| \choose 2} = \frac{|V|(|V|-1)}{2}$ edges. The complete graph connects every pair of distinct student locations, representing maximum potential connectivity as detailed in Section~\ref{se:GraphConstructionMethodsAndSparsity}.
 
 This representation serves as our baseline model, establishing upper bounds on connectivity. However, the dense connectivity often leads to suboptimal routing solutions with higher overall costs due to the ${|V| \choose 2}$ edges making it computationally expensive for large datasets.
 
-\subsubsection{Minibus Solution for Imbalanced Clusters}
-\label{subsubsec:minibus_solution}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{img/complete}
+\caption{Complete graph representation of a sample of student locations. Every point is connected to every other point, representing maximum connectivity but leading to computational challenges for large datasets.}
+\label{fig:complete_graph}
+\end{figure}
 
-When analyzing the complete graph representation, we observed that the resulting clusters were often imbalanced, with many clusters having fewer than 25 students. This created an inefficiency in the transportation system, as standard buses with a capacity of 50 students would be underutilized.
 
-To address this issue, we implemented a vehicle type allocation strategy that assigns minibuses (with a maximum capacity of 25 students) to smaller clusters and standard buses to larger ones:
-
-\begin{itemize}
-    \item Clusters with 10-25 students: Assigned to minibuses
-    \item Clusters with 26-50 students: Assigned to standard buses
-\end{itemize}
-
-This differentiated approach resulted in significant cost savings due to the lower fuel consumption of minibuses compared to standard buses. However, it's important to note that IZTECH currently does not have minibuses in its fleet, only standard buses. This limitation motivates our exploration of alternative graph construction methods that might produce more balanced clusters suitable for the existing bus fleet.
 
 \subsection{Sparse Graph Representation}
 \label{subsec:sparse_graph}
@@ -47,36 +42,53 @@ Given the computational and practical limitations of the complete graph approach
 \subsubsection{Delaunay Graph Representation}
 \label{subsubsec:delaunay}
 
-The Delaunay triangulation constructs a graph based on the empty circumcircle property as explained in Section~\ref{subsec:GraphConstructionMethods}, creating a planar graph that avoids edge crossings.
+The Delaunay triangulation constructs a graph $G_{Delaunay}=(V, E_{Delaunay})$ based on the empty circumcircle property as explained in Section~\ref{se:GraphConstructionMethodsAndSparsity}. For any three vertices $p, q, r \in V$, they form a triangle in the Delaunay triangulation if and only if the circumcircle passing through $p, q, r$ contains no other vertex in $V$. This property creates a planar graph that avoids edge crossings and naturally connects proximate points.
 
-In our implementation, we utilized the JTS Topology Suite to create the Delaunay triangulation of student locations. This representation naturally connects nearby points while avoiding edge crossings, which can represent physical barriers or inefficient routes. Our implementation assigns edge weights based on the Euclidean distance between connected nodes, approximating the fuel cost for direct travel.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{img/delaunay}
+\caption{Delaunay triangulation applied to a sample of student locations. The triangulation connects points such that no point lies inside the circumcircle of any triangle, creating a network that naturally preserves proximity relationships.}
+\label{fig:delaunay_graph}
+\end{figure}
 
 \subsubsection{Gabriel Graph Representation}
 \label{subsubsec:gabriel}
 
-The Gabriel graph is a subgraph of the Delaunay triangulation that connects nodes if the circle with diameter between them contains no other nodes, as described in Section~\ref{subsec:GraphConstructionMethods}.
+The Gabriel graph is a subgraph of the Delaunay triangulation that connects nodes if the circle with diameter between them contains no other nodes (see Section~\ref{se:GraphConstructionMethodsAndSparsity}). Formally, for our set of student locations $V$, the Gabriel graph $G_{Gabriel}=(V, E_{Gabriel})$ contains an edge $e_{uv} \in E_{Gabriel}$ if and only if:
+
+\begin{equation}
+d^2(u, v) < d^2(u, w) + d^2(v, w) \text{ for all } w \in V, w \neq u, w \neq v
+\end{equation}
+
+where $d(u, v)$ represents the Euclidean distance between vertices $u$ and $v$.
 
 Our implementation constructs the Gabriel graph by first generating the Delaunay triangulation and then filtering edges based on the empty circle criterion. This approach preserves the most efficient local connections while further reducing the computational complexity compared to the complete graph.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{img/gabriel}
+\caption{Gabriel graph derived from student location data. This graph is a subgraph of the Delaunay triangulation, where an edge between two points exists only if the circle with the diameter equal to the distance between them contains no other points.}
+\label{fig:gabriel_graph}
+\end{figure}
 
 \subsubsection{K-Nearest Neighbour Graph Representation}
 \label{subsubsec:knn}
 
-The K-Nearest Neighbors (KNN) graph connects each node to its $k$ closest neighbors, creating a sparse representation that emphasizes local connectivity as detailed in Section~\ref{subsec:GraphConstructionMethods}.
+The K-Nearest Neighbors (KNN) graph connects each node to its $k$ closest neighbors, creating a sparse representation that emphasizes local connectivity as detailed in Section~\ref{se:GraphConstructionMethodsAndSparsity}. For our set of student locations $V$, the KNN graph $G_{KNN}=(V, E_{KNN})$ contains edges such that:
 
-In our implementation, we dynamically determine an appropriate value of $k$ based on the network size and density, ensuring sufficient connectivity while maintaining computational efficiency. The graph is constructed using spatial indexing for efficient neighbor queries, with edge weights based on the Euclidean distance between connected nodes.
+\begin{equation}
+E_{KNN} = \{(u, v) \mid v \in \text{kNN}(u) \text{ or } u \in \text{kNN}(v)\}
+\end{equation}
 
-% Placeholder for Graph Examples Visualization
+where $\text{kNN}(u)$ represents the $k$ nearest neighbors of vertex $u$ according to Euclidean distance.
+
+In our implementation, we set $k=30$ based on the average seat size of buses in the IZTECH fleet, ensuring that each node is connected to approximately the number of students that would typically share transportation. The graph is constructed using spatial indexing for efficient neighbor queries, with edge weights based on the Euclidean distance between connected nodes.
+
 \begin{figure}[!htbp]
-\centerline{
-\subfigure[Complete Graph]{\includegraphics[width=0.45\textwidth]{img/complete}}
-\subfigure[K-Nearest Neighbors ($k=5$)]{\includegraphics[width=0.45\textwidth]{img/k_nearest}}
-}
-\centerline{
-\subfigure[Delaunay Triangulation]{\includegraphics[width=0.45\textwidth]{img/delaunay}}
-\subfigure[Gabriel Graph]{\includegraphics[width=0.45\textwidth]{img/gabriel}}
-}
-\caption{Comparison of graph construction methods using a sample of 25 nodes. Each method results in different connectivity patterns, affecting the subsequent clustering and route formation.}
-\label{fig:graph_examples}
+\centering
+\includegraphics[width=0.6\textwidth]{img/k_nearest}
+\caption{K-Nearest Neighbors graph with $k=5$ applied to student location data. Each point is connected to its five closest neighbors, creating a sparse network that preserves local connectivity while significantly reducing the number of edges compared to the complete graph.}
+\label{fig:knn_graph}
 \end{figure}
 
 \section{Clustering Graph Representation of IZTECH}
@@ -87,16 +99,31 @@ Once the various graph representations were constructed, we applied clustering a
 \subsection{Clustering Complete Graph Representation}
 \label{subsec:clustering_complete}
 
-Clustering the complete graph representation presents unique challenges due to its dense connectivity. Our implementation applies multiple clustering algorithms to the complete graph, each configured to respect the bus capacity constraints:
-
-\begin{itemize}
-    \item Minimum cluster size: 10 students (minimum efficient bus occupancy)
-    \item Maximum cluster size: 50 students (maximum bus capacity)
-\end{itemize}
+Clustering the complete graph representation presents unique challenges due to its dense connectivity. Our implementation applies multiple clustering algorithms to the complete graph, each configured to respect the bus capacity constraints. We enforced a minimum cluster size of 10 students (minimum efficient bus occupancy) and a maximum cluster size of 50 students (maximum bus capacity) to ensure practical viability of the resulting routes.
 
 We primarily utilized the Leiden algorithm (see Section~\ref{subsec:LeidenAlgorithm}), which optimizes modularity to find densely connected communities with its refinement phase ensuring well-connected clusters. The algorithm was configured with adaptive resolution to produce balanced clusters.
 
+\begin{table}[h]
+\centering
+
+\label{tab:leiden_complete_example}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Comm.} & \textbf{Students}  &  \textbf{Distance} & \textbf{Fuel} & \textbf{Fuel Cost} & \textbf{Total} \\
+\textbf{ID} & & \textbf{(km)} & \textbf{(L)} & \textbf{(TL)} & \textbf{Cost (TL)} \\
+\hline
+54 & 18  & 45.70 & 18.74 & 849.35 & 2445.35 \\
+\hline
+\end{tabular}
+\caption{Example of a clustered community using Leiden algorithm on complete graph}
+\end{table}
+
 The clusters from the complete graph often required post-processing to merge small communities and split oversized ones, ensuring adherence to the capacity constraints. This post-processing uses geographic proximity to guide the merging and splitting operations, prioritizing the combination of communities that are spatially close while ensuring each resulting community remains within the capacity limits.
+
+\subsubsection{Minibus Solution for Imbalanced Clusters}
+\label{subsubsec:minibus_solution}
+
+When analyzing the complete graph representation, we observed that the resulting clusters were often imbalanced, with many clusters having fewer than 25 students. This created an inefficiency in the transportation system, as standard buses with a capacity of 50 students would be underutilized. To address this issue, we implemented a vehicle type allocation strategy that assigns minibuses (with a maximum capacity of 25 students) to smaller clusters containing 10-25 students, while standard buses were allocated to larger clusters with 26-50 students. This differentiated approach resulted in significant cost savings due to the lower fuel consumption of minibuses compared to standard buses. However, it's important to note that IZTECH currently does not have minibuses in its fleet, only standard buses. This limitation motivates our exploration of alternative graph construction methods that might produce more balanced clusters suitable for the existing bus fleet.
 
 \subsection{Clustering Sparse Graph Representation}
 \label{subsec:clustering_sparse}
@@ -121,46 +148,6 @@ All clustering approaches were evaluated based on their ability to produce balan
 
 \section{Robustness for Clustering Graph Representation of IZTECH}
 \label{sec:robustness}
-
-% Empty section as requested, just the title placeholder
-
-\section{Evaluation Framework and Route Mapping}
-\label{sec:evaluation}
-
-Applying each clustering algorithm to each graph type yields multiple potential partitionings. These were evaluated to find the most effective combinations based on practical transportation logistics, focusing on fuel efficiency and vehicle capacity utilization.
-
-\subsection{Evaluation Metrics}
-Key metrics used for evaluation included:
-\begin{itemize}
-    \item \textbf{Total Estimated Fuel Consumption:} Based on optimized routes within each cluster.
-    \item \textbf{Number of Clusters/Routes:} Total buses required.
-    \item \textbf{Capacity Constraint Adherence:} Checking if cluster sizes are within [10, 50].
-    \item \textbf{Vehicle Type Allocation:} Assigning minibuses (max 25) or buses (max 50) efficiently.
-\end{itemize}
-
-\subsection{Mapping Clusters to Bus Routes}
-Raw clusters were processed to ensure compliance with capacity constraints:
-\begin{enumerate}
-    \item \textbf{Cluster Size Check:} Verify $10 \leq |C| \leq 50$.
-    \item \textbf{Handling Small Clusters ($|C| < 10$):} Merge with nearby clusters where feasible.
-    \item \textbf{Handling Large Clusters ($|C| > 50$):} Split into multiple valid sub-routes.
-    \item \textbf{Vehicle Assignment:} Assign minibus ($10 \leq |C| \leq 25$) or bus ($26 \leq |C| \leq 50$).
-\end{enumerate}
-
-This evaluation and mapping process allows for comparing the practical effectiveness of different graph and clustering strategies.
-
-\section{Implementation Details}
-\label{sec:implementation}
-
-The described methodology was implemented using the Java programming language (JDK 17), with Apache Maven managing project dependencies. Several key libraries facilitated the graph construction, clustering, geospatial operations, and data handling:
-\begin{itemize}
-    \item \textbf{JGraphT:} Employed for core graph data structures, representing student locations as nodes and connections as edges \cite{jgrapht}.
-    \item \textbf{GeoTools and JTS Topology Suite:} Utilized for handling geographical coordinates, performing spatial calculations, and constructing geometric graphs \cite{geotools, jts}.
-    \item \textbf{Apache Commons CSV:} Used for reading student location data and writing results \cite{commonscsv}.
-    \item \textbf{Efficient Java Matrix Library (EJML):} Provided necessary matrix operations, particularly eigenvalue decomposition required for Spectral Clustering \cite{ejml}.
-\end{itemize}
-
-The analysis relied on coordinate data for student locations. Edge weights representing estimated fuel costs were calculated using distance information derived from the geospatial libraries and standard vehicle fuel efficiency models. Data might have been sourced or cross-referenced with external datasets from OpenStreetMap.
 
 % Commenting out the example algorithm from the template
 % \begin{algorithm}
