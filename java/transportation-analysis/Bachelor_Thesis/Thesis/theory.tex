@@ -2,61 +2,21 @@
 \label{ch:basics}
 This chapter introduces the fundamental concepts and theories used in transportation network analysis. First, we explore basic graph theory concepts essential for understanding networks. Then, we examine how transportation systems can be represented as graphs. Finally, we discuss clustering algorithms applied to identify communities within these networks, with focus on their applications in transportation systems .
 
-\section{Fundamental Concepts in Graph Theory}
-\label{se:FundamentalConcepts}
+\section{Basic Definitions}
+\label{se:BasicDefinitions}
 
-\subsection{Basic Definitions}
-\label{subsec:BasicDefinitions}
+A graph $G$ is formally defined as an ordered pair $G = (V, E, W)$ comprising a set $V$ of vertices or nodes and a set $E$ of edges, which are 2-element subsets of $V$ . The fundamental components of a graph include: \textbf{Vertices (Nodes)} which represent distinct entities in the network; \textbf{Edges} which represent the connections or relationships between vertices; \textbf{Weight}, indicating that edges can be weighted to represent distances, travel times, costs, or other metrics.
 
-A graph $G$ is formally defined as an ordered pair $G = (V, E)$ comprising a set $V$ of vertices or nodes and a set $E$ of edges, which are 2-element subsets of $V$ . The fundamental components of a graph include:
-
-\begin{itemize}
-    \item \textbf{Vertices (Nodes):} Represent distinct entities in the network.
-    \item \textbf{Edges:} Represent the connections or relationships between vertices.
-    \item \textbf{Weight:} Edges can be weighted to represent distances, travel times, costs, or other metrics.
-    \item \textbf{Direction:} Edges can be directed (one-way) or undirected (two-way).
-\end{itemize}
-
-Graphs can be classified as directed or undirected, weighted or unweighted, simple or multi-graphs, depending on their properties .
-
-\subsection{Affinity Matrix Construction}
+\subsection{Affinity Matrix}
 \label{subsec:AffinityMatrix}
 
-The adjacency matrix (also known as the affinity matrix) $\mat{A}$ of a graph is a square matrix where each element $\mat{A}_{ij}$ represents the connection between vertices $i$ and $j$ :
+The affinity matrix $\mat{A}$ of a graph is a square matrix where each element $\mat{A}_{ij}$ represents the connection between vertices $i$ and $j$. The affinity matrix provides a complete mathematical representation of the graph and serves as the foundation for many graph algorithms and analyses .
 
-\begin{equation}
-    \mat{A}_{ij} = 
-    \begin{cases} 
-        w_{ij} & \text{if there is an edge from vertex $i$ to vertex $j$ with weight $w_{ij}$} \\
-        0 & \text{otherwise}
-    \end{cases}
-\end{equation}
 
-For an unweighted graph, $w_{ij} = 1$ for all edges. The adjacency matrix provides a complete mathematical representation of the graph and serves as the foundation for many graph algorithms and analyses .
+\section{Graph Construction Methods and Sparsity}
+\label{se:GraphConstructionMethodsAndSparsity}
 
-Other important matrices derived from the adjacency matrix include the edge weight matrix $\mat{D}$, a matrix where each entry $\mat{D}_{ij}$ represents the weight of the edge connecting vertex $i$ to vertex $j$ (with $\mat{D}_{ij} = 0$ if no edge exists), the Laplacian matrix $\mat{L} = \mat{D} - \mat{A}$, which captures many structural properties of the graph, and the normalized Laplacian $\mat{L}_{\text{norm}} = \mat{D}^{-1/2}\mat{L}\mat{D}^{-1/2} = \mat{I} - \mat{D}^{-1/2}\mat{A}\mat{D}^{-1/2}$, which is commonly used in spectral clustering.
-
-\section{Transportation Networks}
-\label{se:TransportationNetworks}
-
-Transportation networks are naturally represented as graphs, where nodes typically represent locations or intersections, and edges represent the connections between them, such as roads, paths, or routes . In transportation context:
-
-\begin{itemize}
-    \item \textbf{Vertices:} Represent geographical locations such as intersections, bus stops, or points of interest.
-    \item \textbf{Edges:} Represent the connections between locations, such as roads, railway lines, or paths.
-\end{itemize}
-
-\subsection{Graph Construction Methods for Transportation Networks}
-\label{subsec:GraphConstructionMethods}
-
-Multiple approaches exist for constructing graphs to represent transportation networks . The choice of method depends on the specific requirements and constraints of the analysis:
-
-\subsubsection{Complete Graph}
-A complete graph connects every pair of vertices with an edge . In a transportation context, this would represent a fully connected network where direct travel is possible between any two locations.
-
-\begin{equation}
-    E = \{(u, v) \mid u, v \in V, u \neq v\}
-\end{equation}
+A graph is considered complete if every distinct pair of vertices is connected by an edge. In terms of edge weights \(w_{i,j}\), this means a connection exists for all \(i \neq j\). While this represents the maximum possible connectivity, constructing a complete graph for a transportation network is often impractical. It implies direct travel is possible between any two locations, ignoring real-world constraints like geographical barriers or infrastructure costs. Such dense connectivity is computationally expensive to analyze and does not accurately reflect most transportation systems. Therefore, sparsity, where only essential or feasible connections are represented, becomes crucial for creating realistic and manageable network models.
 
 \subsubsection{K-Nearest Neighbors Graph}
 In this approach, each vertex is connected to its $k$ nearest neighbors according to some distance metric . This method creates a sparse graph where each location is connected only to its closest locations.
@@ -77,13 +37,10 @@ The Gabriel Graph is a subgraph of the Delaunay triangulation . An edge connects
 \end{equation}
 where $d(u, v)$ is the distance between vertices $u$ and $v$.
 
-\subsubsection{Road Network Extraction}
-For many transportation applications, the graph is constructed directly from existing road network data, such as OpenStreetMap (OSM) . This approach creates a graph that accurately represents the actual road infrastructure.
+\section{Graph-based Clustering}
+\label{se:GraphBasedClusterings}
 
-\section{Clustering Transportation Networks}
-\label{se:ClusteringMethods}
-
-Clustering in transportation networks involves partitioning the network into cohesive groups or communities based on connectivity patterns, geographical proximity, or other relevant factors . These clusters can represent neighborhoods, functional regions, or service areas within a transportation system.
+Clustering in graphs involves partitioning the vertices into cohesive groups or communities based on connectivity patterns, proximity, or other relevant factors. These clusters can represent meaningful subgroups or structures within the data represented by the graph.
 
 \subsection{Spectral Clustering}
 \label{subsec:SpectralClustering}
@@ -98,7 +55,7 @@ Spectral clustering uses the eigenvalues and eigenvectors of matrices derived fr
 \Ensure Cluster assignments for vertices $V$
 
 \State Construct the Adjacency Matrix $\mat{A}$ for the graph $G$.
-\State Construct the Degree Matrix $\mat{D}$ where $\mat{D}_{ii} = \sum_j \mat{A}_{ij}$.
+\State Construct the Edge Weight Matrix $\mat{D}$ where $\mat{d}_{ii} = \sum_j \mat{A}_{ij}$.
 \State Calculate the Laplacian Matrix $\mat{L} = \mat{D} - \mat{A}$.
 \State Compute the Normalized Laplacian $\mat{L}_{\text{norm}} = \mat{D}^{-1/2} \mat{L} \mat{D}^{-1/2} = \mat{I} - \mat{D}^{-1/2} \mat{A} \mat{D}^{-1/2}$.
 \State Find the $k$ eigenvectors $\vect{u}_1, \vect{u}_2, \dots, \vect{u}_k$ corresponding to the $k$ smallest non-zero eigenvalues of $\mat{L}_{\text{norm}}$.
@@ -110,76 +67,44 @@ Spectral clustering uses the eigenvalues and eigenvectors of matrices derived fr
 \end{algorithmic}
 \end{algorithm}
 
-The eigenvectors of the Laplacian matrix capture important structural properties of the graph:
-\begin{itemize}
-    \item The multiplicity of the eigenvalue 0 equals the number of connected components in the graph
-    \item The second smallest eigenvalue (Fiedler value) measures how well-connected the graph is
-    \item The eigenvectors corresponding to the smallest non-zero eigenvalues reveal the community structure
-\end{itemize}
 
 \subsection{Leiden Algorithm}
 \label{subsec:LeidenAlgorithm}
 
-The Leiden algorithm improves upon the Louvain algorithm for community detection by ensuring well-connected communities and optimizing modularity (Eq.~\eqref{eq:modularity}) . The process is outlined in Algorithm~\ref{alg:leiden}.
+The Leiden algorithm improves upon the Louvain algorithm for community detection by ensuring well-connected communities and optimizing modularity. The algorithm operates iteratively to detect communities within a graph. Starting with each node in its own community (a singleton partition), the algorithm performs a local moving phase where individual nodes are reassigned to neighboring communities if such a move improves the overall modularity. This phase continues until no single node move can further increase modularity, resulting in an initial partition. Subsequently, a refinement phase ensures that the communities formed are well-connected by partitioning each community internally. An aggregate network is then constructed based on this refined partition, where each node represents a subcommunity from the refinement stage. The non-refined partition from the local moving phase serves as the initial community assignment for this aggregate network. For instance, if a community is split into two subcommunities during refinement, these become two distinct nodes in the aggregate network, initially assigned to the same aggregate community. The algorithm then repeats the local moving and refinement phases on the aggregate network. These steps of local moving, refinement, and aggregation are iterated until no further improvements in modularity can be achieved, yielding the final community structure. The detailed pseudocode can be found in Appendix \ref{alg:leiden_appendix}.
 
-\begin{algorithm}[H]
-\caption{Leiden Algorithm}
-\label{alg:leiden}
-\begin{algorithmic}[1]
-\Require Graph $G = (V, E)$, initial partition $P$ (optional)
-\Ensure Final partition $P_{\text{final}}$ maximizing modularity $Q$
+The key innovations of the Leiden algorithm over its predecessors include faster convergence due to more efficient community detection, guaranteed well-connected communities through the refinement phase, the ability to avoid getting trapped in poor local optima by allowing more flexible node movement, and proven asymptotic guarantees for identifying optimal partitions \cite{traag2019leiden}.
 
-\State Initialize partition $P$ (e.g., each node in its own community).
-\State Set \texttt{converged} = \texttt{false}.
-\While{not \texttt{converged}}
-    \State \textbf{Local Moving Phase}
-    \State Set \texttt{moved\_nodes} = \texttt{true}.
-    \While{\texttt{moved\_nodes}}
-        \State Set \texttt{moved\_nodes} = \texttt{false}.
-        \ForAll{node $i \in V$}
-            \State Find neighboring community $C_j$ that maximizes $\Delta Q$ (Eq.~\eqref{eq:modularitygain}) for moving $i$ to $C_j$.
-            \If{max $\Delta Q > 0$}
-                \State Move node $i$ to community $C_j$.
-                \State Update partition $P$.
-                \State Set \texttt{moved\_nodes} = \texttt{true}.
-            \EndIf
-        \EndFor
-    \EndWhile
-    \State \textbf{Refinement Phase}
-    \State Create refined partition $P'$ based on $P$.
-    \ForAll{community $C \in P$}
-        \State Partition $C$ into subcommunities locally (ensures well-connected).
-        \State Add refined subcommunities of $C$ to $P'$.
-    \EndFor
-    \State Update $P = P'$.
-    \State \textbf{Aggregation Phase}
-    \If{no change in partition $P$ compared to previous iteration}
-        \State Set \texttt{converged} = \texttt{true}.
-    \Else
-        \State Create aggregated graph $G'$ where each node represents a community in $P$.
-        \State Set edge weights in $G'$ based on inter-community edge weights in $G$.
-        \State Set $G = G'$ for the next iteration.
-        \State Update node mappings to reflect aggregation.
-    \EndIf
-\EndWhile
-\State Set $P_{\text{final}} = P$.
-\end{algorithmic}
-\end{algorithm}
-
-The key innovations of the Leiden algorithm over its predecessors include:
-\begin{itemize}
-    \item Faster convergence due to more efficient community detection
-    \item Guaranteed well-connected communities through the refinement phase
-    \item Ability to avoid getting trapped in poor local optima by allowing more flexible node movement
-    \item Proven asymptotic guarantees for identifying optimal partitions
-\end{itemize}
-
-These properties make Leiden particularly suitable for analyzing transportation networks, where identifying meaningful, well-connected communities is essential for understanding regional connectivity patterns and service areas .
 
 \subsection{Multi-view Anchor Graph-based Clustering (MVAGC)}
 \label{subsec:MVAGC}
 
-MVAGC constructs multiple views of the graph using different features or distance metrics and then integrates these views through an anchor graph representation . This approach can effectively capture both geographic proximity and transportation connectivity patterns.
+Multi-view Anchor Graph-based Clustering (MVAGC) is an advanced clustering technique designed to handle complex datasets represented by multiple feature sets or 'views'. 
 
-The algorithm employs anchor points to approximate the full graph, reducing computational complexity while preserving the essential structure of the data . This makes it particularly suitable for large-scale transportation networks where computational efficiency is important.
+The core idea of MVAGC is to leverage the complementary information present in these different views to obtain a more robust and meaningful clustering result than using any single view alone. Instead of working with the potentially very large full graph, MVAGC utilizes a smaller set of 'anchor points'. These anchors are selected representative points from the dataset (either strategically chosen or randomly sampled).
+
+\begin{algorithm}[H]
+\caption{Multi-view Anchor Graph-based Clustering (MVAGC)}
+\label{alg:mvagc}
+\begin{algorithmic}[1]
+\Require Data points $V = \{v_1, \dots, v_n\}$, Multiple view data representations $X^{(1)}, \dots, X^{(p)}$, Number of clusters $k$, Number of anchors $m$
+\Ensure Cluster assignments for vertices $V$
+
+\State Select $m$ anchor points $U = \{u_1, \dots, u_m\}$ from $V$ (e.g., using k-means or random sampling).
+\For{each view $v = 1, \dots, p$}
+    \State Construct view-specific anchor relationship matrix $Z^{(v)} \in \R^{n \times m}$. $Z_{ij}^{(v)}$ represents the similarity/connection between data point $v_i$ and anchor $u_j$ in view $v$.
+\EndFor
+\State Fuse the view-specific matrices $\{Z^{(1)}, \dots, Z^{(p)}\}$ into a unified representation. This often involves solving an optimization problem to find a consensus matrix $Z^*$ or graph structure that integrates information across views. 
+    \Comment{E.g., Minimize $\sum_{v=1}^{p} \| Z^{(v)} - \text{f}(Z^*, \dots) \|_F^2 + \lambda \cdot \text{Regularization}(Z^*)$}
+\State Perform clustering based on the fused representation $Z^*$.
+    \If{$Z^*$ represents point-to-anchor assignments}
+        \State Apply k-means or spectral clustering on the rows of $Z^*$ (representing points in the anchor space).
+    \ElsIf{$Z^*$ is used to derive a consensus anchor graph $A_{\text{anchor}} \in \R^{m \times m}$}
+        \State Apply spectral clustering on $A_{\text{anchor}}$ to cluster the anchors.
+        \State Assign original points $v_i$ to the cluster of their nearest anchor based on $Z^*$.
+    \EndIf
+\State Assign final cluster labels $C_1, \dots, C_k$ to the original data points $V$.
+
+\end{algorithmic}
+\end{algorithm}
 

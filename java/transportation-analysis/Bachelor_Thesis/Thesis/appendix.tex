@@ -4,5 +4,48 @@
 
 Additional material can be placed here. Do not forget to refer to the appendix in the main part of your thesis.
 
+\begin{algorithm}[H]
+\caption{Leiden Algorithm}
+\label{alg:leiden_appendix}
+\begin{algorithmic}[1]
+\Require Graph $G = (V, E)$, initial partition $P$ (optional)
+\Ensure Final partition $P_{\text{final}}$ maximizing modularity $Q$
+
+\State Initialize partition $P$ (e.g., each node in its own community).
+\State Set \texttt{converged} = \texttt{false}.
+\While{not \texttt{converged}}
+    \State \textbf{Local Moving Phase}
+    \State Set \texttt{moved\_nodes} = \texttt{true}.
+    \While{\texttt{moved\_nodes}}
+        \State Set \texttt{moved\_nodes} = \texttt{false}.
+        \ForAll{node $i \in V$}
+            \State Find neighboring community $C_j$ that maximizes $\Delta Q$ (Eq.~\eqref{eq:modularitygain}) for moving $i$ to $C_j$.
+            \If{max $\Delta Q > 0$}
+                \State Move node $i$ to community $C_j$.
+                \State Update partition $P$.
+                \State Set \texttt{moved\_nodes} = \texttt{true}.
+            \EndIf
+        \EndFor
+    \EndWhile
+    \State \textbf{Refinement Phase}
+    \State Create refined partition $P'$ based on $P$.
+    \ForAll{community $C \in P$}
+        \State Partition $C$ into subcommunities locally (ensures well-connected).
+        \State Add refined subcommunities of $C$ to $P'$.
+    \EndFor
+    \State Update $P = P'$.
+    \State \textbf{Aggregation Phase}
+    \If{no change in partition $P$ compared to previous iteration}
+        \State Set \texttt{converged} = \texttt{true}.
+    \Else
+        \State Create aggregated graph $G'$ where each node represents a community in $P$.
+        \State Set edge weights in $G'$ based on inter-community edge weights in $G$.
+        \State Set $G = G'$ for the next iteration.
+        \State Update node mappings to reflect aggregation.
+    \EndIf
+\EndWhile
+\State Set $P_{\text{final}} = P$.
+\end{algorithmic}
+\end{algorithm}
 
 \end{appendix}
