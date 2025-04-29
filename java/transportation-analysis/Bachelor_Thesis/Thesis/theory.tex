@@ -26,6 +26,11 @@ where $\text{kNN}(u)$ represents the $k$ nearest neighbors of vertex $u$.
 \subsubsection{Delaunay Triangulation}
 Delaunay triangulation creates a graph by connecting vertices such that no vertex lies inside the circumcircle of any triangle formed by three connected vertices . This method preserves local connectivity while avoiding crossing edges, making it useful for geographic applications.
 
+\begin{equation}
+    E = \{(u, v) \mid \forall w \in V \setminus \{u, v\}, \|p_w - c_{uv}\| > r_{uv} \}
+\end{equation}
+where $c_{uv}$ is the center of the circumcircle through vertices $u$ and $v$, $r_{uv}$ is its radius, and $p_w$ is the position of vertex $w$.
+
 \subsubsection{Gabriel Graph}
 The Gabriel Graph is a subgraph of the Delaunay triangulation . An edge connects two vertices $u$ and $v$ if and only if the circle with diameter $uv$ contains no other vertices.
 
