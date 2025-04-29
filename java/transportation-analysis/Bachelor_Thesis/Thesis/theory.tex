@@ -11,6 +11,8 @@ A graph $G$ is formally defined as an ordered pair $G = (V, E, W)$ comprising a 
 \section{Graph Construction Methods and Sparsity}
 \label{se:GraphConstructionMethodsAndSparsity}
 
+Graph construction methods determine how nodes in a network are connected, playing a crucial role in creating accurate transportation network representations by balancing connectivity with computational efficiency.
+
 A graph is considered complete if every distinct pair of vertices is connected by an edge. In terms of edge weights \(w_{i,j}\), this means a connection exists for all \(i \neq j\). While this represents the maximum possible connectivity, constructing a complete graph for a transportation network is often impractical. It implies direct travel is possible between any two locations, ignoring real-world constraints like geographical barriers or infrastructure costs. Such dense connectivity is computationally expensive to analyze and does not accurately reflect most transportation systems. Therefore, sparsity, where only essential or feasible connections are represented, becomes crucial for creating realistic and manageable network models.
 
 \subsubsection{K-Nearest Neighbors Graph}
