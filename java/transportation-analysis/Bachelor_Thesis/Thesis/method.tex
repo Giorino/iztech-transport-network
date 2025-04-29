@@ -101,6 +101,13 @@ Once the various graph representations were constructed, we applied clustering a
 
 Clustering the complete graph representation presents unique challenges due to its dense connectivity. Our implementation applies multiple clustering algorithms to the complete graph, each configured to respect the bus capacity constraints. We enforced a minimum cluster size of 10 students (minimum efficient bus occupancy) and a maximum cluster size of 50 students (maximum bus capacity) to ensure practical viability of the resulting routes.
 
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{img/leiden_complete2}
+\caption{Leiden algorithm applied to a complete graph representation. The high number of edges between all student locations illustrates the computational expensiveness of the complete graph approach, making it less practical for large-scale transportation planning.}
+\label{fig:leiden_complete}
+\end{figure}
+
 We primarily utilized the Leiden algorithm (see Section~\ref{subsec:LeidenAlgorithm}), which optimizes modularity to find densely connected communities with its refinement phase ensuring well-connected clusters. The algorithm was configured with adaptive resolution to produce balanced clusters.
 
 \begin{table}[h]
