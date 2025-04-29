@@ -5,12 +5,7 @@ This chapter introduces the fundamental concepts and theories used in transporta
 \section{Basic Definitions}
 \label{se:BasicDefinitions}
 
-A graph $G$ is formally defined as an ordered pair $G = (V, E, W)$ comprising a set $V$ of vertices or nodes and a set $E$ of edges, which are 2-element subsets of $V$ . The fundamental components of a graph include: \textbf{Vertices (Nodes)} which represent distinct entities in the network; \textbf{Edges} which represent the connections or relationships between vertices; \textbf{Weight}, indicating that edges can be weighted to represent distances, travel times, costs, or other metrics.
-
-\subsection{Affinity Matrix}
-\label{subsec:AffinityMatrix}
-
-The affinity matrix $\mat{A}$ of a graph is a square matrix where each element $\mat{A}_{ij}$ represents the connection between vertices $i$ and $j$. The affinity matrix provides a complete mathematical representation of the graph and serves as the foundation for many graph algorithms and analyses .
+A graph $G$ is formally defined as an ordered pair $G = (V, E, W)$ comprising a set $V$ of vertices or nodes and a set $E$ of edges, which are 2-element subsets of $V$ . The fundamental components of a graph include: \textbf{Vertices (Nodes)} which represent distinct entities in the network; \textbf{Edges} which represent the connections or relationships between vertices; \textbf{Affinity Matrix} $W$, which is a square matrix where each element $W_{ij}$ represents the weight between vertices $i$ and $j$, indicating distances, travel times, costs, or other metrics.
 
 
 \section{Graph Construction Methods and Sparsity}
