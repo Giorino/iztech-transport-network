@@ -32,13 +32,13 @@ public class ClusteringExample {
     private static final Logger LOGGER = Logger.getLogger(ClusteringExample.class.getName());
     
     // Configuration properties
-    private static final int NODE_COUNT = 25;
+    private static final int NODE_COUNT = 200;
     private static final boolean VISUALIZE_CLUSTERS = true;
     
     // Clustering configuration
-    private static final int MAX_CLUSTERS = 5; // Fewer max clusters since we have fewer nodes (25)
-    private static final int MIN_CLUSTER_SIZE = 3; // Minimum cluster size
-    private static final int MAX_CLUSTER_SIZE = 10; // Maximum cluster size
+    private static final int MAX_CLUSTERS = 10; // Fewer max clusters since we have fewer nodes (25)
+    private static final int MIN_CLUSTER_SIZE = 10; // Minimum cluster size
+    private static final int MAX_CLUSTER_SIZE = 50; // Maximum cluster size
     private static final double COMMUNITY_SCALING_FACTOR = 0.5;
     private static final boolean USE_ADAPTIVE_RESOLUTION = true;
     private static final double GEOGRAPHIC_WEIGHT = 0.9;

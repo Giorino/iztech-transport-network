@@ -108,3 +108,56 @@ The core idea of MVAGC is to leverage the complementary information present in t
 \end{algorithmic}
 \end{algorithm}
 
+\section{Shortest Path Algorithms}
+\label{se:ShortestPathAlgorithms}
+
+Shortest path algorithms are fundamental for transportation network analysis, allowing us to determine the most efficient route between locations. In our work, we focused primarily on Dijkstra's algorithm due to its efficiency and suitability for transportation networks with non-negative edge weights.
+
+\subsection{Dijkstra's Algorithm}
+\label{subsec:DijkstrasAlgorithm}
+
+Dijkstra's algorithm solves the single-source shortest path problem for a weighted graph with non-negative edge weights. Given a weighted graph $G = (V, E)$ with vertices $V$ and edges $E$, and a source vertex $s \in V$, Dijkstra's algorithm finds the shortest path from $s$ to every other vertex in the graph.
+
+For a weighted graph $G = (V, E)$ with a weight function $w: E \rightarrow \mathbb{R}^+$ (assigning non-negative weights to edges), Dijkstra's algorithm maintains two primary values for each vertex $v \in V$: First, $\text{dist}[v]$ represents the currently known shortest distance from source $s$ to vertex $v$; Second, $\text{prev}[v]$ indicates the predecessor of $v$ in the shortest path from $s$ to $v$.
+
+The algorithm initializes $\text{dist}[s] = 0$ and $\text{dist}[v] = \infty$ for all other vertices $v \in V \setminus \{s\}$. The iterative process then begins by selecting the unvisited vertex $u$ with the smallest distance value $\text{dist}[u]$. After marking $u$ as visited, the algorithm updates the distance values of all neighboring vertices $v$ according to the following formula:
+
+\begin{equation}
+\text{dist}[v] = \min(\text{dist}[v], \text{dist}[u] + w(u, v))
+\end{equation}
+
+where $w(u, v)$ is the weight of the edge from $u$ to $v$.
+
+When a shorter path is discovered and the distance is updated, the predecessor is also updated:
+
+\begin{equation}
+\text{prev}[v] = u
+\end{equation}
+
+\begin{algorithm}[H]
+\caption{Dijkstra's Shortest Path Algorithm}
+\label{alg:dijkstra}
+\begin{algorithmic}[1]
+\Require Graph $G = (V, E)$, Source vertex $s \in V$, Weight function $w: E \rightarrow \mathbb{R}^+$
+\Ensure Shortest path from $s$ to all vertices in $V$
+
+\State Initialize $\text{dist}[s] \gets 0$ and $\text{dist}[v] \gets \infty$ for all $v \in V \setminus \{s\}$
+\State Initialize $\text{prev}[v] \gets \text{null}$ for all $v \in V$
+\State Initialize set of unvisited vertices $Q \gets V$
+
+\While{$Q \neq \emptyset$}
+    \State $u \gets \text{vertex in } Q \text{ with min } \text{dist}[u]$ \Comment{Extract min operation}
+    \State Remove $u$ from $Q$
+    
+    \For{each neighbor $v$ of $u$ in $G$}
+        \State $\text{alt} \gets \text{dist}[u] + w(u, v)$ \Comment{Distance through $u$ to $v$}
+        \If{$\text{alt} < \text{dist}[v]$}
+            \State $\text{dist}[v] \gets \text{alt}$ \Comment{Update distance}
+            \State $\text{prev}[v] \gets u$ \Comment{Update predecessor}
+        \EndIf
+    \EndFor
+\EndWhile
+
+\State \Return $\text{dist}$ and $\text{prev}$ arrays
+\end{algorithmic}
+\end{algorithm}

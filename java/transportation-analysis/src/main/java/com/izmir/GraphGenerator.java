@@ -34,11 +34,11 @@ public class GraphGenerator {
     private static final Logger LOGGER = Logger.getLogger(GraphGenerator.class.getName());
     
     // Configuration properties
-    private static final int NODE_COUNT = 25;
+    private static final int NODE_COUNT = 200;
     private static final boolean USE_PARALLEL = true;
     private static final boolean VISUALIZE_GRAPH = true;
     private static final boolean SAVE_GRAPH = true;
-    private static final int K_VALUE = 5; // K value for K-Nearest Neighbors
+    private static final int K_VALUE = 30; // K value for K-Nearest Neighbors
     
     // File paths
     private static final String NODES_JSON_FILE = "nodes.json";

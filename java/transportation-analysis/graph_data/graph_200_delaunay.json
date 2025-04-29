@@ -1,0 +1,5252 @@
+{
+  "nodeCount" : 200,
+  "strategyName" : "delaunay",
+  "nodes" : [ {
+    "id" : "535968273",
+    "x" : 27.223287961484967,
+    "y" : 38.46309681695553,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-693553229",
+    "x" : 27.142700090833642,
+    "y" : 38.323012292828395,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1626965507",
+    "x" : 26.99673161390555,
+    "y" : 38.49300985427935,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-660287501",
+    "x" : 27.01814212998526,
+    "y" : 38.4973062266234,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1135340485",
+    "x" : 27.19843268439267,
+    "y" : 38.47718072516701,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1344532723",
+    "x" : 27.091575220040678,
+    "y" : 38.47707363040232,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1945099795",
+    "x" : 27.08417862488222,
+    "y" : 38.469169799334686,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1323641099",
+    "x" : 27.176816856387,
+    "y" : 38.48166999954081,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1019226607",
+    "x" : 26.759909979466478,
+    "y" : 38.31984257594526,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1533958325",
+    "x" : 26.511934528662458,
+    "y" : 38.64112327859088,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1093662543",
+    "x" : 27.177390828339636,
+    "y" : 38.39339342707211,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1430974253",
+    "x" : 27.221370401624103,
+    "y" : 38.47954392410444,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-724477247",
+    "x" : 27.153302417874585,
+    "y" : 38.405148378329166,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "287734973",
+    "x" : 27.088742619514267,
+    "y" : 38.50140200777398,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "311915693",
+    "x" : 27.02749097415362,
+    "y" : 38.49918729746654,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1364398301",
+    "x" : 27.17726111832088,
+    "y" : 38.3960583537232,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-89915263",
+    "x" : 27.09982171705014,
+    "y" : 38.47401554347372,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-13683185",
+    "x" : 27.237608207397635,
+    "y" : 38.47634517247087,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1371362031",
+    "x" : 27.092557651509,
+    "y" : 38.47180423656699,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "864650719",
+    "x" : 27.12208802162963,
+    "y" : 38.32998531292792,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1341209375",
+    "x" : 26.99836660597811,
+    "y" : 38.39147883413244,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1424268931",
+    "x" : 27.183030184265373,
+    "y" : 38.45746416752818,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1429105887",
+    "x" : 27.16978899639634,
+    "y" : 38.465222368819624,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2084925965",
+    "x" : 27.039898016526983,
+    "y" : 38.47622799778002,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-508561095",
+    "x" : 26.523399529192243,
+    "y" : 38.6247718279797,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-707786777",
+    "x" : 27.20791804428148,
+    "y" : 38.4594688417662,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "860166637",
+    "x" : 27.12723577844192,
+    "y" : 38.40762215147028,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "772557593",
+    "x" : 27.086105979139067,
+    "y" : 38.470355473050276,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1390225147",
+    "x" : 27.082404346255952,
+    "y" : 38.46995735102174,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2054912281",
+    "x" : 27.157934594468042,
+    "y" : 38.515137035563605,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2034379747",
+    "x" : 27.175298017260218,
+    "y" : 38.466055455535844,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1480747375",
+    "x" : 27.17268724281245,
+    "y" : 38.41684242857944,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-500159261",
+    "x" : 27.219638769520785,
+    "y" : 38.46903433457524,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "665141693",
+    "x" : 27.157197357253043,
+    "y" : 38.42365973767,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "634096093",
+    "x" : 27.13078152845921,
+    "y" : 38.32321859679262,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "509212547",
+    "x" : 27.15733836310961,
+    "y" : 38.47087096902916,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2088086353",
+    "x" : 26.99658937074419,
+    "y" : 38.49472080679441,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1376183553",
+    "x" : 27.13321046477519,
+    "y" : 38.31249622866503,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-948213349",
+    "x" : 26.737381460430736,
+    "y" : 38.313756958108854,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1634697557",
+    "x" : 26.998004726095406,
+    "y" : 38.49515970633433,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1715787981",
+    "x" : 27.027658403902,
+    "y" : 38.404005076315876,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "867208401",
+    "x" : 27.1699781974699,
+    "y" : 38.38463377392139,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1592774029",
+    "x" : 27.17117346455076,
+    "y" : 38.39171600350296,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "671992203",
+    "x" : 27.00213561667423,
+    "y" : 38.50525373307484,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1624452895",
+    "x" : 27.129675403348298,
+    "y" : 38.458594716789264,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1675090537",
+    "x" : 26.76091638445063,
+    "y" : 38.332134517292246,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1705427045",
+    "x" : 27.17902975809403,
+    "y" : 38.47015835876768,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-761620579",
+    "x" : 26.74881822598883,
+    "y" : 38.33178386507774,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1132720461",
+    "x" : 27.08780938675085,
+    "y" : 38.463326906588286,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "327157733",
+    "x" : 26.990207969760856,
+    "y" : 38.494811751491625,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1070956609",
+    "x" : 27.1523353082946,
+    "y" : 38.42559561514221,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-120176963",
+    "x" : 27.168017771372273,
+    "y" : 38.386623009840875,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-71183737",
+    "x" : 27.092478991594877,
+    "y" : 38.47258128995896,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1435991347",
+    "x" : 26.453505728599787,
+    "y" : 38.630250383226674,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1027078809",
+    "x" : 27.172671656993636,
+    "y" : 38.469573640175845,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "100837403",
+    "x" : 27.046112911628093,
+    "y" : 38.51804504392939,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-465604887",
+    "x" : 27.17267614800582,
+    "y" : 38.394567352460975,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-193258515",
+    "x" : 27.168577306278475,
+    "y" : 38.39287373885835,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1521311139",
+    "x" : 27.156483732719803,
+    "y" : 38.42500763699175,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-560797529",
+    "x" : 27.219668535027147,
+    "y" : 38.468978678800624,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1355060633",
+    "x" : 26.989572825683467,
+    "y" : 38.50565249367301,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1995933769",
+    "x" : 27.21619599766382,
+    "y" : 38.47549928794983,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "606269123",
+    "x" : 26.75639327355065,
+    "y" : 38.32462225093731,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-782960895",
+    "x" : 27.154277012750164,
+    "y" : 38.42241511394591,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-119581751",
+    "x" : 26.505956022705714,
+    "y" : 38.64092140312526,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1230831949",
+    "x" : 27.171343218814116,
+    "y" : 38.3917201280826,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1500792691",
+    "x" : 27.181329561674186,
+    "y" : 38.47364928094205,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-334797509",
+    "x" : 27.235151064241695,
+    "y" : 38.46033258116765,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "823318839",
+    "x" : 27.112456938555123,
+    "y" : 38.49773878075412,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1060884231",
+    "x" : 27.178026855499507,
+    "y" : 38.393959811125804,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2123418389",
+    "x" : 27.16514767131882,
+    "y" : 38.428672816149586,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "831463691",
+    "x" : 27.003910722480075,
+    "y" : 38.39455822687721,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "685452229",
+    "x" : 27.049606390733953,
+    "y" : 38.391598839823594,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1247456631",
+    "x" : 27.088371172027443,
+    "y" : 38.48609784045328,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1209689777",
+    "x" : 26.995680398509023,
+    "y" : 38.49529573667209,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "875681401",
+    "x" : 27.12367608376327,
+    "y" : 38.322186179290966,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-77936441",
+    "x" : 27.198732298645268,
+    "y" : 38.37605158159672,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "984259133",
+    "x" : 26.83626581352166,
+    "y" : 38.182380067547285,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2038209927",
+    "x" : 27.171917507015614,
+    "y" : 38.476904583171844,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "637786129",
+    "x" : 27.08992010269423,
+    "y" : 38.47415155211778,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1407660565",
+    "x" : 27.14766651519735,
+    "y" : 38.424973552363994,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-481714009",
+    "x" : 27.15904928722468,
+    "y" : 38.426922451871135,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "113450155",
+    "x" : 27.15508977434331,
+    "y" : 38.42826795743449,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1586871577",
+    "x" : 27.08548305991397,
+    "y" : 38.46173970430957,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1090263601",
+    "x" : 27.18845342055323,
+    "y" : 38.46690132423279,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-657540915",
+    "x" : 27.096060419693224,
+    "y" : 38.47338004925784,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-893075269",
+    "x" : 27.15554022942304,
+    "y" : 38.422942003313324,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1262554435",
+    "x" : 27.167849597895408,
+    "y" : 38.417016382688786,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1489397737",
+    "x" : 27.234517743190302,
+    "y" : 38.44932586263338,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-735955993",
+    "x" : 27.18435171516271,
+    "y" : 38.41304756278833,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1194402671",
+    "x" : 26.99166677363392,
+    "y" : 38.4999164378424,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "501507721",
+    "x" : 27.17692240318334,
+    "y" : 38.47065712719112,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1667905107",
+    "x" : 27.227112144928213,
+    "y" : 38.470276534830454,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-796328669",
+    "x" : 27.12268090742491,
+    "y" : 38.46098277277621,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-246478467",
+    "x" : 27.218279743550625,
+    "y" : 38.478893472460165,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-490934261",
+    "x" : 27.176027389431702,
+    "y" : 38.44720305553423,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1467059777",
+    "x" : 27.179420639797524,
+    "y" : 38.424659696925765,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "870014473",
+    "x" : 27.20905540271214,
+    "y" : 38.371533982022825,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-671878237",
+    "x" : 27.211280080739137,
+    "y" : 38.43861867846285,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1996258439",
+    "x" : 26.996555426560196,
+    "y" : 38.494698255775255,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-844727637",
+    "x" : 27.163806537773343,
+    "y" : 38.44384216071525,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1159310495",
+    "x" : 27.090271702960855,
+    "y" : 38.48719370992994,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2105632543",
+    "x" : 27.045687483329733,
+    "y" : 38.392880780304836,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1819840007",
+    "x" : 27.22090465853926,
+    "y" : 38.47021089945228,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2087635341",
+    "x" : 27.004298742039566,
+    "y" : 38.396166825521874,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "799991071",
+    "x" : 27.054835380566796,
+    "y" : 38.3858539754481,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "79317247",
+    "x" : 27.173971966951324,
+    "y" : 38.42262340354531,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-735675291",
+    "x" : 27.146073108443094,
+    "y" : 38.412652941725604,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1623095827",
+    "x" : 27.164582701527014,
+    "y" : 38.387516939116196,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-551329927",
+    "x" : 27.14721955447551,
+    "y" : 38.417397125271265,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-476887835",
+    "x" : 27.094717041191842,
+    "y" : 38.480152563400466,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-410272219",
+    "x" : 27.209874878453302,
+    "y" : 38.48244657119185,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "47614499",
+    "x" : 27.192135945133916,
+    "y" : 38.46353036723793,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1254931901",
+    "x" : 27.21507105056749,
+    "y" : 38.41823633015462,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-372431137",
+    "x" : 27.1574384685825,
+    "y" : 38.42429598261005,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1029024345",
+    "x" : 27.176786893491606,
+    "y" : 38.39192539301175,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1671859461",
+    "x" : 27.121724326996663,
+    "y" : 38.32444126677276,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-556789345",
+    "x" : 27.11932764979911,
+    "y" : 38.4605185712818,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-457250635",
+    "x" : 27.141578844199703,
+    "y" : 38.424099275237886,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2133910563",
+    "x" : 27.20274042514533,
+    "y" : 38.48088280948834,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-495388751",
+    "x" : 26.762692823993692,
+    "y" : 38.335568600477764,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-932562203",
+    "x" : 27.091330185712486,
+    "y" : 38.475430207354414,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1067213455",
+    "x" : 27.091742421535056,
+    "y" : 38.47503410244621,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1242656213",
+    "x" : 27.08540173085398,
+    "y" : 38.469024008647956,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1842465707",
+    "x" : 27.214004730492597,
+    "y" : 38.46140969758681,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1663193721",
+    "x" : 27.011433296005933,
+    "y" : 38.49949054144221,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "267867751",
+    "x" : 27.13240298487528,
+    "y" : 38.326722322274044,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1173663501",
+    "x" : 27.15610749831399,
+    "y" : 38.429880201036454,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-373097925",
+    "x" : 27.212505996975775,
+    "y" : 38.45886444812528,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1039700295",
+    "x" : 27.091767745462562,
+    "y" : 38.47352636243499,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-865864095",
+    "x" : 27.140901179127102,
+    "y" : 38.4135360725219,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1777227867",
+    "x" : 27.24644983548839,
+    "y" : 38.476659734505425,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-792286105",
+    "x" : 27.051295962034132,
+    "y" : 38.38775183177618,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1423781945",
+    "x" : 27.15548320512541,
+    "y" : 38.42153350649886,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1157441309",
+    "x" : 27.127154946116477,
+    "y" : 38.32726406344626,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1910632995",
+    "x" : 26.960554024704585,
+    "y" : 38.4950543215556,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "231171113",
+    "x" : 27.13902813910113,
+    "y" : 38.361403221509356,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-799625653",
+    "x" : 27.201931004244233,
+    "y" : 38.384079967628125,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "952892343",
+    "x" : 27.22789882466805,
+    "y" : 38.47437435170931,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1323025445",
+    "x" : 27.155972064773064,
+    "y" : 38.42395717821899,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-856038679",
+    "x" : 27.180197799176803,
+    "y" : 38.4757673126081,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-542107191",
+    "x" : 27.129348036144556,
+    "y" : 38.317484133902845,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1115928237",
+    "x" : 26.767493800665775,
+    "y" : 38.324592976935556,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "503603995",
+    "x" : 27.18265074518869,
+    "y" : 38.3605911591909,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-670162599",
+    "x" : 27.23571241724574,
+    "y" : 38.456125686095646,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1629495255",
+    "x" : 27.09278941667977,
+    "y" : 38.467446580042626,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-703827689",
+    "x" : 27.22290970080855,
+    "y" : 38.46949292401393,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1583764383",
+    "x" : 27.17664954589723,
+    "y" : 38.46295107032509,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1090624973",
+    "x" : 27.001989219083658,
+    "y" : 38.49645890765492,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-229299359",
+    "x" : 26.766317335398934,
+    "y" : 38.32806406412439,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2094243861",
+    "x" : 27.250475007654476,
+    "y" : 38.465074686623765,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1828173627",
+    "x" : 27.168520168184223,
+    "y" : 38.45309752055015,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-78732027",
+    "x" : 27.15425679474527,
+    "y" : 38.418432601281815,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2111349595",
+    "x" : 27.120546326787558,
+    "y" : 38.31655396697979,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "852464195",
+    "x" : 26.996565006564133,
+    "y" : 38.494776622083684,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1988600683",
+    "x" : 27.045357478029523,
+    "y" : 38.38430417612696,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "156811259",
+    "x" : 27.22097127916339,
+    "y" : 38.46983565327902,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "42044299",
+    "x" : 26.990810478275698,
+    "y" : 38.49566967015976,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "13587347",
+    "x" : 26.9898273714447,
+    "y" : 38.47160589893039,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-459432195",
+    "x" : 27.16752607988577,
+    "y" : 38.38300789485077,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1534848043",
+    "x" : 27.224042110166028,
+    "y" : 38.474659481386695,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-695088863",
+    "x" : 27.165617976559062,
+    "y" : 38.391512223424925,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1972369647",
+    "x" : 27.081895939194666,
+    "y" : 38.49571359668352,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-889110833",
+    "x" : 27.03340353020906,
+    "y" : 38.39003564122775,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2066060327",
+    "x" : 27.164529660529862,
+    "y" : 38.47780286803936,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-883481887",
+    "x" : 27.218667762849886,
+    "y" : 38.45982447247354,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2067476865",
+    "x" : 27.174795121897024,
+    "y" : 38.467175680870824,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-805138519",
+    "x" : 26.99554840471987,
+    "y" : 38.49586386611736,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "188928337",
+    "x" : 26.835335445354087,
+    "y" : 38.18906217995372,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1724458513",
+    "x" : 27.168861112361032,
+    "y" : 38.47289508752102,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-720305931",
+    "x" : 27.073055544769808,
+    "y" : 38.47030737053841,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-256660657",
+    "x" : 27.175163051040677,
+    "y" : 38.545038866177514,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1397584607",
+    "x" : 27.175303359847593,
+    "y" : 38.3865351697476,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1051251765",
+    "x" : 27.087390031695154,
+    "y" : 38.46919705723632,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-100512719",
+    "x" : 26.767234581614833,
+    "y" : 38.33170809125841,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1631713631",
+    "x" : 27.017254299367757,
+    "y" : 38.37077297407825,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "974174191",
+    "x" : 27.12971225081626,
+    "y" : 38.32262926100273,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-160969361",
+    "x" : 27.162596518785293,
+    "y" : 38.42464557986909,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1480374431",
+    "x" : 27.052916437304933,
+    "y" : 38.472338703654586,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2034538937",
+    "x" : 26.854952135564282,
+    "y" : 38.208885981632086,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1055579681",
+    "x" : 27.001071659412325,
+    "y" : 38.49757555280289,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-40729651",
+    "x" : 27.092863402617542,
+    "y" : 38.33862755779758,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1461885421",
+    "x" : 27.068389182202562,
+    "y" : 38.471264652337645,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1430299729",
+    "x" : 26.766683988116206,
+    "y" : 38.324175000336986,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "740370769",
+    "x" : 27.08848955411893,
+    "y" : 38.479098836095886,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-58829739",
+    "x" : 27.18650682982308,
+    "y" : 38.46160730595667,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-173597709",
+    "x" : 27.164898778988537,
+    "y" : 38.403242754859306,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1342172981",
+    "x" : 27.154231815146733,
+    "y" : 38.418968511083904,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-593203817",
+    "x" : 27.164011227325243,
+    "y" : 38.459659647437974,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "2092262857",
+    "x" : 26.825451713097003,
+    "y" : 38.199862724694775,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1681900545",
+    "x" : 27.23285692516834,
+    "y" : 38.46057121418079,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-2012982531",
+    "x" : 27.15586280168452,
+    "y" : 38.42438785087215,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1813149297",
+    "x" : 26.970525732163466,
+    "y" : 38.48107103613099,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1476246679",
+    "x" : 26.82330142514423,
+    "y" : 38.189117982051286,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-467253311",
+    "x" : 27.13779148579564,
+    "y" : 38.320362150550075,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "1402965039",
+    "x" : 27.171695349470014,
+    "y" : 38.472560562209516,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-745058253",
+    "x" : 27.232469666712063,
+    "y" : 38.48444117785216,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1329580649",
+    "x" : 27.012392852931026,
+    "y" : 38.482944725305934,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "-1039667823",
+    "x" : 27.040116904221886,
+    "y" : 38.384064502432004,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  }, {
+    "id" : "622097871",
+    "x" : 27.221201365644525,
+    "y" : 38.47228974009593,
+    "populationCenter" : false,
+    "populationWeight" : 0.0
+  } ],
+  "edges" : [ {
+    "id" : "1971308924",
+    "sourceId" : "-1671859461",
+    "targetId" : "-2111349595",
+    "distance" : 1175.1332187344683,
+    "normalizedWeight" : 0.9898490206749295,
+    "coordinates" : [ [ 27.121724326996663, 38.32444126677276 ], [ 27.120546326787558, 38.31655396697979 ] ]
+  }, {
+    "id" : "581721768",
+    "sourceId" : "-246478467",
+    "targetId" : "1995933769",
+    "distance" : 558.4452684452883,
+    "normalizedWeight" : 0.9946512835955487,
+    "coordinates" : [ [ 27.218279743550625, 38.478893472460165 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "1661027076",
+    "sourceId" : "1623095827",
+    "targetId" : "231171113",
+    "distance" : 4622.0558214694665,
+    "normalizedWeight" : 0.9630071980033561,
+    "coordinates" : [ [ 27.164582701527014, 38.387516939116196 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "1453917871",
+    "sourceId" : "-707786777",
+    "targetId" : "-373097925",
+    "distance" : 474.97338383745176,
+    "normalizedWeight" : 0.9953012945714051,
+    "coordinates" : [ [ 27.20791804428148, 38.4594688417662 ], [ 27.212505996975775, 38.45886444812528 ] ]
+  }, {
+    "id" : "1730812704",
+    "sourceId" : "1390225147",
+    "targetId" : "-720305931",
+    "distance" : 1202.5442703562942,
+    "normalizedWeight" : 0.9896355657553759,
+    "coordinates" : [ [ 27.082404346255952, 38.46995735102174 ], [ 27.073055544769808, 38.47030737053841 ] ]
+  }, {
+    "id" : "1021452526",
+    "sourceId" : "-695088863",
+    "targetId" : "-193258515",
+    "distance" : 449.34829172753484,
+    "normalizedWeight" : 0.9955008418945193,
+    "coordinates" : [ [ 27.165617976559062, 38.391512223424925 ], [ 27.168577306278475, 38.39287373885835 ] ]
+  }, {
+    "id" : "1936405371",
+    "sourceId" : "-476887835",
+    "targetId" : "740370769",
+    "distance" : 676.7740109907796,
+    "normalizedWeight" : 0.9937298358317271,
+    "coordinates" : [ [ 27.094717041191842, 38.480152563400466 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "2006899598",
+    "sourceId" : "-1157441309",
+    "targetId" : "974174191",
+    "distance" : 609.3343688336164,
+    "normalizedWeight" : 0.9942550007757791,
+    "coordinates" : [ [ 27.127154946116477, 38.32726406344626 ], [ 27.12971225081626, 38.32262926100273 ] ]
+  }, {
+    "id" : "1901950284",
+    "sourceId" : "-40729651",
+    "targetId" : "231171113",
+    "distance" : 6999.337669204046,
+    "normalizedWeight" : 0.9444948653659447,
+    "coordinates" : [ [ 27.092863402617542, 38.33862755779758 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "599024551",
+    "sourceId" : "535968273",
+    "targetId" : "1667905107",
+    "distance" : 1126.4132798812418,
+    "normalizedWeight" : 0.990228411833359,
+    "coordinates" : [ [ 27.223287961484967, 38.46309681695553 ], [ 27.227112144928213, 38.470276534830454 ] ]
+  }, {
+    "id" : "752542924",
+    "sourceId" : "1430299729",
+    "targetId" : "1019226607",
+    "distance" : 928.0975501808045,
+    "normalizedWeight" : 0.9917727330331966,
+    "coordinates" : [ [ 26.766683988116206, 38.324175000336986 ], [ 26.759909979466478, 38.31984257594526 ] ]
+  }, {
+    "id" : "1707529680",
+    "sourceId" : "-1480747375",
+    "targetId" : "-1467059777",
+    "distance" : 1387.2593421361564,
+    "normalizedWeight" : 0.9881971553896927,
+    "coordinates" : [ [ 27.17268724281245, 38.41684242857944 ], [ 27.179420639797524, 38.424659696925765 ] ]
+  }, {
+    "id" : "1689453732",
+    "sourceId" : "-58829739",
+    "targetId" : "-1090263601",
+    "distance" : 900.3526244390483,
+    "normalizedWeight" : 0.9919887878921613,
+    "coordinates" : [ [ 27.18650682982308, 38.46160730595667 ], [ 27.18845342055323, 38.46690132423279 ] ]
+  }, {
+    "id" : "989454048",
+    "sourceId" : "-1060884231",
+    "targetId" : "-1029024345",
+    "distance" : 385.33842481170603,
+    "normalizedWeight" : 0.9959992985455687,
+    "coordinates" : [ [ 27.178026855499507, 38.393959811125804 ], [ 27.176786893491606, 38.39192539301175 ] ]
+  }, {
+    "id" : "568850941",
+    "sourceId" : "-556789345",
+    "targetId" : "-457250635",
+    "distance" : 13151.823682280206,
+    "normalizedWeight" : 0.8965843209222457,
+    "coordinates" : [ [ 27.11932764979911, 38.4605185712818 ], [ 27.141578844199703, 38.424099275237886 ] ]
+  }, {
+    "id" : "1067024259",
+    "sourceId" : "-1135340485",
+    "targetId" : "1995933769",
+    "distance" : 1837.766529836336,
+    "normalizedWeight" : 0.9846889727473198,
+    "coordinates" : [ [ 27.19843268439267, 38.47718072516701 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "1881992247",
+    "sourceId" : "-593203817",
+    "targetId" : "-1624452895",
+    "distance" : 7207.470589296054,
+    "normalizedWeight" : 0.9428740958920977,
+    "coordinates" : [ [ 27.164011227325243, 38.459659647437974 ], [ 27.129675403348298, 38.458594716789264 ] ]
+  }, {
+    "id" : "1181116026",
+    "sourceId" : "-556789345",
+    "targetId" : "-89915263",
+    "distance" : 2820.845485805311,
+    "normalizedWeight" : 0.9770335554230848,
+    "coordinates" : [ [ 27.11932764979911, 38.4605185712818 ], [ 27.09982171705014, 38.47401554347372 ] ]
+  }, {
+    "id" : "1396568865",
+    "sourceId" : "-2094243861",
+    "targetId" : "-334797509",
+    "distance" : 2348.565532515967,
+    "normalizedWeight" : 0.9807112866107457,
+    "coordinates" : [ [ 27.250475007654476, 38.465074686623765 ], [ 27.235151064241695, 38.46033258116765 ] ]
+  }, {
+    "id" : "641267237",
+    "sourceId" : "823318839",
+    "targetId" : "2054912281",
+    "distance" : 6692.184961060853,
+    "normalizedWeight" : 0.946886720210185,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.157934594468042, 38.515137035563605 ] ]
+  }, {
+    "id" : "650246879",
+    "sourceId" : "13587347",
+    "targetId" : "1813149297",
+    "distance" : 6134.103373642325,
+    "normalizedWeight" : 0.9512326045633389,
+    "coordinates" : [ [ 26.9898273714447, 38.47160589893039 ], [ 26.970525732163466, 38.48107103613099 ] ]
+  }, {
+    "id" : "474176611",
+    "sourceId" : "-670162599",
+    "targetId" : "-1489397737",
+    "distance" : 4300.0751737000855,
+    "normalizedWeight" : 0.9655145207509707,
+    "coordinates" : [ [ 27.23571241724574, 38.456125686095646 ], [ 27.234517743190302, 38.44932586263338 ] ]
+  }, {
+    "id" : "969221607",
+    "sourceId" : "-1828173627",
+    "targetId" : "-593203817",
+    "distance" : 2313.7931294429914,
+    "normalizedWeight" : 0.9809820657330877,
+    "coordinates" : [ [ 27.168520168184223, 38.45309752055015 ], [ 27.164011227325243, 38.459659647437974 ] ]
+  }, {
+    "id" : "441626230",
+    "sourceId" : "-889110833",
+    "targetId" : "1631713631",
+    "distance" : 3648.197504777781,
+    "normalizedWeight" : 0.9705908125072426,
+    "coordinates" : [ [ 27.03340353020906, 38.39003564122775 ], [ 27.017254299367757, 38.37077297407825 ] ]
+  }, {
+    "id" : "1933703015",
+    "sourceId" : "-542107191",
+    "targetId" : "875681401",
+    "distance" : 833.1261929830744,
+    "normalizedWeight" : 0.9925122925251205,
+    "coordinates" : [ [ 27.129348036144556, 38.317484133902845 ], [ 27.12367608376327, 38.322186179290966 ] ]
+  }, {
+    "id" : "74724444",
+    "sourceId" : "823318839",
+    "targetId" : "287734973",
+    "distance" : 3357.1919540185863,
+    "normalizedWeight" : 0.9728569264558773,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.088742619514267, 38.50140200777398 ] ]
+  }, {
+    "id" : "313372289",
+    "sourceId" : "-1060884231",
+    "targetId" : "1364398301",
+    "distance" : 300.642369426017,
+    "normalizedWeight" : 0.9966588423652762,
+    "coordinates" : [ [ 27.178026855499507, 38.393959811125804 ], [ 27.17726111832088, 38.3960583537232 ] ]
+  }, {
+    "id" : "371307020",
+    "sourceId" : "-948213349",
+    "targetId" : "1019226607",
+    "distance" : 2572.3465836012524,
+    "normalizedWeight" : 0.9789686622519267,
+    "coordinates" : [ [ 26.737381460430736, 38.313756958108854 ], [ 26.759909979466478, 38.31984257594526 ] ]
+  }, {
+    "id" : "94197171",
+    "sourceId" : "1675090537",
+    "targetId" : "-100512719",
+    "distance" : 9289.25138247048,
+    "normalizedWeight" : 0.9266628845213701,
+    "coordinates" : [ [ 26.76091638445063, 38.332134517292246 ], [ 26.767234581614833, 38.33170809125841 ] ]
+  }, {
+    "id" : "1856417416",
+    "sourceId" : "267867751",
+    "targetId" : "-467253311",
+    "distance" : 1053.1565949442747,
+    "normalizedWeight" : 0.9907988751634683,
+    "coordinates" : [ [ 27.13240298487528, 38.326722322274044 ], [ 27.13779148579564, 38.320362150550075 ] ]
+  }, {
+    "id" : "829073755",
+    "sourceId" : "-1329580649",
+    "targetId" : "1663193721",
+    "distance" : 3411.167876148017,
+    "normalizedWeight" : 0.9724366059853268,
+    "coordinates" : [ [ 27.012392852931026, 38.482944725305934 ], [ 27.011433296005933, 38.49949054144221 ] ]
+  }, {
+    "id" : "605383719",
+    "sourceId" : "-707786777",
+    "targetId" : "1842465707",
+    "distance" : 833.4482790667648,
+    "normalizedWeight" : 0.992509784381324,
+    "coordinates" : [ [ 27.20791804428148, 38.4594688417662 ], [ 27.214004730492597, 38.46140969758681 ] ]
+  }, {
+    "id" : "1874255746",
+    "sourceId" : "1067213455",
+    "targetId" : "1039700295",
+    "distance" : 308.986878660721,
+    "normalizedWeight" : 0.9965938621313187,
+    "coordinates" : [ [ 27.091742421535056, 38.47503410244621 ], [ 27.091767745462562, 38.47352636243499 ] ]
+  }, {
+    "id" : "179749504",
+    "sourceId" : "-1093662543",
+    "targetId" : "-1060884231",
+    "distance" : 235.15107362956596,
+    "normalizedWeight" : 0.9971688351765176,
+    "coordinates" : [ [ 27.177390828339636, 38.39339342707211 ], [ 27.178026855499507, 38.393959811125804 ] ]
+  }, {
+    "id" : "421282090",
+    "sourceId" : "864650719",
+    "targetId" : "-40729651",
+    "distance" : 5057.13252760244,
+    "normalizedWeight" : 0.9596191753696923,
+    "coordinates" : [ [ 27.12208802162963, 38.32998531292792 ], [ 27.092863402617542, 38.33862755779758 ] ]
+  }, {
+    "id" : "286492970",
+    "sourceId" : "-735675291",
+    "targetId" : "-724477247",
+    "distance" : 4399.8178584478665,
+    "normalizedWeight" : 0.9647378060505413,
+    "coordinates" : [ [ 27.146073108443094, 38.412652941725604 ], [ 27.153302417874585, 38.405148378329166 ] ]
+  }, {
+    "id" : "1948716061",
+    "sourceId" : "-889110833",
+    "targetId" : "2087635341",
+    "distance" : 3094.9304723239884,
+    "normalizedWeight" : 0.9748992050320324,
+    "coordinates" : [ [ 27.03340353020906, 38.39003564122775 ], [ 27.004298742039566, 38.396166825521874 ] ]
+  }, {
+    "id" : "359255378",
+    "sourceId" : "-459432195",
+    "targetId" : "867208401",
+    "distance" : 270.1168316193123,
+    "normalizedWeight" : 0.9968965503637419,
+    "coordinates" : [ [ 27.16752607988577, 38.38300789485077 ], [ 27.1699781974699, 38.38463377392139 ] ]
+  }, {
+    "id" : "225673550",
+    "sourceId" : "1067213455",
+    "targetId" : "1344532723",
+    "distance" : 315.99786489647283,
+    "normalizedWeight" : 0.9965392662871464,
+    "coordinates" : [ [ 27.091742421535056, 38.47503410244621 ], [ 27.091575220040678, 38.47707363040232 ] ]
+  }, {
+    "id" : "1002460159",
+    "sourceId" : "509212547",
+    "targetId" : "-1429105887",
+    "distance" : 2721.7365527820784,
+    "normalizedWeight" : 0.9778053349818331,
+    "coordinates" : [ [ 27.15733836310961, 38.47087096902916 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "1378537067",
+    "sourceId" : "665141693",
+    "targetId" : "1423781945",
+    "distance" : 956.2447105372975,
+    "normalizedWeight" : 0.9915535458990271,
+    "coordinates" : [ [ 27.157197357253043, 38.42365973767 ], [ 27.15548320512541, 38.42153350649886 ] ]
+  }, {
+    "id" : "994073346",
+    "sourceId" : "-373097925",
+    "targetId" : "-671878237",
+    "distance" : 2871.915839643821,
+    "normalizedWeight" : 0.976635861149236,
+    "coordinates" : [ [ 27.212505996975775, 38.45886444812528 ], [ 27.211280080739137, 38.43861867846285 ] ]
+  }, {
+    "id" : "2101561600",
+    "sourceId" : "-761620579",
+    "targetId" : "606269123",
+    "distance" : 7137.523640307236,
+    "normalizedWeight" : 0.9434187856973418,
+    "coordinates" : [ [ 26.74881822598883, 38.33178386507774 ], [ 26.75639327355065, 38.32462225093731 ] ]
+  }, {
+    "id" : "840516191",
+    "sourceId" : "1067213455",
+    "targetId" : "-657540915",
+    "distance" : 512.8599833689539,
+    "normalizedWeight" : 0.9950062646263038,
+    "coordinates" : [ [ 27.091742421535056, 38.47503410244621 ], [ 27.096060419693224, 38.47338004925784 ] ]
+  }, {
+    "id" : "1830071646",
+    "sourceId" : "1376183553",
+    "targetId" : "-467253311",
+    "distance" : 1412.4199164637075,
+    "normalizedWeight" : 0.9880012253523083,
+    "coordinates" : [ [ 27.13321046477519, 38.31249622866503 ], [ 27.13779148579564, 38.320362150550075 ] ]
+  }, {
+    "id" : "356651278",
+    "sourceId" : "-1480747375",
+    "targetId" : "1364398301",
+    "distance" : 3328.223165084164,
+    "normalizedWeight" : 0.9730825117634705,
+    "coordinates" : [ [ 27.17268724281245, 38.41684242857944 ], [ 27.17726111832088, 38.3960583537232 ] ]
+  }, {
+    "id" : "267402173",
+    "sourceId" : "-805138519",
+    "targetId" : "852464195",
+    "distance" : 104.41220319194905,
+    "normalizedWeight" : 0.9981869228973685,
+    "coordinates" : [ [ 26.99554840471987, 38.49586386611736 ], [ 26.996565006564133, 38.494776622083684 ] ]
+  }, {
+    "id" : "335494064",
+    "sourceId" : "1777227867",
+    "targetId" : "-2094243861",
+    "distance" : 1806.1843673540081,
+    "normalizedWeight" : 0.9849349088772065,
+    "coordinates" : [ [ 27.24644983548839, 38.476659734505425 ], [ 27.250475007654476, 38.465074686623765 ] ]
+  }, {
+    "id" : "497312247",
+    "sourceId" : "-1624452895",
+    "targetId" : "-457250635",
+    "distance" : 14112.546465132078,
+    "normalizedWeight" : 0.8891029952454262,
+    "coordinates" : [ [ 27.129675403348298, 38.458594716789264 ], [ 27.141578844199703, 38.424099275237886 ] ]
+  }, {
+    "id" : "1514183189",
+    "sourceId" : "1342172981",
+    "targetId" : "-551329927",
+    "distance" : 918.5003887045133,
+    "normalizedWeight" : 0.9918474679014215,
+    "coordinates" : [ [ 27.154231815146733, 38.418968511083904 ], [ 27.14721955447551, 38.417397125271265 ] ]
+  }, {
+    "id" : "1144536174",
+    "sourceId" : "-1626965507",
+    "targetId" : "13587347",
+    "distance" : 3453.3503640793365,
+    "normalizedWeight" : 0.9721081231641575,
+    "coordinates" : [ [ 26.99673161390555, 38.49300985427935 ], [ 26.9898273714447, 38.47160589893039 ] ]
+  }, {
+    "id" : "2146455463",
+    "sourceId" : "-120176963",
+    "targetId" : "-1592774029",
+    "distance" : 912.3452292365879,
+    "normalizedWeight" : 0.9918953992645517,
+    "coordinates" : [ [ 27.168017771372273, 38.386623009840875 ], [ 27.17117346455076, 38.39171600350296 ] ]
+  }, {
+    "id" : "225666340",
+    "sourceId" : "1344532723",
+    "targetId" : "-657540915",
+    "distance" : 664.6537603916184,
+    "normalizedWeight" : 0.9938242184607596,
+    "coordinates" : [ [ 27.091575220040678, 38.47707363040232 ], [ 27.096060419693224, 38.47338004925784 ] ]
+  }, {
+    "id" : "1944737714",
+    "sourceId" : "-1173663501",
+    "targetId" : "1407660565",
+    "distance" : 1077.9894590438128,
+    "normalizedWeight" : 0.9906054970661307,
+    "coordinates" : [ [ 27.15610749831399, 38.429880201036454 ], [ 27.14766651519735, 38.424973552363994 ] ]
+  }, {
+    "id" : "231294354",
+    "sourceId" : "1629495255",
+    "targetId" : "1371362031",
+    "distance" : 624.0071992748885,
+    "normalizedWeight" : 0.9941407407362638,
+    "coordinates" : [ [ 27.09278941667977, 38.467446580042626 ], [ 27.092557651509, 38.47180423656699 ] ]
+  }, {
+    "id" : "1735830317",
+    "sourceId" : "-1209689777",
+    "targetId" : "-1996258439",
+    "distance" : 71.20667805238625,
+    "normalizedWeight" : 0.9984455004519691,
+    "coordinates" : [ [ 26.995680398509023, 38.49529573667209 ], [ 26.996555426560196, 38.494698255775255 ] ]
+  }, {
+    "id" : "1429600617",
+    "sourceId" : "-1705427045",
+    "targetId" : "-1090263601",
+    "distance" : 1389.0258042164921,
+    "normalizedWeight" : 0.9881833996233523,
+    "coordinates" : [ [ 27.17902975809403, 38.47015835876768 ], [ 27.18845342055323, 38.46690132423279 ] ]
+  }, {
+    "id" : "32190859",
+    "sourceId" : "42044299",
+    "targetId" : "1194402671",
+    "distance" : 457.5040662051743,
+    "normalizedWeight" : 0.9954373313729589,
+    "coordinates" : [ [ 26.990810478275698, 38.49566967015976 ], [ 26.99166677363392, 38.4999164378424 ] ]
+  }, {
+    "id" : "296938963",
+    "sourceId" : "-1467059777",
+    "targetId" : "-671878237",
+    "distance" : 4011.779865950007,
+    "normalizedWeight" : 0.9677595295369336,
+    "coordinates" : [ [ 27.179420639797524, 38.424659696925765 ], [ 27.211280080739137, 38.43861867846285 ] ]
+  }, {
+    "id" : "1246005797",
+    "sourceId" : "-2111349595",
+    "targetId" : "875681401",
+    "distance" : 897.8943048052951,
+    "normalizedWeight" : 0.9920079312809994,
+    "coordinates" : [ [ 27.120546326787558, 38.31655396697979 ], [ 27.12367608376327, 38.322186179290966 ] ]
+  }, {
+    "id" : "1703862764",
+    "sourceId" : "-1230831949",
+    "targetId" : "-1592774029",
+    "distance" : 7.284235520646969,
+    "normalizedWeight" : 0.9989432763131995,
+    "coordinates" : [ [ 27.171343218814116, 38.3917201280826 ], [ 27.17117346455076, 38.39171600350296 ] ]
+  }, {
+    "id" : "230490587",
+    "sourceId" : "-1705427045",
+    "targetId" : "501507721",
+    "distance" : 396.87546895084745,
+    "normalizedWeight" : 0.9959094574529107,
+    "coordinates" : [ [ 27.17902975809403, 38.47015835876768 ], [ 27.17692240318334, 38.47065712719112 ] ]
+  }, {
+    "id" : "1287332060",
+    "sourceId" : "100837403",
+    "targetId" : "311915693",
+    "distance" : 24672.369184250496,
+    "normalizedWeight" : 0.806871706197936,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 27.02749097415362, 38.49918729746654 ] ]
+  }, {
+    "id" : "1657638565",
+    "sourceId" : "-500159261",
+    "targetId" : "156811259",
+    "distance" : 175.15317521577668,
+    "normalizedWeight" : 0.9976360498881598,
+    "coordinates" : [ [ 27.219638769520785, 38.46903433457524 ], [ 27.22097127916339, 38.46983565327902 ] ]
+  }, {
+    "id" : "133881746",
+    "sourceId" : "-1230831949",
+    "targetId" : "867208401",
+    "distance" : 1089.5642330426772,
+    "normalizedWeight" : 0.9905153621640895,
+    "coordinates" : [ [ 27.171343218814116, 38.3917201280826 ], [ 27.1699781974699, 38.38463377392139 ] ]
+  }, {
+    "id" : "1049726714",
+    "sourceId" : "-1323025445",
+    "targetId" : "665141693",
+    "distance" : 200.14361672925452,
+    "normalizedWeight" : 0.9974414447064082,
+    "coordinates" : [ [ 27.155972064773064, 38.42395717821899 ], [ 27.157197357253043, 38.42365973767 ] ]
+  }, {
+    "id" : "1115306518",
+    "sourceId" : "-229299359",
+    "targetId" : "-100512719",
+    "distance" : 436.35049214932434,
+    "normalizedWeight" : 0.995602058159463,
+    "coordinates" : [ [ 26.766317335398934, 38.32806406412439 ], [ 26.767234581614833, 38.33170809125841 ] ]
+  }, {
+    "id" : "660439859",
+    "sourceId" : "1500792691",
+    "targetId" : "-1090263601",
+    "distance" : 1263.6074093431403,
+    "normalizedWeight" : 0.9891600558187287,
+    "coordinates" : [ [ 27.181329561674186, 38.47364928094205 ], [ 27.18845342055323, 38.46690132423279 ] ]
+  }, {
+    "id" : "411401463",
+    "sourceId" : "-856038679",
+    "targetId" : "-1135340485",
+    "distance" : 1926.2815930110294,
+    "normalizedWeight" : 0.9839996896089015,
+    "coordinates" : [ [ 27.180197799176803, 38.4757673126081 ], [ 27.19843268439267, 38.47718072516701 ] ]
+  }, {
+    "id" : "1613525080",
+    "sourceId" : "-1476246679",
+    "targetId" : "2092262857",
+    "distance" : 1539.9034784354437,
+    "normalizedWeight" : 0.9870084873194697,
+    "coordinates" : [ [ 26.82330142514423, 38.189117982051286 ], [ 26.825451713097003, 38.199862724694775 ] ]
+  }, {
+    "id" : "1202595800",
+    "sourceId" : "799991071",
+    "targetId" : "685452229",
+    "distance" : 932.139674290022,
+    "normalizedWeight" : 0.991741256266509,
+    "coordinates" : [ [ 27.054835380566796, 38.3858539754481 ], [ 27.049606390733953, 38.391598839823594 ] ]
+  }, {
+    "id" : "298464701",
+    "sourceId" : "799991071",
+    "targetId" : "860166637",
+    "distance" : 7904.824965796198,
+    "normalizedWeight" : 0.9374436686180967,
+    "coordinates" : [ [ 27.054835380566796, 38.3858539754481 ], [ 27.12723577844192, 38.40762215147028 ] ]
+  }, {
+    "id" : "132369304",
+    "sourceId" : "2067476865",
+    "targetId" : "-1705427045",
+    "distance" : 491.10930518954683,
+    "normalizedWeight" : 0.9951756411728544,
+    "coordinates" : [ [ 27.174795121897024, 38.467175680870824 ], [ 27.17902975809403, 38.47015835876768 ] ]
+  }, {
+    "id" : "720912004",
+    "sourceId" : "-893075269",
+    "targetId" : "-1323025445",
+    "distance" : 974.6216536610101,
+    "normalizedWeight" : 0.9914104412502076,
+    "coordinates" : [ [ 27.15554022942304, 38.422942003313324 ], [ 27.155972064773064, 38.42395717821899 ] ]
+  }, {
+    "id" : "1528062825",
+    "sourceId" : "-782960895",
+    "targetId" : "1423781945",
+    "distance" : 183.53481147455432,
+    "normalizedWeight" : 0.9975707805392114,
+    "coordinates" : [ [ 27.154277012750164, 38.42241511394591 ], [ 27.15548320512541, 38.42153350649886 ] ]
+  }, {
+    "id" : "1543881851",
+    "sourceId" : "-761620579",
+    "targetId" : "-508561095",
+    "distance" : 58215.356523104914,
+    "normalizedWeight" : 0.5456662711498828,
+    "coordinates" : [ [ 26.74881822598883, 38.33178386507774 ], [ 26.523399529192243, 38.6247718279797 ] ]
+  }, {
+    "id" : "1600533272",
+    "sourceId" : "535968273",
+    "targetId" : "1681900545",
+    "distance" : 895.1304777523866,
+    "normalizedWeight" : 0.9920294537125127,
+    "coordinates" : [ [ 27.223287961484967, 38.46309681695553 ], [ 27.23285692516834, 38.46057121418079 ] ]
+  }, {
+    "id" : "882847968",
+    "sourceId" : "-782960895",
+    "targetId" : "-551329927",
+    "distance" : 1292.0022092142367,
+    "normalizedWeight" : 0.9889389402699403,
+    "coordinates" : [ [ 27.154277012750164, 38.42241511394591 ], [ 27.14721955447551, 38.417397125271265 ] ]
+  }, {
+    "id" : "1935810333",
+    "sourceId" : "-13683185",
+    "targetId" : "-745058253",
+    "distance" : 3490.3274913420723,
+    "normalizedWeight" : 0.9718201754475181,
+    "coordinates" : [ [ 27.237608207397635, 38.47634517247087 ], [ 27.232469666712063, 38.48444117785216 ] ]
+  }, {
+    "id" : "979435039",
+    "sourceId" : "-2123418389",
+    "targetId" : "-844727637",
+    "distance" : 2345.002076015809,
+    "normalizedWeight" : 0.9807390359043907,
+    "coordinates" : [ [ 27.16514767131882, 38.428672816149586 ], [ 27.163806537773343, 38.44384216071525 ] ]
+  }, {
+    "id" : "583973455",
+    "sourceId" : "-948213349",
+    "targetId" : "-761620579",
+    "distance" : 5966.85916225721,
+    "normalizedWeight" : 0.9525349661136924,
+    "coordinates" : [ [ 26.737381460430736, 38.313756958108854 ], [ 26.74881822598883, 38.33178386507774 ] ]
+  }, {
+    "id" : "423876040",
+    "sourceId" : "1254931901",
+    "targetId" : "-799625653",
+    "distance" : 11224.25083285963,
+    "normalizedWeight" : 0.9115946865653946,
+    "coordinates" : [ [ 27.21507105056749, 38.41823633015462 ], [ 27.201931004244233, 38.384079967628125 ] ]
+  }, {
+    "id" : "202328195",
+    "sourceId" : "2084925965",
+    "targetId" : "311915693",
+    "distance" : 24286.641555937065,
+    "normalizedWeight" : 0.8098754384518893,
+    "coordinates" : [ [ 27.039898016526983, 38.47622799778002 ], [ 27.02749097415362, 38.49918729746654 ] ]
+  }, {
+    "id" : "1023025268",
+    "sourceId" : "1371362031",
+    "targetId" : "-1051251765",
+    "distance" : 727.4558251446639,
+    "normalizedWeight" : 0.9933351671881339,
+    "coordinates" : [ [ 27.092557651509, 38.47180423656699 ], [ 27.087390031695154, 38.46919705723632 ] ]
+  }, {
+    "id" : "370815626",
+    "sourceId" : "-1480747375",
+    "targetId" : "79317247",
+    "distance" : 885.9998501070138,
+    "normalizedWeight" : 0.9921005555956658,
+    "coordinates" : [ [ 27.17268724281245, 38.41684242857944 ], [ 27.173971966951324, 38.42262340354531 ] ]
+  }, {
+    "id" : "896844258",
+    "sourceId" : "-119581751",
+    "targetId" : "-508561095",
+    "distance" : 3060.2709639910086,
+    "normalizedWeight" : 0.9751691050221916,
+    "coordinates" : [ [ 26.505956022705714, 38.64092140312526 ], [ 26.523399529192243, 38.6247718279797 ] ]
+  }, {
+    "id" : "568257863",
+    "sourceId" : "-1988600683",
+    "targetId" : "-2105632543",
+    "distance" : 1450.220969754454,
+    "normalizedWeight" : 0.987706861571577,
+    "coordinates" : [ [ 27.045357478029523, 38.38430417612696 ], [ 27.045687483329733, 38.392880780304836 ] ]
+  }, {
+    "id" : "1876720455",
+    "sourceId" : "1715787981",
+    "targetId" : "13587347",
+    "distance" : 38220.77928661314,
+    "normalizedWeight" : 0.7013677354499943,
+    "coordinates" : [ [ 27.027658403902, 38.404005076315876 ], [ 26.9898273714447, 38.47160589893039 ] ]
+  }, {
+    "id" : "725248934",
+    "sourceId" : "-1027078809",
+    "targetId" : "-1429105887",
+    "distance" : 1939.7468446555274,
+    "normalizedWeight" : 0.9838948332084175,
+    "coordinates" : [ [ 27.172671656993636, 38.469573640175845 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "876897497",
+    "sourceId" : "-2133910563",
+    "targetId" : "-1323641099",
+    "distance" : 11367.833262757184,
+    "normalizedWeight" : 0.9104765836758762,
+    "coordinates" : [ [ 27.20274042514533, 38.48088280948834 ], [ 27.176816856387, 38.48166999954081 ] ]
+  }, {
+    "id" : "287530430",
+    "sourceId" : "-13683185",
+    "targetId" : "-2094243861",
+    "distance" : 2863.466101567298,
+    "normalizedWeight" : 0.976701660819612,
+    "coordinates" : [ [ 27.237608207397635, 38.47634517247087 ], [ 27.250475007654476, 38.465074686623765 ] ]
+  }, {
+    "id" : "164691278",
+    "sourceId" : "-1329580649",
+    "targetId" : "13587347",
+    "distance" : 3345.9942535653495,
+    "normalizedWeight" : 0.9729441250166041,
+    "coordinates" : [ [ 27.012392852931026, 38.482944725305934 ], [ 26.9898273714447, 38.47160589893039 ] ]
+  }, {
+    "id" : "1049764403",
+    "sourceId" : "100837403",
+    "targetId" : "2084925965",
+    "distance" : 6824.153781825346,
+    "normalizedWeight" : 0.9458590546390677,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 27.039898016526983, 38.47622799778002 ] ]
+  }, {
+    "id" : "221981081",
+    "sourceId" : "1842465707",
+    "targetId" : "1995933769",
+    "distance" : 2108.892799248013,
+    "normalizedWeight" : 0.9825776624326121,
+    "coordinates" : [ [ 27.214004730492597, 38.46140969758681 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "921812564",
+    "sourceId" : "503603995",
+    "targetId" : "-1397584607",
+    "distance" : 3273.8706633790093,
+    "normalizedWeight" : 0.9735057647287005,
+    "coordinates" : [ [ 27.18265074518869, 38.3605911591909 ], [ 27.175303359847593, 38.3865351697476 ] ]
+  }, {
+    "id" : "1113901761",
+    "sourceId" : "-1626965507",
+    "targetId" : "327157733",
+    "distance" : 497.60430848828537,
+    "normalizedWeight" : 0.9951250633830723,
+    "coordinates" : [ [ 26.99673161390555, 38.49300985427935 ], [ 26.990207969760856, 38.494811751491625 ] ]
+  }, {
+    "id" : "848235049",
+    "sourceId" : "-1945099795",
+    "targetId" : "772557593",
+    "distance" : 261.27764527408897,
+    "normalizedWeight" : 0.9969653827396854,
+    "coordinates" : [ [ 27.08417862488222, 38.469169799334686 ], [ 27.086105979139067, 38.470355473050276 ] ]
+  }, {
+    "id" : "1200182048",
+    "sourceId" : "535968273",
+    "targetId" : "-560797529",
+    "distance" : 911.677600292923,
+    "normalizedWeight" : 0.9919005982143924,
+    "coordinates" : [ [ 27.223287961484967, 38.46309681695553 ], [ 27.219668535027147, 38.468978678800624 ] ]
+  }, {
+    "id" : "901444883",
+    "sourceId" : "1254931901",
+    "targetId" : "870014473",
+    "distance" : 12247.804952550754,
+    "normalizedWeight" : 0.9036240816688099,
+    "coordinates" : [ [ 27.21507105056749, 38.41823633015462 ], [ 27.20905540271214, 38.371533982022825 ] ]
+  }, {
+    "id" : "819736694",
+    "sourceId" : "685452229",
+    "targetId" : "-792286105",
+    "distance" : 497.29622335045593,
+    "normalizedWeight" : 0.9951274624989187,
+    "coordinates" : [ [ 27.049606390733953, 38.391598839823594 ], [ 27.051295962034132, 38.38775183177618 ] ]
+  }, {
+    "id" : "1970244037",
+    "sourceId" : "1344532723",
+    "targetId" : "740370769",
+    "distance" : 510.81691286828647,
+    "normalizedWeight" : 0.9950221743934802,
+    "coordinates" : [ [ 27.091575220040678, 38.47707363040232 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "1396550547",
+    "sourceId" : "1376183553",
+    "targetId" : "984259133",
+    "distance" : 46897.08570582594,
+    "normalizedWeight" : 0.6338037355609464,
+    "coordinates" : [ [ 27.13321046477519, 38.31249622866503 ], [ 26.83626581352166, 38.182380067547285 ] ]
+  }, {
+    "id" : "1383653079",
+    "sourceId" : "-556789345",
+    "targetId" : "-1132720461",
+    "distance" : 3317.5914234523075,
+    "normalizedWeight" : 0.973165303098369,
+    "coordinates" : [ [ 27.11932764979911, 38.4605185712818 ], [ 27.08780938675085, 38.463326906588286 ] ]
+  }, {
+    "id" : "294328633",
+    "sourceId" : "-2012982531",
+    "targetId" : "113450155",
+    "distance" : 3666.287267482636,
+    "normalizedWeight" : 0.9704499441853635,
+    "coordinates" : [ [ 27.15586280168452, 38.42438785087215 ], [ 27.15508977434331, 38.42826795743449 ] ]
+  }, {
+    "id" : "2021019845",
+    "sourceId" : "-2034538937",
+    "targetId" : "-1341209375",
+    "distance" : 34074.06942069781,
+    "normalizedWeight" : 0.7336589307333021,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 26.99836660597811, 38.39147883413244 ] ]
+  }, {
+    "id" : "1566698962",
+    "sourceId" : "671992203",
+    "targetId" : "1194402671",
+    "distance" : 2558.372839319157,
+    "normalizedWeight" : 0.9790774783784566,
+    "coordinates" : [ [ 27.00213561667423, 38.50525373307484 ], [ 26.99166677363392, 38.4999164378424 ] ]
+  }, {
+    "id" : "1407013736",
+    "sourceId" : "-1090263601",
+    "targetId" : "47614499",
+    "distance" : 1154.792803362302,
+    "normalizedWeight" : 0.9900074152446401,
+    "coordinates" : [ [ 27.18845342055323, 38.46690132423279 ], [ 27.192135945133916, 38.46353036723793 ] ]
+  }, {
+    "id" : "2125786627",
+    "sourceId" : "-2034538937",
+    "targetId" : "2092262857",
+    "distance" : 9759.048677554563,
+    "normalizedWeight" : 0.9230044862514971,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 26.825451713097003, 38.199862724694775 ] ]
+  }, {
+    "id" : "1200291634",
+    "sourceId" : "-2133910563",
+    "targetId" : "-256660657",
+    "distance" : 26587.943283412867,
+    "normalizedWeight" : 0.7919547770382335,
+    "coordinates" : [ [ 27.20274042514533, 38.48088280948834 ], [ 27.175163051040677, 38.545038866177514 ] ]
+  }, {
+    "id" : "2096230476",
+    "sourceId" : "634096093",
+    "targetId" : "-1157441309",
+    "distance" : 723.7006221085919,
+    "normalizedWeight" : 0.993364409647454,
+    "coordinates" : [ [ 27.13078152845921, 38.32321859679262 ], [ 27.127154946116477, 38.32726406344626 ] ]
+  }, {
+    "id" : "699368721",
+    "sourceId" : "-2133910563",
+    "targetId" : "-410272219",
+    "distance" : 827.8351673742321,
+    "normalizedWeight" : 0.9925534947183554,
+    "coordinates" : [ [ 27.20274042514533, 38.48088280948834 ], [ 27.209874878453302, 38.48244657119185 ] ]
+  }, {
+    "id" : "1046972120",
+    "sourceId" : "-693553229",
+    "targetId" : "-467253311",
+    "distance" : 2741.071589285799,
+    "normalizedWeight" : 0.9776547694829822,
+    "coordinates" : [ [ 27.142700090833642, 38.323012292828395 ], [ 27.13779148579564, 38.320362150550075 ] ]
+  }, {
+    "id" : "1905283408",
+    "sourceId" : "1500792691",
+    "targetId" : "-1135340485",
+    "distance" : 2109.9787133800223,
+    "normalizedWeight" : 0.9825692062187869,
+    "coordinates" : [ [ 27.181329561674186, 38.47364928094205 ], [ 27.19843268439267, 38.47718072516701 ] ]
+  }, {
+    "id" : "2024925301",
+    "sourceId" : "-173597709",
+    "targetId" : "-695088863",
+    "distance" : 1586.845325326233,
+    "normalizedWeight" : 0.9866429424914196,
+    "coordinates" : [ [ 27.164898778988537, 38.403242754859306 ], [ 27.165617976559062, 38.391512223424925 ] ]
+  }, {
+    "id" : "1023421894",
+    "sourceId" : "-1489397737",
+    "targetId" : "-2094243861",
+    "distance" : 3038.2924039626464,
+    "normalizedWeight" : 0.975340256126771,
+    "coordinates" : [ [ 27.234517743190302, 38.44932586263338 ], [ 27.250475007654476, 38.465074686623765 ] ]
+  }, {
+    "id" : "1978181935",
+    "sourceId" : "-1173663501",
+    "targetId" : "-1624452895",
+    "distance" : 13048.993963440205,
+    "normalizedWeight" : 0.8973850749270733,
+    "coordinates" : [ [ 27.15610749831399, 38.429880201036454 ], [ 27.129675403348298, 38.458594716789264 ] ]
+  }, {
+    "id" : "1775251736",
+    "sourceId" : "-865864095",
+    "targetId" : "-724477247",
+    "distance" : 4242.55770973862,
+    "normalizedWeight" : 0.9659624198615997,
+    "coordinates" : [ [ 27.140901179127102, 38.4135360725219 ], [ 27.153302417874585, 38.405148378329166 ] ]
+  }, {
+    "id" : "2017566858",
+    "sourceId" : "-1173663501",
+    "targetId" : "113450155",
+    "distance" : 3114.358520154319,
+    "normalizedWeight" : 0.9747479152368096,
+    "coordinates" : [ [ 27.15610749831399, 38.429880201036454 ], [ 27.15508977434331, 38.42826795743449 ] ]
+  }, {
+    "id" : "298001679",
+    "sourceId" : "864650719",
+    "targetId" : "-1671859461",
+    "distance" : 792.0120169849281,
+    "normalizedWeight" : 0.9928324562040365,
+    "coordinates" : [ [ 27.12208802162963, 38.32998531292792 ], [ 27.121724326996663, 38.32444126677276 ] ]
+  }, {
+    "id" : "1212946563",
+    "sourceId" : "-948213349",
+    "targetId" : "1435991347",
+    "distance" : 64460.529565111894,
+    "normalizedWeight" : 0.49703395570020226,
+    "coordinates" : [ [ 26.737381460430736, 38.313756958108854 ], [ 26.453505728599787, 38.630250383226674 ] ]
+  }, {
+    "id" : "225768891",
+    "sourceId" : "-120176963",
+    "targetId" : "-193258515",
+    "distance" : 989.3893186441152,
+    "normalizedWeight" : 0.9912954427166069,
+    "coordinates" : [ [ 27.168017771372273, 38.386623009840875 ], [ 27.168577306278475, 38.39287373885835 ] ]
+  }, {
+    "id" : "788687827",
+    "sourceId" : "852464195",
+    "targetId" : "1634697557",
+    "distance" : 47.796239980158546,
+    "normalizedWeight" : 0.9986278018552266,
+    "coordinates" : [ [ 26.996565006564133, 38.494776622083684 ], [ 26.998004726095406, 38.49515970633433 ] ]
+  }, {
+    "id" : "986553887",
+    "sourceId" : "-1671859461",
+    "targetId" : "-40729651",
+    "distance" : 5389.157245007787,
+    "normalizedWeight" : 0.9570336375975061,
+    "coordinates" : [ [ 27.121724326996663, 38.32444126677276 ], [ 27.092863402617542, 38.33862755779758 ] ]
+  }, {
+    "id" : "603211554",
+    "sourceId" : "1715787981",
+    "targetId" : "-889110833",
+    "distance" : 2793.297850953919,
+    "normalizedWeight" : 0.9772480739414628,
+    "coordinates" : [ [ 27.027658403902, 38.404005076315876 ], [ 27.03340353020906, 38.39003564122775 ] ]
+  }, {
+    "id" : "766182781",
+    "sourceId" : "503603995",
+    "targetId" : "867208401",
+    "distance" : 3341.2651212805104,
+    "normalizedWeight" : 0.9729809516427892,
+    "coordinates" : [ [ 27.18265074518869, 38.3605911591909 ], [ 27.1699781974699, 38.38463377392139 ] ]
+  }, {
+    "id" : "325117878",
+    "sourceId" : "-1039667823",
+    "targetId" : "1631713631",
+    "distance" : 5138.250964957415,
+    "normalizedWeight" : 0.9589874911220827,
+    "coordinates" : [ [ 27.040116904221886, 38.384064502432004 ], [ 27.017254299367757, 38.37077297407825 ] ]
+  }, {
+    "id" : "827672962",
+    "sourceId" : "327157733",
+    "targetId" : "13587347",
+    "distance" : 3319.316513537673,
+    "normalizedWeight" : 0.9731518695033915,
+    "coordinates" : [ [ 26.990207969760856, 38.494811751491625 ], [ 26.9898273714447, 38.47160589893039 ] ]
+  }, {
+    "id" : "546717770",
+    "sourceId" : "42044299",
+    "targetId" : "327157733",
+    "distance" : 364.9201118424176,
+    "normalizedWeight" : 0.9961582997182493,
+    "coordinates" : [ [ 26.990810478275698, 38.49566967015976 ], [ 26.990207969760856, 38.494811751491625 ] ]
+  }, {
+    "id" : "950642804",
+    "sourceId" : "-1132720461",
+    "targetId" : "-1051251765",
+    "distance" : 702.6979376476338,
+    "normalizedWeight" : 0.9935279614288258,
+    "coordinates" : [ [ 27.08780938675085, 38.463326906588286 ], [ 27.087390031695154, 38.46919705723632 ] ]
+  }, {
+    "id" : "1885967499",
+    "sourceId" : "2066060327",
+    "targetId" : "-1323641099",
+    "distance" : 8449.542637505487,
+    "normalizedWeight" : 0.9332018515437905,
+    "coordinates" : [ [ 27.164529660529862, 38.47780286803936 ], [ 27.176816856387, 38.48166999954081 ] ]
+  }, {
+    "id" : "1871589226",
+    "sourceId" : "634096093",
+    "targetId" : "-467253311",
+    "distance" : 956.0674271088482,
+    "normalizedWeight" : 0.9915549264378142,
+    "coordinates" : [ [ 27.13078152845921, 38.32321859679262 ], [ 27.13779148579564, 38.320362150550075 ] ]
+  }, {
+    "id" : "2019583109",
+    "sourceId" : "-229299359",
+    "targetId" : "606269123",
+    "distance" : 1177.3571128153849,
+    "normalizedWeight" : 0.9898317028011505,
+    "coordinates" : [ [ 26.766317335398934, 38.32806406412439 ], [ 26.75639327355065, 38.32462225093731 ] ]
+  }, {
+    "id" : "1588086349",
+    "sourceId" : "-745058253",
+    "targetId" : "-410272219",
+    "distance" : 3169.5805930854035,
+    "normalizedWeight" : 0.9743178907599047,
+    "coordinates" : [ [ 27.232469666712063, 38.48444117785216 ], [ 27.209874878453302, 38.48244657119185 ] ]
+  }, {
+    "id" : "318097936",
+    "sourceId" : "671992203",
+    "targetId" : "-1355060633",
+    "distance" : 3300.722713207702,
+    "normalizedWeight" : 0.9732966628593118,
+    "coordinates" : [ [ 27.00213561667423, 38.50525373307484 ], [ 26.989572825683467, 38.50565249367301 ] ]
+  }, {
+    "id" : "64769851",
+    "sourceId" : "100837403",
+    "targetId" : "-1355060633",
+    "distance" : 9113.376722164729,
+    "normalizedWeight" : 0.928032452970805,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 26.989572825683467, 38.50565249367301 ] ]
+  }, {
+    "id" : "1315450511",
+    "sourceId" : "-693553229",
+    "targetId" : "503603995",
+    "distance" : 8601.354533200207,
+    "normalizedWeight" : 0.932019664284802,
+    "coordinates" : [ [ 27.142700090833642, 38.323012292828395 ], [ 27.18265074518869, 38.3605911591909 ] ]
+  }, {
+    "id" : "1996206615",
+    "sourceId" : "-1988600683",
+    "targetId" : "-792286105",
+    "distance" : 1471.7566071315046,
+    "normalizedWeight" : 0.9875391595874549,
+    "coordinates" : [ [ 27.045357478029523, 38.38430417612696 ], [ 27.051295962034132, 38.38775183177618 ] ]
+  }, {
+    "id" : "1702197657",
+    "sourceId" : "-481714009",
+    "targetId" : "113450155",
+    "distance" : 3256.6815678094813,
+    "normalizedWeight" : 0.9736396193893175,
+    "coordinates" : [ [ 27.15904928722468, 38.426922451871135 ], [ 27.15508977434331, 38.42826795743449 ] ]
+  }, {
+    "id" : "971664666",
+    "sourceId" : "-256660657",
+    "targetId" : "-410272219",
+    "distance" : 27333.316563224824,
+    "normalizedWeight" : 0.7861504176989879,
+    "coordinates" : [ [ 27.175163051040677, 38.545038866177514 ], [ 27.209874878453302, 38.48244657119185 ] ]
+  }, {
+    "id" : "911197885",
+    "sourceId" : "2054912281",
+    "targetId" : "509212547",
+    "distance" : 6948.8495804218155,
+    "normalizedWeight" : 0.9448880254343037,
+    "coordinates" : [ [ 27.157934594468042, 38.515137035563605 ], [ 27.15733836310961, 38.47087096902916 ] ]
+  }, {
+    "id" : "1157594122",
+    "sourceId" : "-1029024345",
+    "targetId" : "-799625653",
+    "distance" : 3622.1840930583166,
+    "normalizedWeight" : 0.970793383746847,
+    "coordinates" : [ [ 27.176786893491606, 38.39192539301175 ], [ 27.201931004244233, 38.384079967628125 ] ]
+  }, {
+    "id" : "1571183952",
+    "sourceId" : "-1093662543",
+    "targetId" : "1364398301",
+    "distance" : 465.02319360637597,
+    "normalizedWeight" : 0.9953787785397191,
+    "coordinates" : [ [ 27.177390828339636, 38.39339342707211 ], [ 27.17726111832088, 38.3960583537232 ] ]
+  }, {
+    "id" : "1996179981",
+    "sourceId" : "-1626965507",
+    "targetId" : "-1329580649",
+    "distance" : 2571.2341130205896,
+    "normalizedWeight" : 0.9789773252657205,
+    "coordinates" : [ [ 26.99673161390555, 38.49300985427935 ], [ 27.012392852931026, 38.482944725305934 ] ]
+  }, {
+    "id" : "695738752",
+    "sourceId" : "-703827689",
+    "targetId" : "1667905107",
+    "distance" : 491.7827364380838,
+    "normalizedWeight" : 0.9951703970393945,
+    "coordinates" : [ [ 27.22290970080855, 38.46949292401393 ], [ 27.227112144928213, 38.470276534830454 ] ]
+  }, {
+    "id" : "1677139727",
+    "sourceId" : "-1521311139",
+    "targetId" : "-372431137",
+    "distance" : 156.48173618949028,
+    "normalizedWeight" : 0.9977814478309419,
+    "coordinates" : [ [ 27.156483732719803, 38.42500763699175 ], [ 27.1574384685825, 38.42429598261005 ] ]
+  }, {
+    "id" : "1324644878",
+    "sourceId" : "-2123418389",
+    "targetId" : "-1467059777",
+    "distance" : 2043.286161601728,
+    "normalizedWeight" : 0.9830885534321323,
+    "coordinates" : [ [ 27.16514767131882, 38.428672816149586 ], [ 27.179420639797524, 38.424659696925765 ] ]
+  }, {
+    "id" : "1625727460",
+    "sourceId" : "267867751",
+    "targetId" : "231171113",
+    "distance" : 4779.91416722146,
+    "normalizedWeight" : 0.9617779259214878,
+    "coordinates" : [ [ 27.13240298487528, 38.326722322274044 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "458258005",
+    "sourceId" : "-893075269",
+    "targetId" : "665141693",
+    "distance" : 774.4780369317557,
+    "normalizedWeight" : 0.9929689965437994,
+    "coordinates" : [ [ 27.15554022942304, 38.422942003313324 ], [ 27.157197357253043, 38.42365973767 ] ]
+  }, {
+    "id" : "2008798910",
+    "sourceId" : "-77936441",
+    "targetId" : "-1397584607",
+    "distance" : 3069.861790780291,
+    "normalizedWeight" : 0.9750944194833439,
+    "coordinates" : [ [ 27.198732298645268, 38.37605158159672 ], [ 27.175303359847593, 38.3865351697476 ] ]
+  }, {
+    "id" : "745116015",
+    "sourceId" : "1634697557",
+    "targetId" : "2088086353",
+    "distance" : 669.1662547909807,
+    "normalizedWeight" : 0.9937890788337839,
+    "coordinates" : [ [ 26.998004726095406, 38.49515970633433 ], [ 26.99658937074419, 38.49472080679441 ] ]
+  }, {
+    "id" : "103152419",
+    "sourceId" : "1910632995",
+    "targetId" : "-495388751",
+    "distance" : 62851.12250163731,
+    "normalizedWeight" : 0.5095667056290476,
+    "coordinates" : [ [ 26.960554024704585, 38.4950543215556 ], [ 26.762692823993692, 38.335568600477764 ] ]
+  }, {
+    "id" : "870589155",
+    "sourceId" : "1910632995",
+    "targetId" : "1813149297",
+    "distance" : 4714.136820270658,
+    "normalizedWeight" : 0.9622901462658783,
+    "coordinates" : [ [ 26.960554024704585, 38.4950543215556 ], [ 26.970525732163466, 38.48107103613099 ] ]
+  }, {
+    "id" : "869775071",
+    "sourceId" : "1390225147",
+    "targetId" : "-1945099795",
+    "distance" : 446.36278238174555,
+    "normalizedWeight" : 0.9955240906069738,
+    "coordinates" : [ [ 27.082404346255952, 38.46995735102174 ], [ 27.08417862488222, 38.469169799334686 ] ]
+  }, {
+    "id" : "1780686635",
+    "sourceId" : "-100512719",
+    "targetId" : "-1115928237",
+    "distance" : 878.9715202316106,
+    "normalizedWeight" : 0.992155286497962,
+    "coordinates" : [ [ 26.767234581614833, 38.33170809125841 ], [ 26.767493800665775, 38.324592976935556 ] ]
+  }, {
+    "id" : "872540427",
+    "sourceId" : "-1592774029",
+    "targetId" : "-193258515",
+    "distance" : 282.7298856955488,
+    "normalizedWeight" : 0.996798330183053,
+    "coordinates" : [ [ 27.17117346455076, 38.39171600350296 ], [ 27.168577306278475, 38.39287373885835 ] ]
+  }, {
+    "id" : "1880908054",
+    "sourceId" : "1247456631",
+    "targetId" : "-476887835",
+    "distance" : 1039.3811137607493,
+    "normalizedWeight" : 0.9909061473786467,
+    "coordinates" : [ [ 27.088371172027443, 38.48609784045328 ], [ 27.094717041191842, 38.480152563400466 ] ]
+  }, {
+    "id" : "678527354",
+    "sourceId" : "-246478467",
+    "targetId" : "622097871",
+    "distance" : 1042.7129631605328,
+    "normalizedWeight" : 0.9908802016522511,
+    "coordinates" : [ [ 27.218279743550625, 38.478893472460165 ], [ 27.221201365644525, 38.47228974009593 ] ]
+  }, {
+    "id" : "1783573315",
+    "sourceId" : "-1051251765",
+    "targetId" : "772557593",
+    "distance" : 376.651038722379,
+    "normalizedWeight" : 0.9960669488248943,
+    "coordinates" : [ [ 27.087390031695154, 38.46919705723632 ], [ 27.086105979139067, 38.470355473050276 ] ]
+  }, {
+    "id" : "1986746215",
+    "sourceId" : "-1341209375",
+    "targetId" : "1813149297",
+    "distance" : 40284.410080717935,
+    "normalizedWeight" : 0.6852978614728391,
+    "coordinates" : [ [ 26.99836660597811, 38.39147883413244 ], [ 26.970525732163466, 38.48107103613099 ] ]
+  }, {
+    "id" : "1122836477",
+    "sourceId" : "1435991347",
+    "targetId" : "-508561095",
+    "distance" : 7294.785430119204,
+    "normalizedWeight" : 0.9421941591067136,
+    "coordinates" : [ [ 26.453505728599787, 38.630250383226674 ], [ 26.523399529192243, 38.6247718279797 ] ]
+  }, {
+    "id" : "381504430",
+    "sourceId" : "1019226607",
+    "targetId" : "-1115928237",
+    "distance" : 1048.217326768643,
+    "normalizedWeight" : 0.99083733815663,
+    "coordinates" : [ [ 26.759909979466478, 38.31984257594526 ], [ 26.767493800665775, 38.324592976935556 ] ]
+  }, {
+    "id" : "1543536917",
+    "sourceId" : "-745058253",
+    "targetId" : "952892343",
+    "distance" : 4560.914545596267,
+    "normalizedWeight" : 0.9634833164063629,
+    "coordinates" : [ [ 27.232469666712063, 38.48444117785216 ], [ 27.22789882466805, 38.47437435170931 ] ]
+  }, {
+    "id" : "1037447375",
+    "sourceId" : "1371362031",
+    "targetId" : "637786129",
+    "distance" : 455.8435636597013,
+    "normalizedWeight" : 0.9954502620128391,
+    "coordinates" : [ [ 27.092557651509, 38.47180423656699 ], [ 27.08992010269423, 38.47415155211778 ] ]
+  }, {
+    "id" : "450071497",
+    "sourceId" : "-745058253",
+    "targetId" : "-256660657",
+    "distance" : 29634.474778681226,
+    "normalizedWeight" : 0.7682308738399221,
+    "coordinates" : [ [ 27.232469666712063, 38.48444117785216 ], [ 27.175163051040677, 38.545038866177514 ] ]
+  }, {
+    "id" : "893439066",
+    "sourceId" : "-1029024345",
+    "targetId" : "-1397584607",
+    "distance" : 959.9918689344499,
+    "normalizedWeight" : 0.9915243660847954,
+    "coordinates" : [ [ 27.176786893491606, 38.39192539301175 ], [ 27.175303359847593, 38.3865351697476 ] ]
+  }, {
+    "id" : "1922416526",
+    "sourceId" : "2038209927",
+    "targetId" : "-856038679",
+    "distance" : 881.9312021562461,
+    "normalizedWeight" : 0.9921322389084042,
+    "coordinates" : [ [ 27.171917507015614, 38.476904583171844 ], [ 27.180197799176803, 38.4757673126081 ] ]
+  }, {
+    "id" : "1916551968",
+    "sourceId" : "1254931901",
+    "targetId" : "-671878237",
+    "distance" : 2704.3476404504713,
+    "normalizedWeight" : 0.9779407456524661,
+    "coordinates" : [ [ 27.21507105056749, 38.41823633015462 ], [ 27.211280080739137, 38.43861867846285 ] ]
+  }, {
+    "id" : "998527642",
+    "sourceId" : "1371362031",
+    "targetId" : "-657540915",
+    "distance" : 2566.8719062655773,
+    "normalizedWeight" : 0.9790112945750638,
+    "coordinates" : [ [ 27.092557651509, 38.47180423656699 ], [ 27.096060419693224, 38.47338004925784 ] ]
+  }, {
+    "id" : "1629988920",
+    "sourceId" : "-865864095",
+    "targetId" : "-551329927",
+    "distance" : 817.6969216988666,
+    "normalizedWeight" : 0.9926324431091325,
+    "coordinates" : [ [ 27.140901179127102, 38.4135360725219 ], [ 27.14721955447551, 38.417397125271265 ] ]
+  }, {
+    "id" : "1247784830",
+    "sourceId" : "984259133",
+    "targetId" : "188928337",
+    "distance" : 875.5490639463967,
+    "normalizedWeight" : 0.9921819377969021,
+    "coordinates" : [ [ 26.83626581352166, 38.182380067547285 ], [ 26.835335445354087, 38.18906217995372 ] ]
+  }, {
+    "id" : "954117631",
+    "sourceId" : "-703827689",
+    "targetId" : "535968273",
+    "distance" : 930.6073054040454,
+    "normalizedWeight" : 0.991753189105927,
+    "coordinates" : [ [ 27.22290970080855, 38.46949292401393 ], [ 27.223287961484967, 38.46309681695553 ] ]
+  }, {
+    "id" : "2039833783",
+    "sourceId" : "-1521311139",
+    "targetId" : "-2012982531",
+    "distance" : 60.671100430857535,
+    "normalizedWeight" : 0.9985275429399656,
+    "coordinates" : [ [ 27.156483732719803, 38.42500763699175 ], [ 27.15586280168452, 38.42438785087215 ] ]
+  }, {
+    "id" : "1795647008",
+    "sourceId" : "-2133910563",
+    "targetId" : "1995933769",
+    "distance" : 1493.0923770932761,
+    "normalizedWeight" : 0.9873730140077946,
+    "coordinates" : [ [ 27.20274042514533, 38.48088280948834 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "916332466",
+    "sourceId" : "-1132720461",
+    "targetId" : "-1586871577",
+    "distance" : 411.79446827304054,
+    "normalizedWeight" : 0.9957932804508725,
+    "coordinates" : [ [ 27.08780938675085, 38.463326906588286 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "1361657860",
+    "sourceId" : "100837403",
+    "targetId" : "1480374431",
+    "distance" : 6820.512391144257,
+    "normalizedWeight" : 0.9458874108205677,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 27.052916437304933, 38.472338703654586 ] ]
+  }, {
+    "id" : "1678185768",
+    "sourceId" : "1480374431",
+    "targetId" : "1972369647",
+    "distance" : 5937.51972469552,
+    "normalizedWeight" : 0.9527634377305746,
+    "coordinates" : [ [ 27.052916437304933, 38.472338703654586 ], [ 27.081895939194666, 38.49571359668352 ] ]
+  }, {
+    "id" : "2120826694",
+    "sourceId" : "-782960895",
+    "targetId" : "-2012982531",
+    "distance" : 1118.2531869907702,
+    "normalizedWeight" : 0.9902919559831974,
+    "coordinates" : [ [ 27.154277012750164, 38.42241511394591 ], [ 27.15586280168452, 38.42438785087215 ] ]
+  }, {
+    "id" : "648938398",
+    "sourceId" : "-1480747375",
+    "targetId" : "1262554435",
+    "distance" : 661.035533563604,
+    "normalizedWeight" : 0.9938523942610593,
+    "coordinates" : [ [ 27.17268724281245, 38.41684242857944 ], [ 27.167849597895408, 38.417016382688786 ] ]
+  }, {
+    "id" : "1310351144",
+    "sourceId" : "-1230831949",
+    "targetId" : "-1397584607",
+    "distance" : 720.2494267794729,
+    "normalizedWeight" : 0.9933912847426347,
+    "coordinates" : [ [ 27.171343218814116, 38.3917201280826 ], [ 27.175303359847593, 38.3865351697476 ] ]
+  }, {
+    "id" : "1969998942",
+    "sourceId" : "-1521311139",
+    "targetId" : "-1323025445",
+    "distance" : 152.38225194927963,
+    "normalizedWeight" : 0.9978133712715591,
+    "coordinates" : [ [ 27.156483732719803, 38.42500763699175 ], [ 27.155972064773064, 38.42395717821899 ] ]
+  }, {
+    "id" : "2144892653",
+    "sourceId" : "2038209927",
+    "targetId" : "1402965039",
+    "distance" : 648.3563527237209,
+    "normalizedWeight" : 0.9939511293830648,
+    "coordinates" : [ [ 27.171917507015614, 38.476904583171844 ], [ 27.171695349470014, 38.472560562209516 ] ]
+  }, {
+    "id" : "22516832",
+    "sourceId" : "-173597709",
+    "targetId" : "-193258515",
+    "distance" : 1386.262287497217,
+    "normalizedWeight" : 0.9882049196382403,
+    "coordinates" : [ [ 27.164898778988537, 38.403242754859306 ], [ 27.168577306278475, 38.39287373885835 ] ]
+  }, {
+    "id" : "1933270530",
+    "sourceId" : "860166637",
+    "targetId" : "-40729651",
+    "distance" : 9260.997322968535,
+    "normalizedWeight" : 0.9268829040989207,
+    "coordinates" : [ [ 27.12723577844192, 38.40762215147028 ], [ 27.092863402617542, 38.33862755779758 ] ]
+  }, {
+    "id" : "21356670",
+    "sourceId" : "-1828173627",
+    "targetId" : "1424268931",
+    "distance" : 2680.106260674085,
+    "normalizedWeight" : 0.9781295177521808,
+    "coordinates" : [ [ 27.168520168184223, 38.45309752055015 ], [ 27.183030184265373, 38.45746416752818 ] ]
+  }, {
+    "id" : "333771487",
+    "sourceId" : "-865864095",
+    "targetId" : "-735675291",
+    "distance" : 662.1455964254257,
+    "normalizedWeight" : 0.9938437499966166,
+    "coordinates" : [ [ 27.140901179127102, 38.4135360725219 ], [ 27.146073108443094, 38.412652941725604 ] ]
+  }, {
+    "id" : "1943294698",
+    "sourceId" : "503603995",
+    "targetId" : "-459432195",
+    "distance" : 3266.9041587895204,
+    "normalizedWeight" : 0.9735600141860813,
+    "coordinates" : [ [ 27.18265074518869, 38.3605911591909 ], [ 27.16752607988577, 38.38300789485077 ] ]
+  }, {
+    "id" : "908336997",
+    "sourceId" : "-1157441309",
+    "targetId" : "875681401",
+    "distance" : 817.4591406250524,
+    "normalizedWeight" : 0.9926342947542529,
+    "coordinates" : [ [ 27.127154946116477, 38.32726406344626 ], [ 27.12367608376327, 38.322186179290966 ] ]
+  }, {
+    "id" : "50861644",
+    "sourceId" : "-1027078809",
+    "targetId" : "2067476865",
+    "distance" : 767.6650011005227,
+    "normalizedWeight" : 0.9930220509116265,
+    "coordinates" : [ [ 27.172671656993636, 38.469573640175845 ], [ 27.174795121897024, 38.467175680870824 ] ]
+  }, {
+    "id" : "848414679",
+    "sourceId" : "-1583764383",
+    "targetId" : "-1429105887",
+    "distance" : 995.4614837685074,
+    "normalizedWeight" : 0.991248157645752,
+    "coordinates" : [ [ 27.17664954589723, 38.46295107032509 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "1208282446",
+    "sourceId" : "-173597709",
+    "targetId" : "-724477247",
+    "distance" : 1715.381743721008,
+    "normalizedWeight" : 0.9856420056712386,
+    "coordinates" : [ [ 27.164898778988537, 38.403242754859306 ], [ 27.153302417874585, 38.405148378329166 ] ]
+  }, {
+    "id" : "980035366",
+    "sourceId" : "1424268931",
+    "targetId" : "-58829739",
+    "distance" : 667.7147734389973,
+    "normalizedWeight" : 0.9938003817870414,
+    "coordinates" : [ [ 27.183030184265373, 38.45746416752818 ], [ 27.18650682982308, 38.46160730595667 ] ]
+  }, {
+    "id" : "991694413",
+    "sourceId" : "-2012982531",
+    "targetId" : "-1323025445",
+    "distance" : 106.37471235933246,
+    "normalizedWeight" : 0.9981716404761676,
+    "coordinates" : [ [ 27.15586280168452, 38.42438785087215 ], [ 27.155972064773064, 38.42395717821899 ] ]
+  }, {
+    "id" : "1697010807",
+    "sourceId" : "287734973",
+    "targetId" : "-256660657",
+    "distance" : 19240.747413731002,
+    "normalizedWeight" : 0.8491687477003067,
+    "coordinates" : [ [ 27.088742619514267, 38.50140200777398 ], [ 27.175163051040677, 38.545038866177514 ] ]
+  }, {
+    "id" : "418920875",
+    "sourceId" : "-1489397737",
+    "targetId" : "1681900545",
+    "distance" : 2261.7119999488336,
+    "normalizedWeight" : 0.9813876311035744,
+    "coordinates" : [ [ 27.234517743190302, 38.44932586263338 ], [ 27.23285692516834, 38.46057121418079 ] ]
+  }, {
+    "id" : "1026715750",
+    "sourceId" : "-1027078809",
+    "targetId" : "501507721",
+    "distance" : 521.2712262531271,
+    "normalizedWeight" : 0.9949407647250976,
+    "coordinates" : [ [ 27.172671656993636, 38.469573640175845 ], [ 27.17692240318334, 38.47065712719112 ] ]
+  }, {
+    "id" : "1970890799",
+    "sourceId" : "-481714009",
+    "targetId" : "-372431137",
+    "distance" : 417.0685790385884,
+    "normalizedWeight" : 0.9957522099766452,
+    "coordinates" : [ [ 27.15904928722468, 38.426922451871135 ], [ 27.1574384685825, 38.42429598261005 ] ]
+  }, {
+    "id" : "169548611",
+    "sourceId" : "-893075269",
+    "targetId" : "-782960895",
+    "distance" : 102.08963653544177,
+    "normalizedWeight" : 0.9982050091527105,
+    "coordinates" : [ [ 27.15554022942304, 38.422942003313324 ], [ 27.154277012750164, 38.42241511394591 ] ]
+  }, {
+    "id" : "1388750750",
+    "sourceId" : "-58829739",
+    "targetId" : "47614499",
+    "distance" : 714.3414243182636,
+    "normalizedWeight" : 0.993437291448524,
+    "coordinates" : [ [ 27.18650682982308, 38.46160730595667 ], [ 27.192135945133916, 38.46353036723793 ] ]
+  }, {
+    "id" : "1726871476",
+    "sourceId" : "100837403",
+    "targetId" : "287734973",
+    "distance" : 6892.911202249853,
+    "normalizedWeight" : 0.9453236279123622,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 27.088742619514267, 38.50140200777398 ] ]
+  }, {
+    "id" : "1168391421",
+    "sourceId" : "622097871",
+    "targetId" : "-500159261",
+    "distance" : 515.3345983842054,
+    "normalizedWeight" : 0.9949869943423215,
+    "coordinates" : [ [ 27.221201365644525, 38.47228974009593 ], [ 27.219638769520785, 38.46903433457524 ] ]
+  }, {
+    "id" : "1716400917",
+    "sourceId" : "-593203817",
+    "targetId" : "509212547",
+    "distance" : 4864.408530389234,
+    "normalizedWeight" : 0.9611199527163171,
+    "coordinates" : [ [ 27.164011227325243, 38.459659647437974 ], [ 27.15733836310961, 38.47087096902916 ] ]
+  }, {
+    "id" : "964048939",
+    "sourceId" : "-707786777",
+    "targetId" : "1424268931",
+    "distance" : 2467.646616839043,
+    "normalizedWeight" : 0.9797839802226062,
+    "coordinates" : [ [ 27.20791804428148, 38.4594688417662 ], [ 27.183030184265373, 38.45746416752818 ] ]
+  }, {
+    "id" : "2016374130",
+    "sourceId" : "1480374431",
+    "targetId" : "-1586871577",
+    "distance" : 3986.922671543105,
+    "normalizedWeight" : 0.9679530970988665,
+    "coordinates" : [ [ 27.052916437304933, 38.472338703654586 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "191343108",
+    "sourceId" : "1376183553",
+    "targetId" : "-2034538937",
+    "distance" : 45472.42023037418,
+    "normalizedWeight" : 0.6448978686372291,
+    "coordinates" : [ [ 27.13321046477519, 38.31249622866503 ], [ 26.854952135564282, 38.208885981632086 ] ]
+  }, {
+    "id" : "1646436170",
+    "sourceId" : "-1209689777",
+    "targetId" : "327157733",
+    "distance" : 635.5066911857202,
+    "normalizedWeight" : 0.9940511920697406,
+    "coordinates" : [ [ 26.995680398509023, 38.49529573667209 ], [ 26.990207969760856, 38.494811751491625 ] ]
+  }, {
+    "id" : "1732144726",
+    "sourceId" : "-1461885421",
+    "targetId" : "-1586871577",
+    "distance" : 2424.9228503627055,
+    "normalizedWeight" : 0.9801166780797351,
+    "coordinates" : [ [ 27.068389182202562, 38.471264652337645 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "535314048",
+    "sourceId" : "1247456631",
+    "targetId" : "-720305931",
+    "distance" : 6010.472408582183,
+    "normalizedWeight" : 0.952195341712768,
+    "coordinates" : [ [ 27.088371172027443, 38.48609784045328 ], [ 27.073055544769808, 38.47030737053841 ] ]
+  }, {
+    "id" : "344892903",
+    "sourceId" : "-1476246679",
+    "targetId" : "984259133",
+    "distance" : 10122.952089234233,
+    "normalizedWeight" : 0.9201707032016149,
+    "coordinates" : [ [ 26.82330142514423, 38.189117982051286 ], [ 26.83626581352166, 38.182380067547285 ] ]
+  }, {
+    "id" : "416726461",
+    "sourceId" : "-703827689",
+    "targetId" : "-1819840007",
+    "distance" : 245.91375139440166,
+    "normalizedWeight" : 0.9970850242177783,
+    "coordinates" : [ [ 27.22290970080855, 38.46949292401393 ], [ 27.22090465853926, 38.47021089945228 ] ]
+  }, {
+    "id" : "247736233",
+    "sourceId" : "-40729651",
+    "targetId" : "-2111349595",
+    "distance" : 6491.530816109293,
+    "normalizedWeight" : 0.9484492510812967,
+    "coordinates" : [ [ 27.092863402617542, 38.33862755779758 ], [ 27.120546326787558, 38.31655396697979 ] ]
+  }, {
+    "id" : "118338147",
+    "sourceId" : "1247456631",
+    "targetId" : "1972369647",
+    "distance" : 1930.4493332300783,
+    "normalizedWeight" : 0.9839672346463758,
+    "coordinates" : [ [ 27.088371172027443, 38.48609784045328 ], [ 27.081895939194666, 38.49571359668352 ] ]
+  }, {
+    "id" : "718778296",
+    "sourceId" : "-1988600683",
+    "targetId" : "-1039667823",
+    "distance" : 464.2684158612084,
+    "normalizedWeight" : 0.9953846561333664,
+    "coordinates" : [ [ 27.045357478029523, 38.38430417612696 ], [ 27.040116904221886, 38.384064502432004 ] ]
+  }, {
+    "id" : "934264538",
+    "sourceId" : "-373097925",
+    "targetId" : "1842465707",
+    "distance" : 447.0831145617531,
+    "normalizedWeight" : 0.9955184812473018,
+    "coordinates" : [ [ 27.212505996975775, 38.45886444812528 ], [ 27.214004730492597, 38.46140969758681 ] ]
+  }, {
+    "id" : "1962743172",
+    "sourceId" : "1663193721",
+    "targetId" : "-1055579681",
+    "distance" : 2848.1787243778135,
+    "normalizedWeight" : 0.9768207064481119,
+    "coordinates" : [ [ 27.011433296005933, 38.49949054144221 ], [ 27.001071659412325, 38.49757555280289 ] ]
+  }, {
+    "id" : "1113197351",
+    "sourceId" : "685452229",
+    "targetId" : "-2105632543",
+    "distance" : 581.885196328102,
+    "normalizedWeight" : 0.9944687525496918,
+    "coordinates" : [ [ 27.049606390733953, 38.391598839823594 ], [ 27.045687483329733, 38.392880780304836 ] ]
+  }, {
+    "id" : "1911429228",
+    "sourceId" : "-670162599",
+    "targetId" : "1681900545",
+    "distance" : 2038.3631737512521,
+    "normalizedWeight" : 0.9831268896473963,
+    "coordinates" : [ [ 27.23571241724574, 38.456125686095646 ], [ 27.23285692516834, 38.46057121418079 ] ]
+  }, {
+    "id" : "358445278",
+    "sourceId" : "1430299729",
+    "targetId" : "-1115928237",
+    "distance" : 203.86863337938888,
+    "normalizedWeight" : 0.9974124373140483,
+    "coordinates" : [ [ 26.766683988116206, 38.324175000336986 ], [ 26.767493800665775, 38.324592976935556 ] ]
+  }, {
+    "id" : "1068415531",
+    "sourceId" : "1039700295",
+    "targetId" : "637786129",
+    "distance" : 3103.3392166034305,
+    "normalizedWeight" : 0.9748337245879225,
+    "coordinates" : [ [ 27.091767745462562, 38.47352636243499 ], [ 27.08992010269423, 38.47415155211778 ] ]
+  }, {
+    "id" : "1335709211",
+    "sourceId" : "-893075269",
+    "targetId" : "1423781945",
+    "distance" : 181.76667360554174,
+    "normalizedWeight" : 0.9975845493552277,
+    "coordinates" : [ [ 27.15554022942304, 38.422942003313324 ], [ 27.15548320512541, 38.42153350649886 ] ]
+  }, {
+    "id" : "766285860",
+    "sourceId" : "-1724458513",
+    "targetId" : "509212547",
+    "distance" : 1154.2554262227488,
+    "normalizedWeight" : 0.9900115998996354,
+    "coordinates" : [ [ 27.168861112361032, 38.47289508752102 ], [ 27.15733836310961, 38.47087096902916 ] ]
+  }, {
+    "id" : "8385014",
+    "sourceId" : "1262554435",
+    "targetId" : "-78732027",
+    "distance" : 2438.37076294988,
+    "normalizedWeight" : 0.9800119567016916,
+    "coordinates" : [ [ 27.167849597895408, 38.417016382688786 ], [ 27.15425679474527, 38.418432601281815 ] ]
+  }, {
+    "id" : "1476271735",
+    "sourceId" : "-707786777",
+    "targetId" : "-1135340485",
+    "distance" : 2818.914201340284,
+    "normalizedWeight" : 0.977048594691764,
+    "coordinates" : [ [ 27.20791804428148, 38.4594688417662 ], [ 27.19843268439267, 38.47718072516701 ] ]
+  }, {
+    "id" : "1852794850",
+    "sourceId" : "-660287501",
+    "targetId" : "311915693",
+    "distance" : 28902.845123851333,
+    "normalizedWeight" : 0.7739282090341113,
+    "coordinates" : [ [ 27.01814212998526, 38.4973062266234 ], [ 27.02749097415362, 38.49918729746654 ] ]
+  }, {
+    "id" : "140330448",
+    "sourceId" : "-1093662543",
+    "targetId" : "-1029024345",
+    "distance" : 534.8903857998595,
+    "normalizedWeight" : 0.9948347098153648,
+    "coordinates" : [ [ 27.177390828339636, 38.39339342707211 ], [ 27.176786893491606, 38.39192539301175 ] ]
+  }, {
+    "id" : "1052133179",
+    "sourceId" : "1533958325",
+    "targetId" : "-508561095",
+    "distance" : 2945.245889572532,
+    "normalizedWeight" : 0.9760648265123915,
+    "coordinates" : [ [ 26.511934528662458, 38.64112327859088 ], [ 26.523399529192243, 38.6247718279797 ] ]
+  }, {
+    "id" : "164732994",
+    "sourceId" : "1667905107",
+    "targetId" : "-334797509",
+    "distance" : 1693.3259433001144,
+    "normalizedWeight" : 0.9858137582610146,
+    "coordinates" : [ [ 27.227112144928213, 38.470276534830454 ], [ 27.235151064241695, 38.46033258116765 ] ]
+  }, {
+    "id" : "160890884",
+    "sourceId" : "2067476865",
+    "targetId" : "501507721",
+    "distance" : 521.2250969363215,
+    "normalizedWeight" : 0.9949411239426039,
+    "coordinates" : [ [ 27.174795121897024, 38.467175680870824 ], [ 27.17692240318334, 38.47065712719112 ] ]
+  }, {
+    "id" : "524713680",
+    "sourceId" : "-1060884231",
+    "targetId" : "-799625653",
+    "distance" : 3492.2946882227257,
+    "normalizedWeight" : 0.9718048565222284,
+    "coordinates" : [ [ 27.178026855499507, 38.393959811125804 ], [ 27.201931004244233, 38.384079967628125 ] ]
+  }, {
+    "id" : "387596941",
+    "sourceId" : "-78732027",
+    "targetId" : "-551329927",
+    "distance" : 898.2769148239229,
+    "normalizedWeight" : 0.9920049518261477,
+    "coordinates" : [ [ 27.15425679474527, 38.418432601281815 ], [ 27.14721955447551, 38.417397125271265 ] ]
+  }, {
+    "id" : "1815294372",
+    "sourceId" : "860166637",
+    "targetId" : "231171113",
+    "distance" : 6152.536721381904,
+    "normalizedWeight" : 0.9510890606813625,
+    "coordinates" : [ [ 27.12723577844192, 38.40762215147028 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "633006114",
+    "sourceId" : "-1115928237",
+    "targetId" : "2092262857",
+    "distance" : 19580.93350039768,
+    "normalizedWeight" : 0.8465196558389466,
+    "coordinates" : [ [ 26.767493800665775, 38.324592976935556 ], [ 26.825451713097003, 38.199862724694775 ] ]
+  }, {
+    "id" : "583974740",
+    "sourceId" : "-372431137",
+    "targetId" : "-160969361",
+    "distance" : 624.5177123706419,
+    "normalizedWeight" : 0.9941367652765373,
+    "coordinates" : [ [ 27.1574384685825, 38.42429598261005 ], [ 27.162596518785293, 38.42464557986909 ] ]
+  }, {
+    "id" : "707496843",
+    "sourceId" : "-724477247",
+    "targetId" : "-695088863",
+    "distance" : 2739.6536522612923,
+    "normalizedWeight" : 0.9776658112203688,
+    "coordinates" : [ [ 27.153302417874585, 38.405148378329166 ], [ 27.165617976559062, 38.391512223424925 ] ]
+  }, {
+    "id" : "374155247",
+    "sourceId" : "-1624452895",
+    "targetId" : "-796328669",
+    "distance" : 839.2145916329687,
+    "normalizedWeight" : 0.9924648810408057,
+    "coordinates" : [ [ 27.129675403348298, 38.458594716789264 ], [ 27.12268090742491, 38.46098277277621 ] ]
+  }, {
+    "id" : "105382893",
+    "sourceId" : "-457250635",
+    "targetId" : "1407660565",
+    "distance" : 603.062190383721,
+    "normalizedWeight" : 0.9943038433873257,
+    "coordinates" : [ [ 27.141578844199703, 38.424099275237886 ], [ 27.14766651519735, 38.424973552363994 ] ]
+  }, {
+    "id" : "1590821751",
+    "sourceId" : "-865864095",
+    "targetId" : "-457250635",
+    "distance" : 1540.7362341827973,
+    "normalizedWeight" : 0.9870020024967233,
+    "coordinates" : [ [ 27.140901179127102, 38.4135360725219 ], [ 27.141578844199703, 38.424099275237886 ] ]
+  }, {
+    "id" : "164789365",
+    "sourceId" : "-1341209375",
+    "targetId" : "-1115928237",
+    "distance" : 23340.413796451106,
+    "normalizedWeight" : 0.8172438887057156,
+    "coordinates" : [ [ 26.99836660597811, 38.39147883413244 ], [ 26.767493800665775, 38.324592976935556 ] ]
+  }, {
+    "id" : "189971195",
+    "sourceId" : "1067213455",
+    "targetId" : "-932562203",
+    "distance" : 118.48674735984434,
+    "normalizedWeight" : 0.9980773218235185,
+    "coordinates" : [ [ 27.091742421535056, 38.47503410244621 ], [ 27.091330185712486, 38.475430207354414 ] ]
+  }, {
+    "id" : "1030882526",
+    "sourceId" : "852464195",
+    "targetId" : "2088086353",
+    "distance" : 716.9624947711393,
+    "normalizedWeight" : 0.9934168806890106,
+    "coordinates" : [ [ 26.996565006564133, 38.494776622083684 ], [ 26.99658937074419, 38.49472080679441 ] ]
+  }, {
+    "id" : "1275891105",
+    "sourceId" : "100837403",
+    "targetId" : "1972369647",
+    "distance" : 5303.102853445134,
+    "normalizedWeight" : 0.9577037590317972,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 27.081895939194666, 38.49571359668352 ] ]
+  }, {
+    "id" : "1968610535",
+    "sourceId" : "634096093",
+    "targetId" : "267867751",
+    "distance" : 640.6033041162123,
+    "normalizedWeight" : 0.9940115038039241,
+    "coordinates" : [ [ 27.13078152845921, 38.32321859679262 ], [ 27.13240298487528, 38.326722322274044 ] ]
+  }, {
+    "id" : "1160438939",
+    "sourceId" : "637786129",
+    "targetId" : "772557593",
+    "distance" : 1018.1678519083172,
+    "normalizedWeight" : 0.9910713389650423,
+    "coordinates" : [ [ 27.08992010269423, 38.47415155211778 ], [ 27.086105979139067, 38.470355473050276 ] ]
+  }, {
+    "id" : "396362258",
+    "sourceId" : "1371362031",
+    "targetId" : "1039700295",
+    "distance" : 2683.101154104206,
+    "normalizedWeight" : 0.9781061959641291,
+    "coordinates" : [ [ 27.092557651509, 38.47180423656699 ], [ 27.091767745462562, 38.47352636243499 ] ]
+  }, {
+    "id" : "116239198",
+    "sourceId" : "-1230831949",
+    "targetId" : "-120176963",
+    "distance" : 919.6294647572352,
+    "normalizedWeight" : 0.9918386755777512,
+    "coordinates" : [ [ 27.171343218814116, 38.3917201280826 ], [ 27.168017771372273, 38.386623009840875 ] ]
+  }, {
+    "id" : "1918304239",
+    "sourceId" : "-71183737",
+    "targetId" : "1067213455",
+    "distance" : 409.5397655791524,
+    "normalizedWeight" : 0.9958108382370086,
+    "coordinates" : [ [ 27.092478991594877, 38.47258128995896 ], [ 27.091742421535056, 38.47503410244621 ] ]
+  }, {
+    "id" : "643587045",
+    "sourceId" : "-13683185",
+    "targetId" : "-334797509",
+    "distance" : 2952.4997690236946,
+    "normalizedWeight" : 0.9760083392139083,
+    "coordinates" : [ [ 27.237608207397635, 38.47634517247087 ], [ 27.235151064241695, 38.46033258116765 ] ]
+  }, {
+    "id" : "122357488",
+    "sourceId" : "-120176963",
+    "targetId" : "-695088863",
+    "distance" : 822.7456476061196,
+    "normalizedWeight" : 0.9925931277484068,
+    "coordinates" : [ [ 27.168017771372273, 38.386623009840875 ], [ 27.165617976559062, 38.391512223424925 ] ]
+  }, {
+    "id" : "623085725",
+    "sourceId" : "-735955993",
+    "targetId" : "-1467059777",
+    "distance" : 1566.9668950576922,
+    "normalizedWeight" : 0.9867977394978374,
+    "coordinates" : [ [ 27.18435171516271, 38.41304756278833 ], [ 27.179420639797524, 38.424659696925765 ] ]
+  }, {
+    "id" : "33083463",
+    "sourceId" : "-1242656213",
+    "targetId" : "-1132720461",
+    "distance" : 811.9097347695018,
+    "normalizedWeight" : 0.9926775090021704,
+    "coordinates" : [ [ 27.08540173085398, 38.469024008647956 ], [ 27.08780938675085, 38.463326906588286 ] ]
+  }, {
+    "id" : "322749180",
+    "sourceId" : "831463691",
+    "targetId" : "2087635341",
+    "distance" : 251.45624282296603,
+    "normalizedWeight" : 0.9970418638137802,
+    "coordinates" : [ [ 27.003910722480075, 38.39455822687721 ], [ 27.004298742039566, 38.396166825521874 ] ]
+  }, {
+    "id" : "261015118",
+    "sourceId" : "864650719",
+    "targetId" : "267867751",
+    "distance" : 1145.4751572498596,
+    "normalizedWeight" : 0.9900799734751232,
+    "coordinates" : [ [ 27.12208802162963, 38.32998531292792 ], [ 27.13240298487528, 38.326722322274044 ] ]
+  }, {
+    "id" : "953786648",
+    "sourceId" : "-372431137",
+    "targetId" : "-1323025445",
+    "distance" : 168.07833960739745,
+    "normalizedWeight" : 0.9976911429391845,
+    "coordinates" : [ [ 27.1574384685825, 38.42429598261005 ], [ 27.155972064773064, 38.42395717821899 ] ]
+  }, {
+    "id" : "537787855",
+    "sourceId" : "671992203",
+    "targetId" : "311915693",
+    "distance" : 27832.68755099491,
+    "normalizedWeight" : 0.782261723624332,
+    "coordinates" : [ [ 27.00213561667423, 38.50525373307484 ], [ 27.02749097415362, 38.49918729746654 ] ]
+  }, {
+    "id" : "1375971271",
+    "sourceId" : "823318839",
+    "targetId" : "-1624452895",
+    "distance" : 6264.535488733643,
+    "normalizedWeight" : 0.9502169056030021,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.129675403348298, 38.458594716789264 ] ]
+  }, {
+    "id" : "1243970529",
+    "sourceId" : "-883481887",
+    "targetId" : "1842465707",
+    "distance" : 668.2845602771883,
+    "normalizedWeight" : 0.9937959447517395,
+    "coordinates" : [ [ 27.218667762849886, 38.45982447247354 ], [ 27.214004730492597, 38.46140969758681 ] ]
+  }, {
+    "id" : "1570150483",
+    "sourceId" : "823318839",
+    "targetId" : "-796328669",
+    "distance" : 5469.449199364652,
+    "normalizedWeight" : 0.9564083893255865,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.12268090742491, 38.46098277277621 ] ]
+  }, {
+    "id" : "954458406",
+    "sourceId" : "-13683185",
+    "targetId" : "1777227867",
+    "distance" : 1246.2962574786882,
+    "normalizedWeight" : 0.989294860954248,
+    "coordinates" : [ [ 27.237608207397635, 38.47634517247087 ], [ 27.24644983548839, 38.476659734505425 ] ]
+  }, {
+    "id" : "1900782732",
+    "sourceId" : "1194402671",
+    "targetId" : "-1355060633",
+    "distance" : 979.8101577922537,
+    "normalizedWeight" : 0.9913700374106462,
+    "coordinates" : [ [ 26.99166677363392, 38.4999164378424 ], [ 26.989572825683467, 38.50565249367301 ] ]
+  }, {
+    "id" : "1402594899",
+    "sourceId" : "-246478467",
+    "targetId" : "-410272219",
+    "distance" : 938.325052708013,
+    "normalizedWeight" : 0.9916930895828358,
+    "coordinates" : [ [ 27.218279743550625, 38.478893472460165 ], [ 27.209874878453302, 38.48244657119185 ] ]
+  }, {
+    "id" : "1129409183",
+    "sourceId" : "2054912281",
+    "targetId" : "-2133910563",
+    "distance" : 9763.063375755548,
+    "normalizedWeight" : 0.9229732230554204,
+    "coordinates" : [ [ 27.157934594468042, 38.515137035563605 ], [ 27.20274042514533, 38.48088280948834 ] ]
+  }, {
+    "id" : "2026898689",
+    "sourceId" : "823318839",
+    "targetId" : "-89915263",
+    "distance" : 3007.3636339824156,
+    "normalizedWeight" : 0.9755811041686158,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.09982171705014, 38.47401554347372 ] ]
+  }, {
+    "id" : "1762606301",
+    "sourceId" : "-13683185",
+    "targetId" : "1667905107",
+    "distance" : 1423.6500298746153,
+    "normalizedWeight" : 0.987913774385896,
+    "coordinates" : [ [ 27.237608207397635, 38.47634517247087 ], [ 27.227112144928213, 38.470276534830454 ] ]
+  }, {
+    "id" : "1446096867",
+    "sourceId" : "1634697557",
+    "targetId" : "-1055579681",
+    "distance" : 996.7993017372606,
+    "normalizedWeight" : 0.9912377398102441,
+    "coordinates" : [ [ 26.998004726095406, 38.49515970633433 ], [ 27.001071659412325, 38.49757555280289 ] ]
+  }, {
+    "id" : "1033379917",
+    "sourceId" : "-1159310495",
+    "targetId" : "287734973",
+    "distance" : 2333.443956759202,
+    "normalizedWeight" : 0.9808290411128792,
+    "coordinates" : [ [ 27.090271702960855, 38.48719370992994 ], [ 27.088742619514267, 38.50140200777398 ] ]
+  }, {
+    "id" : "903068678",
+    "sourceId" : "1430299729",
+    "targetId" : "-229299359",
+    "distance" : 443.49816943246145,
+    "normalizedWeight" : 0.995546397876869,
+    "coordinates" : [ [ 26.766683988116206, 38.324175000336986 ], [ 26.766317335398934, 38.32806406412439 ] ]
+  }, {
+    "id" : "683902234",
+    "sourceId" : "-1159310495",
+    "targetId" : "-476887835",
+    "distance" : 1260.459800231802,
+    "normalizedWeight" : 0.9891845668319841,
+    "coordinates" : [ [ 27.090271702960855, 38.48719370992994 ], [ 27.094717041191842, 38.480152563400466 ] ]
+  }, {
+    "id" : "1899789541",
+    "sourceId" : "-1341209375",
+    "targetId" : "2087635341",
+    "distance" : 1130.145803014465,
+    "normalizedWeight" : 0.9901993459866295,
+    "coordinates" : [ [ 26.99836660597811, 38.39147883413244 ], [ 27.004298742039566, 38.396166825521874 ] ]
+  }, {
+    "id" : "1076486640",
+    "sourceId" : "-71183737",
+    "targetId" : "-657540915",
+    "distance" : 485.27603246346047,
+    "normalizedWeight" : 0.9952210659444998,
+    "coordinates" : [ [ 27.092478991594877, 38.47258128995896 ], [ 27.096060419693224, 38.47338004925784 ] ]
+  }, {
+    "id" : "1115355041",
+    "sourceId" : "-782960895",
+    "targetId" : "1342172981",
+    "distance" : 914.5930939427747,
+    "normalizedWeight" : 0.9918778947270882,
+    "coordinates" : [ [ 27.154277012750164, 38.42241511394591 ], [ 27.154231815146733, 38.418968511083904 ] ]
+  }, {
+    "id" : "1460696781",
+    "sourceId" : "-476887835",
+    "targetId" : "1344532723",
+    "distance" : 779.0325146880424,
+    "normalizedWeight" : 0.9929335299846725,
+    "coordinates" : [ [ 27.094717041191842, 38.480152563400466 ], [ 27.091575220040678, 38.47707363040232 ] ]
+  }, {
+    "id" : "879828399",
+    "sourceId" : "-1626965507",
+    "targetId" : "1634697557",
+    "distance" : 669.1662547909807,
+    "normalizedWeight" : 0.9937890788337839,
+    "coordinates" : [ [ 26.99673161390555, 38.49300985427935 ], [ 26.998004726095406, 38.49515970633433 ] ]
+  }, {
+    "id" : "1295987935",
+    "sourceId" : "-1323641099",
+    "targetId" : "-1135340485",
+    "distance" : 10764.858115336627,
+    "normalizedWeight" : 0.9151720624689267,
+    "coordinates" : [ [ 27.176816856387, 38.48166999954081 ], [ 27.19843268439267, 38.47718072516701 ] ]
+  }, {
+    "id" : "1918090163",
+    "sourceId" : "-703827689",
+    "targetId" : "156811259",
+    "distance" : 202.05759511633562,
+    "normalizedWeight" : 0.997426540203353,
+    "coordinates" : [ [ 27.22290970080855, 38.46949292401393 ], [ 27.22097127916339, 38.46983565327902 ] ]
+  }, {
+    "id" : "2104784023",
+    "sourceId" : "-735955993",
+    "targetId" : "-671878237",
+    "distance" : 4645.1485260375775,
+    "normalizedWeight" : 0.9628273708495545,
+    "coordinates" : [ [ 27.18435171516271, 38.41304756278833 ], [ 27.211280080739137, 38.43861867846285 ] ]
+  }, {
+    "id" : "1667462791",
+    "sourceId" : "1376183553",
+    "targetId" : "-542107191",
+    "distance" : 743.35730315911,
+    "normalizedWeight" : 0.9932113394431358,
+    "coordinates" : [ [ 27.13321046477519, 38.31249622866503 ], [ 27.129348036144556, 38.317484133902845 ] ]
+  }, {
+    "id" : "877626794",
+    "sourceId" : "1376183553",
+    "targetId" : "-2111349595",
+    "distance" : 1927.14776848948,
+    "normalizedWeight" : 0.9839929445405392,
+    "coordinates" : [ [ 27.13321046477519, 38.31249622866503 ], [ 27.120546326787558, 38.31655396697979 ] ]
+  }, {
+    "id" : "208099712",
+    "sourceId" : "-695088863",
+    "targetId" : "1623095827",
+    "distance" : 862.4860172686541,
+    "normalizedWeight" : 0.9922836621530557,
+    "coordinates" : [ [ 27.165617976559062, 38.391512223424925 ], [ 27.164582701527014, 38.387516939116196 ] ]
+  }, {
+    "id" : "611215751",
+    "sourceId" : "-1586871577",
+    "targetId" : "-720305931",
+    "distance" : 1852.0740592235788,
+    "normalizedWeight" : 0.9845775573745534,
+    "coordinates" : [ [ 27.08548305991397, 38.46173970430957 ], [ 27.073055544769808, 38.47030737053841 ] ]
+  }, {
+    "id" : "979248049",
+    "sourceId" : "1629495255",
+    "targetId" : "-89915263",
+    "distance" : 1946.036083160788,
+    "normalizedWeight" : 0.9838458577470702,
+    "coordinates" : [ [ 27.09278941667977, 38.467446580042626 ], [ 27.09982171705014, 38.47401554347372 ] ]
+  }, {
+    "id" : "812855683",
+    "sourceId" : "-1093662543",
+    "targetId" : "-465604887",
+    "distance" : 794.0487186421353,
+    "normalizedWeight" : 0.99281659603222,
+    "coordinates" : [ [ 27.177390828339636, 38.39339342707211 ], [ 27.17267614800582, 38.394567352460975 ] ]
+  }, {
+    "id" : "2080113165",
+    "sourceId" : "-799625653",
+    "targetId" : "-1397584607",
+    "distance" : 2926.8925397021226,
+    "normalizedWeight" : 0.9762077474361917,
+    "coordinates" : [ [ 27.201931004244233, 38.384079967628125 ], [ 27.175303359847593, 38.3865351697476 ] ]
+  }, {
+    "id" : "1058154208",
+    "sourceId" : "-1242656213",
+    "targetId" : "772557593",
+    "distance" : 396.0982906952508,
+    "normalizedWeight" : 0.9959155094834682,
+    "coordinates" : [ [ 27.08540173085398, 38.469024008647956 ], [ 27.086105979139067, 38.470355473050276 ] ]
+  }, {
+    "id" : "219914472",
+    "sourceId" : "1407660565",
+    "targetId" : "113450155",
+    "distance" : 3800.2610996832245,
+    "normalizedWeight" : 0.9694066652200319,
+    "coordinates" : [ [ 27.14766651519735, 38.424973552363994 ], [ 27.15508977434331, 38.42826795743449 ] ]
+  }, {
+    "id" : "626426018",
+    "sourceId" : "-1467059777",
+    "targetId" : "79317247",
+    "distance" : 1442.6085485381254,
+    "normalizedWeight" : 0.9877661409009788,
+    "coordinates" : [ [ 27.179420639797524, 38.424659696925765 ], [ 27.173971966951324, 38.42262340354531 ] ]
+  }, {
+    "id" : "1459465995",
+    "sourceId" : "2066060327",
+    "targetId" : "509212547",
+    "distance" : 2340.073645447358,
+    "normalizedWeight" : 0.9807774145031044,
+    "coordinates" : [ [ 27.164529660529862, 38.47780286803936 ], [ 27.15733836310961, 38.47087096902916 ] ]
+  }, {
+    "id" : "1964774634",
+    "sourceId" : "-660287501",
+    "targetId" : "-1329580649",
+    "distance" : 4190.36512379458,
+    "normalizedWeight" : 0.9663688531640386,
+    "coordinates" : [ [ 27.01814212998526, 38.4973062266234 ], [ 27.012392852931026, 38.482944725305934 ] ]
+  }, {
+    "id" : "1372035120",
+    "sourceId" : "2038209927",
+    "targetId" : "-1724458513",
+    "distance" : 573.7157478059537,
+    "normalizedWeight" : 0.9945323695535613,
+    "coordinates" : [ [ 27.171917507015614, 38.476904583171844 ], [ 27.168861112361032, 38.47289508752102 ] ]
+  }, {
+    "id" : "1541653018",
+    "sourceId" : "-1521311139",
+    "targetId" : "-481714009",
+    "distance" : 406.6896495221736,
+    "normalizedWeight" : 0.9958330326169271,
+    "coordinates" : [ [ 27.156483732719803, 38.42500763699175 ], [ 27.15904928722468, 38.426922451871135 ] ]
+  }, {
+    "id" : "1802094227",
+    "sourceId" : "-120176963",
+    "targetId" : "867208401",
+    "distance" : 508.92982431144964,
+    "normalizedWeight" : 0.9950368695004629,
+    "coordinates" : [ [ 27.168017771372273, 38.386623009840875 ], [ 27.1699781974699, 38.38463377392139 ] ]
+  }, {
+    "id" : "2061381413",
+    "sourceId" : "-500159261",
+    "targetId" : "1995933769",
+    "distance" : 974.4990640184693,
+    "normalizedWeight" : 0.9914113958783863,
+    "coordinates" : [ [ 27.219638769520785, 38.46903433457524 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "756110572",
+    "sourceId" : "-1173663501",
+    "targetId" : "-844727637",
+    "distance" : 2367.3621061020185,
+    "normalizedWeight" : 0.9805649142220446,
+    "coordinates" : [ [ 27.15610749831399, 38.429880201036454 ], [ 27.163806537773343, 38.44384216071525 ] ]
+  }, {
+    "id" : "1841856566",
+    "sourceId" : "188928337",
+    "targetId" : "2092262857",
+    "distance" : 8993.371745696068,
+    "normalizedWeight" : 0.9289669538776495,
+    "coordinates" : [ [ 26.835335445354087, 38.18906217995372 ], [ 26.825451713097003, 38.199862724694775 ] ]
+  }, {
+    "id" : "1891873475",
+    "sourceId" : "-2123418389",
+    "targetId" : "-481714009",
+    "distance" : 676.4456848375927,
+    "normalizedWeight" : 0.9937323925680969,
+    "coordinates" : [ [ 27.16514767131882, 38.428672816149586 ], [ 27.15904928722468, 38.426922451871135 ] ]
+  }, {
+    "id" : "326977919",
+    "sourceId" : "-1819840007",
+    "targetId" : "156811259",
+    "distance" : 118.59408176399221,
+    "normalizedWeight" : 0.9980764859906975,
+    "coordinates" : [ [ 27.22090465853926, 38.47021089945228 ], [ 27.22097127916339, 38.46983565327902 ] ]
+  }, {
+    "id" : "1638601640",
+    "sourceId" : "1715787981",
+    "targetId" : "2087635341",
+    "distance" : 3126.698869269285,
+    "normalizedWeight" : 0.9746518186600004,
+    "coordinates" : [ [ 27.027658403902, 38.404005076315876 ], [ 27.004298742039566, 38.396166825521874 ] ]
+  }, {
+    "id" : "982019211",
+    "sourceId" : "1019226607",
+    "targetId" : "606269123",
+    "distance" : 795.0212034464726,
+    "normalizedWeight" : 0.9928090231135104,
+    "coordinates" : [ [ 26.759909979466478, 38.31984257594526 ], [ 26.75639327355065, 38.32462225093731 ] ]
+  }, {
+    "id" : "1499614055",
+    "sourceId" : "-1027078809",
+    "targetId" : "1402965039",
+    "distance" : 853.4938402131141,
+    "normalizedWeight" : 0.9923536858959052,
+    "coordinates" : [ [ 27.172671656993636, 38.469573640175845 ], [ 27.171695349470014, 38.472560562209516 ] ]
+  }, {
+    "id" : "1638100901",
+    "sourceId" : "-160969361",
+    "targetId" : "1423781945",
+    "distance" : 1251.4719350162898,
+    "normalizedWeight" : 0.9892545569977392,
+    "coordinates" : [ [ 27.162596518785293, 38.42464557986909 ], [ 27.15548320512541, 38.42153350649886 ] ]
+  }, {
+    "id" : "1852176492",
+    "sourceId" : "2038209927",
+    "targetId" : "501507721",
+    "distance" : 1067.9977677406866,
+    "normalizedWeight" : 0.9906833042109545,
+    "coordinates" : [ [ 27.171917507015614, 38.476904583171844 ], [ 27.17692240318334, 38.47065712719112 ] ]
+  }, {
+    "id" : "1572152249",
+    "sourceId" : "-1027078809",
+    "targetId" : "-1724458513",
+    "distance" : 944.2817347798241,
+    "normalizedWeight" : 0.9916467037998317,
+    "coordinates" : [ [ 27.172671656993636, 38.469573640175845 ], [ 27.168861112361032, 38.47289508752102 ] ]
+  }, {
+    "id" : "1508937724",
+    "sourceId" : "-465604887",
+    "targetId" : "-193258515",
+    "distance" : 481.05605262088375,
+    "normalizedWeight" : 0.9952539277066182,
+    "coordinates" : [ [ 27.17267614800582, 38.394567352460975 ], [ 27.168577306278475, 38.39287373885835 ] ]
+  }, {
+    "id" : "592673118",
+    "sourceId" : "823318839",
+    "targetId" : "-256660657",
+    "distance" : 15883.555459712421,
+    "normalizedWeight" : 0.8753118212444294,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.175163051040677, 38.545038866177514 ] ]
+  }, {
+    "id" : "229510076",
+    "sourceId" : "823318839",
+    "targetId" : "-476887835",
+    "distance" : 3121.9976951069925,
+    "normalizedWeight" : 0.9746884275711236,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.094717041191842, 38.480152563400466 ] ]
+  }, {
+    "id" : "1368090520",
+    "sourceId" : "622097871",
+    "targetId" : "-1534848043",
+    "distance" : 452.6962522263972,
+    "normalizedWeight" : 0.9954747707080207,
+    "coordinates" : [ [ 27.221201365644525, 38.47228974009593 ], [ 27.224042110166028, 38.474659481386695 ] ]
+  }, {
+    "id" : "1359640343",
+    "sourceId" : "-660287501",
+    "targetId" : "1663193721",
+    "distance" : 779.197247646563,
+    "normalizedWeight" : 0.9929322471787119,
+    "coordinates" : [ [ 27.01814212998526, 38.4973062266234 ], [ 27.011433296005933, 38.49949054144221 ] ]
+  }, {
+    "id" : "1547684386",
+    "sourceId" : "-883481887",
+    "targetId" : "1681900545",
+    "distance" : 1245.3695756095283,
+    "normalizedWeight" : 0.9893020771970453,
+    "coordinates" : [ [ 27.218667762849886, 38.45982447247354 ], [ 27.23285692516834, 38.46057121418079 ] ]
+  }, {
+    "id" : "75351650",
+    "sourceId" : "-173597709",
+    "targetId" : "1262554435",
+    "distance" : 1869.6732321416505,
+    "normalizedWeight" : 0.9844405093659157,
+    "coordinates" : [ [ 27.164898778988537, 38.403242754859306 ], [ 27.167849597895408, 38.417016382688786 ] ]
+  }, {
+    "id" : "8697499",
+    "sourceId" : "1667905107",
+    "targetId" : "-1534848043",
+    "distance" : 1069.8761978780733,
+    "normalizedWeight" : 0.9906686765286826,
+    "coordinates" : [ [ 27.227112144928213, 38.470276534830454 ], [ 27.224042110166028, 38.474659481386695 ] ]
+  }, {
+    "id" : "2018081366",
+    "sourceId" : "1629495255",
+    "targetId" : "-1051251765",
+    "distance" : 821.7190255182975,
+    "normalizedWeight" : 0.9926011222441377,
+    "coordinates" : [ [ 27.09278941667977, 38.467446580042626 ], [ 27.087390031695154, 38.46919705723632 ] ]
+  }, {
+    "id" : "888035022",
+    "sourceId" : "-2034538937",
+    "targetId" : "-40729651",
+    "distance" : 49260.03684508702,
+    "normalizedWeight" : 0.6154029987961254,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 27.092863402617542, 38.33862755779758 ] ]
+  }, {
+    "id" : "1929975083",
+    "sourceId" : "-560797529",
+    "targetId" : "1842465707",
+    "distance" : 1200.0031727631479,
+    "normalizedWeight" : 0.9896553537514662,
+    "coordinates" : [ [ 27.219668535027147, 38.468978678800624 ], [ 27.214004730492597, 38.46140969758681 ] ]
+  }, {
+    "id" : "1812603436",
+    "sourceId" : "-1159310495",
+    "targetId" : "1247456631",
+    "distance" : 244.6218093370535,
+    "normalizedWeight" : 0.9970950848090947,
+    "coordinates" : [ [ 27.090271702960855, 38.48719370992994 ], [ 27.088371172027443, 38.48609784045328 ] ]
+  }, {
+    "id" : "1670144427",
+    "sourceId" : "870014473",
+    "targetId" : "-1489397737",
+    "distance" : 14777.286929483927,
+    "normalizedWeight" : 0.8839265385264404,
+    "coordinates" : [ [ 27.20905540271214, 38.371533982022825 ], [ 27.234517743190302, 38.44932586263338 ] ]
+  }, {
+    "id" : "1980795961",
+    "sourceId" : "-1209689777",
+    "targetId" : "852464195",
+    "distance" : 71.20667805238625,
+    "normalizedWeight" : 0.9984455004519691,
+    "coordinates" : [ [ 26.995680398509023, 38.49529573667209 ], [ 26.996565006564133, 38.494776622083684 ] ]
+  }, {
+    "id" : "878999117",
+    "sourceId" : "1430974253",
+    "targetId" : "-410272219",
+    "distance" : 1652.2387471987606,
+    "normalizedWeight" : 0.9861337118424932,
+    "coordinates" : [ [ 27.221370401624103, 38.47954392410444 ], [ 27.209874878453302, 38.48244657119185 ] ]
+  }, {
+    "id" : "498343838",
+    "sourceId" : "1675090537",
+    "targetId" : "606269123",
+    "distance" : 8195.559193027635,
+    "normalizedWeight" : 0.9351796675158639,
+    "coordinates" : [ [ 26.76091638445063, 38.332134517292246 ], [ 26.75639327355065, 38.32462225093731 ] ]
+  }, {
+    "id" : "2098443064",
+    "sourceId" : "2084925965",
+    "targetId" : "1715787981",
+    "distance" : 31644.561698241218,
+    "normalizedWeight" : 0.7525779558990121,
+    "coordinates" : [ [ 27.039898016526983, 38.47622799778002 ], [ 27.027658403902, 38.404005076315876 ] ]
+  }, {
+    "id" : "1775629304",
+    "sourceId" : "-71183737",
+    "targetId" : "1371362031",
+    "distance" : 2592.6506526202766,
+    "normalizedWeight" : 0.9788105507179783,
+    "coordinates" : [ [ 27.092478991594877, 38.47258128995896 ], [ 27.092557651509, 38.47180423656699 ] ]
+  }, {
+    "id" : "1071497710",
+    "sourceId" : "-1586871577",
+    "targetId" : "-2105632543",
+    "distance" : 24870.21057617813,
+    "normalizedWeight" : 0.8053310787539066,
+    "coordinates" : [ [ 27.08548305991397, 38.46173970430957 ], [ 27.045687483329733, 38.392880780304836 ] ]
+  }, {
+    "id" : "690181911",
+    "sourceId" : "-948213349",
+    "targetId" : "2092262857",
+    "distance" : 21726.59094575091,
+    "normalizedWeight" : 0.8298110251849208,
+    "coordinates" : [ [ 26.737381460430736, 38.313756958108854 ], [ 26.825451713097003, 38.199862724694775 ] ]
+  }, {
+    "id" : "669444560",
+    "sourceId" : "799991071",
+    "targetId" : "-40729651",
+    "distance" : 11249.902783851825,
+    "normalizedWeight" : 0.9113949300872055,
+    "coordinates" : [ [ 27.054835380566796, 38.3858539754481 ], [ 27.092863402617542, 38.33862755779758 ] ]
+  }, {
+    "id" : "854153425",
+    "sourceId" : "-2034538937",
+    "targetId" : "188928337",
+    "distance" : 3348.6874436229127,
+    "normalizedWeight" : 0.9729231526484143,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 26.835335445354087, 38.18906217995372 ] ]
+  }, {
+    "id" : "1184551072",
+    "sourceId" : "1194402671",
+    "targetId" : "327157733",
+    "distance" : 822.4241780475919,
+    "normalizedWeight" : 0.9925956310912081,
+    "coordinates" : [ [ 26.99166677363392, 38.4999164378424 ], [ 26.990207969760856, 38.494811751491625 ] ]
+  }, {
+    "id" : "606623255",
+    "sourceId" : "-948213349",
+    "targetId" : "606269123",
+    "distance" : 2689.531519452604,
+    "normalizedWeight" : 0.9780561215219997,
+    "coordinates" : [ [ 26.737381460430736, 38.313756958108854 ], [ 26.75639327355065, 38.32462225093731 ] ]
+  }, {
+    "id" : "387592538",
+    "sourceId" : "1430299729",
+    "targetId" : "606269123",
+    "distance" : 989.2410708996113,
+    "normalizedWeight" : 0.9912965971491625,
+    "coordinates" : [ [ 26.766683988116206, 38.324175000336986 ], [ 26.75639327355065, 38.32462225093731 ] ]
+  }, {
+    "id" : "1469926877",
+    "sourceId" : "1364398301",
+    "targetId" : "-735955993",
+    "distance" : 3218.6609479496738,
+    "normalizedWeight" : 0.9739356929754579,
+    "coordinates" : [ [ 27.17726111832088, 38.3960583537232 ], [ 27.18435171516271, 38.41304756278833 ] ]
+  }, {
+    "id" : "1997021514",
+    "sourceId" : "1342172981",
+    "targetId" : "1423781945",
+    "distance" : 994.2701310128747,
+    "normalizedWeight" : 0.9912574349296054,
+    "coordinates" : [ [ 27.154231815146733, 38.418968511083904 ], [ 27.15548320512541, 38.42153350649886 ] ]
+  }, {
+    "id" : "1944682925",
+    "sourceId" : "823318839",
+    "targetId" : "-556789345",
+    "distance" : 5303.812705881775,
+    "normalizedWeight" : 0.9576982312798215,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.11932764979911, 38.4605185712818 ] ]
+  }, {
+    "id" : "898081730",
+    "sourceId" : "-889110833",
+    "targetId" : "831463691",
+    "distance" : 2865.6302628337417,
+    "normalizedWeight" : 0.9766848080962869,
+    "coordinates" : [ [ 27.03340353020906, 38.39003564122775 ], [ 27.003910722480075, 38.39455822687721 ] ]
+  }, {
+    "id" : "1439844244",
+    "sourceId" : "1390225147",
+    "targetId" : "-1586871577",
+    "distance" : 1099.2043278838241,
+    "normalizedWeight" : 0.9904402929658261,
+    "coordinates" : [ [ 27.082404346255952, 38.46995735102174 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "1728133447",
+    "sourceId" : "1430974253",
+    "targetId" : "622097871",
+    "distance" : 891.2343083555776,
+    "normalizedWeight" : 0.9920597939029088,
+    "coordinates" : [ [ 27.221370401624103, 38.47954392410444 ], [ 27.221201365644525, 38.47228974009593 ] ]
+  }, {
+    "id" : "1661063494",
+    "sourceId" : "-707786777",
+    "targetId" : "-671878237",
+    "distance" : 2987.4788162800733,
+    "normalizedWeight" : 0.9757359509151599,
+    "coordinates" : [ [ 27.20791804428148, 38.4594688417662 ], [ 27.211280080739137, 38.43861867846285 ] ]
+  }, {
+    "id" : "1240696762",
+    "sourceId" : "-720305931",
+    "targetId" : "740370769",
+    "distance" : 5192.280697460183,
+    "normalizedWeight" : 0.9585667516202205,
+    "coordinates" : [ [ 27.073055544769808, 38.47030737053841 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "1394003288",
+    "sourceId" : "-593203817",
+    "targetId" : "-1429105887",
+    "distance" : 4447.035963807528,
+    "normalizedWeight" : 0.9643701099467917,
+    "coordinates" : [ [ 27.164011227325243, 38.459659647437974 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "460615995",
+    "sourceId" : "1533958325",
+    "targetId" : "-119581751",
+    "distance" : 781.482043327081,
+    "normalizedWeight" : 0.9929144550529332,
+    "coordinates" : [ [ 26.511934528662458, 38.64112327859088 ], [ 26.505956022705714, 38.64092140312526 ] ]
+  }, {
+    "id" : "1079584264",
+    "sourceId" : "-707786777",
+    "targetId" : "1995933769",
+    "distance" : 2636.1971322550075,
+    "normalizedWeight" : 0.9784714462415971,
+    "coordinates" : [ [ 27.20791804428148, 38.4594688417662 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "1582908426",
+    "sourceId" : "-735955993",
+    "targetId" : "-799625653",
+    "distance" : 6665.3608302058865,
+    "normalizedWeight" : 0.947095604669371,
+    "coordinates" : [ [ 27.18435171516271, 38.41304756278833 ], [ 27.201931004244233, 38.384079967628125 ] ]
+  }, {
+    "id" : "644988962",
+    "sourceId" : "-459432195",
+    "targetId" : "231171113",
+    "distance" : 3976.6067965109337,
+    "normalizedWeight" : 0.9680334287222386,
+    "coordinates" : [ [ 27.16752607988577, 38.38300789485077 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "1091248991",
+    "sourceId" : "-693553229",
+    "targetId" : "231171113",
+    "distance" : 4951.594208047053,
+    "normalizedWeight" : 0.9604410217483472,
+    "coordinates" : [ [ 27.142700090833642, 38.323012292828395 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "1604011470",
+    "sourceId" : "2038209927",
+    "targetId" : "-1323641099",
+    "distance" : 8180.2823231248985,
+    "normalizedWeight" : 0.9352986313221823,
+    "coordinates" : [ [ 27.171917507015614, 38.476904583171844 ], [ 27.176816856387, 38.48166999954081 ] ]
+  }, {
+    "id" : "572926079",
+    "sourceId" : "1631713631",
+    "targetId" : "-40729651",
+    "distance" : 16319.483699479235,
+    "normalizedWeight" : 0.8719171675611505,
+    "coordinates" : [ [ 27.017254299367757, 38.37077297407825 ], [ 27.092863402617542, 38.33862755779758 ] ]
+  }, {
+    "id" : "1852206143",
+    "sourceId" : "2066060327",
+    "targetId" : "-1724458513",
+    "distance" : 1417.8149833736873,
+    "normalizedWeight" : 0.9879592129702536,
+    "coordinates" : [ [ 27.164529660529862, 38.47780286803936 ], [ 27.168861112361032, 38.47289508752102 ] ]
+  }, {
+    "id" : "263015923",
+    "sourceId" : "1972369647",
+    "targetId" : "-720305931",
+    "distance" : 6108.014790994597,
+    "normalizedWeight" : 0.9514357611728397,
+    "coordinates" : [ [ 27.081895939194666, 38.49571359668352 ], [ 27.073055544769808, 38.47030737053841 ] ]
+  }, {
+    "id" : "767069146",
+    "sourceId" : "-173597709",
+    "targetId" : "-465604887",
+    "distance" : 1468.0521794596827,
+    "normalizedWeight" : 0.9875680066496395,
+    "coordinates" : [ [ 27.164898778988537, 38.403242754859306 ], [ 27.17267614800582, 38.394567352460975 ] ]
+  }, {
+    "id" : "1058142583",
+    "sourceId" : "-1671859461",
+    "targetId" : "-1157441309",
+    "distance" : 981.1812825648385,
+    "normalizedWeight" : 0.9913593602089077,
+    "coordinates" : [ [ 27.121724326996663, 38.32444126677276 ], [ 27.127154946116477, 38.32726406344626 ] ]
+  }, {
+    "id" : "1921106151",
+    "sourceId" : "-1039667823",
+    "targetId" : "-2105632543",
+    "distance" : 1227.7527190770315,
+    "normalizedWeight" : 0.9894392629112533,
+    "coordinates" : [ [ 27.040116904221886, 38.384064502432004 ], [ 27.045687483329733, 38.392880780304836 ] ]
+  }, {
+    "id" : "185548135",
+    "sourceId" : "799991071",
+    "targetId" : "-792286105",
+    "distance" : 434.843450939566,
+    "normalizedWeight" : 0.9956137937675904,
+    "coordinates" : [ [ 27.054835380566796, 38.3858539754481 ], [ 27.051295962034132, 38.38775183177618 ] ]
+  }, {
+    "id" : "971869063",
+    "sourceId" : "-735675291",
+    "targetId" : "-551329927",
+    "distance" : 970.4758774519919,
+    "normalizedWeight" : 0.9914427251749323,
+    "coordinates" : [ [ 27.146073108443094, 38.412652941725604 ], [ 27.14721955447551, 38.417397125271265 ] ]
+  }, {
+    "id" : "1805839822",
+    "sourceId" : "-1461885421",
+    "targetId" : "1972369647",
+    "distance" : 5738.308974571948,
+    "normalizedWeight" : 0.954314728619684,
+    "coordinates" : [ [ 27.068389182202562, 38.471264652337645 ], [ 27.081895939194666, 38.49571359668352 ] ]
+  }, {
+    "id" : "957165411",
+    "sourceId" : "1629495255",
+    "targetId" : "-657540915",
+    "distance" : 2071.153844153332,
+    "normalizedWeight" : 0.9828715426432262,
+    "coordinates" : [ [ 27.09278941667977, 38.467446580042626 ], [ 27.096060419693224, 38.47338004925784 ] ]
+  }, {
+    "id" : "1535462900",
+    "sourceId" : "1533958325",
+    "targetId" : "1910632995",
+    "distance" : 124550.05009520125,
+    "normalizedWeight" : 0.029105765723221766,
+    "coordinates" : [ [ 26.511934528662458, 38.64112327859088 ], [ 26.960554024704585, 38.4950543215556 ] ]
+  }, {
+    "id" : "1604630998",
+    "sourceId" : "-1521311139",
+    "targetId" : "113450155",
+    "distance" : 3605.616167051778,
+    "normalizedWeight" : 0.9709224012453979,
+    "coordinates" : [ [ 27.156483732719803, 38.42500763699175 ], [ 27.15508977434331, 38.42826795743449 ] ]
+  }, {
+    "id" : "1602188557",
+    "sourceId" : "1629495255",
+    "targetId" : "-1132720461",
+    "distance" : 1111.1554520052186,
+    "normalizedWeight" : 0.9903472273558998,
+    "coordinates" : [ [ 27.09278941667977, 38.467446580042626 ], [ 27.08780938675085, 38.463326906588286 ] ]
+  }, {
+    "id" : "1989326049",
+    "sourceId" : "867208401",
+    "targetId" : "-1397584607",
+    "distance" : 680.4240803881197,
+    "normalizedWeight" : 0.9937014120674613,
+    "coordinates" : [ [ 27.1699781974699, 38.38463377392139 ], [ 27.175303359847593, 38.3865351697476 ] ]
+  }, {
+    "id" : "39781420",
+    "sourceId" : "100837403",
+    "targetId" : "1533958325",
+    "distance" : 118488.61807444935,
+    "normalizedWeight" : 0.07630725591848275,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 26.511934528662458, 38.64112327859088 ] ]
+  }, {
+    "id" : "976007253",
+    "sourceId" : "-542107191",
+    "targetId" : "-467253311",
+    "distance" : 1122.353285089446,
+    "normalizedWeight" : 0.990260027762351,
+    "coordinates" : [ [ 27.129348036144556, 38.317484133902845 ], [ 27.13779148579564, 38.320362150550075 ] ]
+  }, {
+    "id" : "902008767",
+    "sourceId" : "1533958325",
+    "targetId" : "-1355060633",
+    "distance" : 122821.3337252786,
+    "normalizedWeight" : 0.04256759924802789,
+    "coordinates" : [ [ 26.511934528662458, 38.64112327859088 ], [ 26.989572825683467, 38.50565249367301 ] ]
+  }, {
+    "id" : "433915808",
+    "sourceId" : "-1341209375",
+    "targetId" : "-100512719",
+    "distance" : 22496.27056994409,
+    "normalizedWeight" : 0.823817387854589,
+    "coordinates" : [ [ 26.99836660597811, 38.39147883413244 ], [ 26.767234581614833, 38.33170809125841 ] ]
+  }, {
+    "id" : "80932524",
+    "sourceId" : "2054912281",
+    "targetId" : "-1323641099",
+    "distance" : 7305.57369528539,
+    "normalizedWeight" : 0.9421101488941561,
+    "coordinates" : [ [ 27.157934594468042, 38.515137035563605 ], [ 27.176816856387, 38.48166999954081 ] ]
+  }, {
+    "id" : "1423969951",
+    "sourceId" : "-1355060633",
+    "targetId" : "327157733",
+    "distance" : 1564.774051936137,
+    "normalizedWeight" : 0.9868148155720634,
+    "coordinates" : [ [ 26.989572825683467, 38.50565249367301 ], [ 26.990207969760856, 38.494811751491625 ] ]
+  }, {
+    "id" : "2062695538",
+    "sourceId" : "1430974253",
+    "targetId" : "952892343",
+    "distance" : 4115.186692751954,
+    "normalizedWeight" : 0.9669542814858617,
+    "coordinates" : [ [ 27.221370401624103, 38.47954392410444 ], [ 27.22789882466805, 38.47437435170931 ] ]
+  }, {
+    "id" : "1607560528",
+    "sourceId" : "-724477247",
+    "targetId" : "1623095827",
+    "distance" : 3306.7392713999757,
+    "normalizedWeight" : 0.9732498108099035,
+    "coordinates" : [ [ 27.153302417874585, 38.405148378329166 ], [ 27.164582701527014, 38.387516939116196 ] ]
+  }, {
+    "id" : "43782174",
+    "sourceId" : "-1828173627",
+    "targetId" : "-844727637",
+    "distance" : 3609.1277985351167,
+    "normalizedWeight" : 0.9708950555227266,
+    "coordinates" : [ [ 27.168520168184223, 38.45309752055015 ], [ 27.163806537773343, 38.44384216071525 ] ]
+  }, {
+    "id" : "1058249104",
+    "sourceId" : "1634697557",
+    "targetId" : "-1090624973",
+    "distance" : 788.1649686436466,
+    "normalizedWeight" : 0.9928624138797045,
+    "coordinates" : [ [ 26.998004726095406, 38.49515970633433 ], [ 27.001989219083658, 38.49645890765492 ] ]
+  }, {
+    "id" : "529832221",
+    "sourceId" : "287734973",
+    "targetId" : "1972369647",
+    "distance" : 1589.8083488047234,
+    "normalizedWeight" : 0.986619868880565,
+    "coordinates" : [ [ 27.088742619514267, 38.50140200777398 ], [ 27.081895939194666, 38.49571359668352 ] ]
+  }, {
+    "id" : "965560071",
+    "sourceId" : "-1476246679",
+    "targetId" : "1435991347",
+    "distance" : 84396.65040073071,
+    "normalizedWeight" : 0.34178770218579413,
+    "coordinates" : [ [ 26.82330142514423, 38.189117982051286 ], [ 26.453505728599787, 38.630250383226674 ] ]
+  }, {
+    "id" : "1733853650",
+    "sourceId" : "-2034379747",
+    "targetId" : "-1429105887",
+    "distance" : 1163.588761053607,
+    "normalizedWeight" : 0.9899389194982056,
+    "coordinates" : [ [ 27.175298017260218, 38.466055455535844 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "1430945735",
+    "sourceId" : "1910632995",
+    "targetId" : "-100512719",
+    "distance" : 62349.80591787106,
+    "normalizedWeight" : 0.5134705504189176,
+    "coordinates" : [ [ 26.960554024704585, 38.4950543215556 ], [ 26.767234581614833, 38.33170809125841 ] ]
+  }, {
+    "id" : "505204877",
+    "sourceId" : "-889110833",
+    "targetId" : "-2105632543",
+    "distance" : 1439.4903894327358,
+    "normalizedWeight" : 0.9877904225816009,
+    "coordinates" : [ [ 27.03340353020906, 38.39003564122775 ], [ 27.045687483329733, 38.392880780304836 ] ]
+  }, {
+    "id" : "1050350601",
+    "sourceId" : "974174191",
+    "targetId" : "875681401",
+    "distance" : 569.6915700356373,
+    "normalizedWeight" : 0.9945637065687946,
+    "coordinates" : [ [ 27.12971225081626, 38.32262926100273 ], [ 27.12367608376327, 38.322186179290966 ] ]
+  }, {
+    "id" : "1985780936",
+    "sourceId" : "1390225147",
+    "targetId" : "772557593",
+    "distance" : 347.1191491478652,
+    "normalizedWeight" : 0.9962969191011305,
+    "coordinates" : [ [ 27.082404346255952, 38.46995735102174 ], [ 27.086105979139067, 38.470355473050276 ] ]
+  }, {
+    "id" : "1323023425",
+    "sourceId" : "-805138519",
+    "targetId" : "1634697557",
+    "distance" : 152.20844317210756,
+    "normalizedWeight" : 0.9978147247525951,
+    "coordinates" : [ [ 26.99554840471987, 38.49586386611736 ], [ 26.998004726095406, 38.49515970633433 ] ]
+  }, {
+    "id" : "1875498323",
+    "sourceId" : "1629495255",
+    "targetId" : "-556789345",
+    "distance" : 2917.555231350401,
+    "normalizedWeight" : 0.976280458780162,
+    "coordinates" : [ [ 27.09278941667977, 38.467446580042626 ], [ 27.11932764979911, 38.4605185712818 ] ]
+  }, {
+    "id" : "1609356662",
+    "sourceId" : "-560797529",
+    "targetId" : "-883481887",
+    "distance" : 1562.541187186817,
+    "normalizedWeight" : 0.9868322033020934,
+    "coordinates" : [ [ 27.219668535027147, 38.468978678800624 ], [ 27.218667762849886, 38.45982447247354 ] ]
+  }, {
+    "id" : "847241443",
+    "sourceId" : "-120176963",
+    "targetId" : "-459432195",
+    "distance" : 779.0466559307619,
+    "normalizedWeight" : 0.9929334198642048,
+    "coordinates" : [ [ 27.168017771372273, 38.386623009840875 ], [ 27.16752607988577, 38.38300789485077 ] ]
+  }, {
+    "id" : "1485678096",
+    "sourceId" : "-1624452895",
+    "targetId" : "-556789345",
+    "distance" : 1156.3833689917233,
+    "normalizedWeight" : 0.9899950292164368,
+    "coordinates" : [ [ 27.129675403348298, 38.458594716789264 ], [ 27.11932764979911, 38.4605185712818 ] ]
+  }, {
+    "id" : "1574300490",
+    "sourceId" : "-735675291",
+    "targetId" : "-78732027",
+    "distance" : 1365.4687784697721,
+    "normalizedWeight" : 0.9883668425318938,
+    "coordinates" : [ [ 27.146073108443094, 38.412652941725604 ], [ 27.15425679474527, 38.418432601281815 ] ]
+  }, {
+    "id" : "21541865",
+    "sourceId" : "1500792691",
+    "targetId" : "501507721",
+    "distance" : 608.8283966131901,
+    "normalizedWeight" : 0.9942589408748712,
+    "coordinates" : [ [ 27.181329561674186, 38.47364928094205 ], [ 27.17692240318334, 38.47065712719112 ] ]
+  }, {
+    "id" : "645948456",
+    "sourceId" : "2054912281",
+    "targetId" : "2066060327",
+    "distance" : 5739.689948344791,
+    "normalizedWeight" : 0.9543039747219622,
+    "coordinates" : [ [ 27.157934594468042, 38.515137035563605 ], [ 27.164529660529862, 38.47780286803936 ] ]
+  }, {
+    "id" : "953710192",
+    "sourceId" : "-1819840007",
+    "targetId" : "-500159261",
+    "distance" : 179.24890683569402,
+    "normalizedWeight" : 0.9976041556698896,
+    "coordinates" : [ [ 27.22090465853926, 38.47021089945228 ], [ 27.219638769520785, 38.46903433457524 ] ]
+  }, {
+    "id" : "1722908698",
+    "sourceId" : "503603995",
+    "targetId" : "231171113",
+    "distance" : 4989.1618755071795,
+    "normalizedWeight" : 0.9601484753861663,
+    "coordinates" : [ [ 27.18265074518869, 38.3605911591909 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "2085308128",
+    "sourceId" : "-724477247",
+    "targetId" : "-78732027",
+    "distance" : 3359.845290773825,
+    "normalizedWeight" : 0.9728362644327104,
+    "coordinates" : [ [ 27.153302417874585, 38.405148378329166 ], [ 27.15425679474527, 38.418432601281815 ] ]
+  }, {
+    "id" : "1495860122",
+    "sourceId" : "-1157441309",
+    "targetId" : "267867751",
+    "distance" : 707.3885483782891,
+    "normalizedWeight" : 0.9934914347770948,
+    "coordinates" : [ [ 27.127154946116477, 38.32726406344626 ], [ 27.13240298487528, 38.326722322274044 ] ]
+  }, {
+    "id" : "1549330156",
+    "sourceId" : "-1209689777",
+    "targetId" : "42044299",
+    "distance" : 438.7684337499038,
+    "normalizedWeight" : 0.9955832292018236,
+    "coordinates" : [ [ 26.995680398509023, 38.49529573667209 ], [ 26.990810478275698, 38.49566967015976 ] ]
+  }, {
+    "id" : "138987261",
+    "sourceId" : "-703827689",
+    "targetId" : "-1534848043",
+    "distance" : 639.4693609075058,
+    "normalizedWeight" : 0.9940203340290367,
+    "coordinates" : [ [ 27.22290970080855, 38.46949292401393 ], [ 27.224042110166028, 38.474659481386695 ] ]
+  }, {
+    "id" : "1557910113",
+    "sourceId" : "-1945099795",
+    "targetId" : "-1586871577",
+    "distance" : 940.4869136101009,
+    "normalizedWeight" : 0.9916762547728727,
+    "coordinates" : [ [ 27.08417862488222, 38.469169799334686 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "1812545203",
+    "sourceId" : "-2123418389",
+    "targetId" : "-1173663501",
+    "distance" : 3129.1054840580578,
+    "normalizedWeight" : 0.9746330779063357,
+    "coordinates" : [ [ 27.16514767131882, 38.428672816149586 ], [ 27.15610749831399, 38.429880201036454 ] ]
+  }, {
+    "id" : "497477405",
+    "sourceId" : "-1626965507",
+    "targetId" : "-1996258439",
+    "distance" : 716.9624947711393,
+    "normalizedWeight" : 0.9934168806890106,
+    "coordinates" : [ [ 26.99673161390555, 38.49300985427935 ], [ 26.996555426560196, 38.494698255775255 ] ]
+  }, {
+    "id" : "2117943548",
+    "sourceId" : "1430974253",
+    "targetId" : "-745058253",
+    "distance" : 1739.366316516732,
+    "normalizedWeight" : 0.9854552333748936,
+    "coordinates" : [ [ 27.221370401624103, 38.47954392410444 ], [ 27.232469666712063, 38.48444117785216 ] ]
+  }, {
+    "id" : "1934399886",
+    "sourceId" : "-1626965507",
+    "targetId" : "-1090624973",
+    "distance" : 802.3229377803739,
+    "normalizedWeight" : 0.9927521631602204,
+    "coordinates" : [ [ 26.99673161390555, 38.49300985427935 ], [ 27.001989219083658, 38.49645890765492 ] ]
+  }, {
+    "id" : "2066684395",
+    "sourceId" : "-556789345",
+    "targetId" : "-1586871577",
+    "distance" : 3699.072482234726,
+    "normalizedWeight" : 0.970194639665347,
+    "coordinates" : [ [ 27.11932764979911, 38.4605185712818 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "1678115522",
+    "sourceId" : "-932562203",
+    "targetId" : "637786129",
+    "distance" : 3421.4976026738677,
+    "normalizedWeight" : 0.9723561664978161,
+    "coordinates" : [ [ 27.091330185712486, 38.475430207354414 ], [ 27.08992010269423, 38.47415155211778 ] ]
+  }, {
+    "id" : "1563075567",
+    "sourceId" : "1262554435",
+    "targetId" : "1423781945",
+    "distance" : 2059.8347080339663,
+    "normalizedWeight" : 0.9829596868459043,
+    "coordinates" : [ [ 27.167849597895408, 38.417016382688786 ], [ 27.15548320512541, 38.42153350649886 ] ]
+  }, {
+    "id" : "1547027187",
+    "sourceId" : "864650719",
+    "targetId" : "231171113",
+    "distance" : 5163.054145645756,
+    "normalizedWeight" : 0.9587943441749481,
+    "coordinates" : [ [ 27.12208802162963, 38.32998531292792 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "2121444533",
+    "sourceId" : "1262554435",
+    "targetId" : "79317247",
+    "distance" : 1033.0282285291478,
+    "normalizedWeight" : 0.9909556184688024,
+    "coordinates" : [ [ 27.167849597895408, 38.417016382688786 ], [ 27.173971966951324, 38.42262340354531 ] ]
+  }, {
+    "id" : "1496482810",
+    "sourceId" : "671992203",
+    "targetId" : "-1055579681",
+    "distance" : 2557.218399167959,
+    "normalizedWeight" : 0.9790864682170445,
+    "coordinates" : [ [ 27.00213561667423, 38.50525373307484 ], [ 27.001071659412325, 38.49757555280289 ] ]
+  }, {
+    "id" : "1219905151",
+    "sourceId" : "1480374431",
+    "targetId" : "-2105632543",
+    "distance" : 27961.461239966626,
+    "normalizedWeight" : 0.7812589391343638,
+    "coordinates" : [ [ 27.052916437304933, 38.472338703654586 ], [ 27.045687483329733, 38.392880780304836 ] ]
+  }, {
+    "id" : "781274203",
+    "sourceId" : "-932562203",
+    "targetId" : "740370769",
+    "distance" : 708.3280304049151,
+    "normalizedWeight" : 0.9934841188571082,
+    "coordinates" : [ [ 27.091330185712486, 38.475430207354414 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "957557726",
+    "sourceId" : "860166637",
+    "targetId" : "-724477247",
+    "distance" : 3958.978309964083,
+    "normalizedWeight" : 0.9681707050015155,
+    "coordinates" : [ [ 27.12723577844192, 38.40762215147028 ], [ 27.153302417874585, 38.405148378329166 ] ]
+  }, {
+    "id" : "865761620",
+    "sourceId" : "-542107191",
+    "targetId" : "-2111349595",
+    "distance" : 1235.265088619406,
+    "normalizedWeight" : 0.9893807627027079,
+    "coordinates" : [ [ 27.129348036144556, 38.317484133902845 ], [ 27.120546326787558, 38.31655396697979 ] ]
+  }, {
+    "id" : "834945802",
+    "sourceId" : "-856038679",
+    "targetId" : "501507721",
+    "distance" : 780.7964740720817,
+    "normalizedWeight" : 0.9929197937072903,
+    "coordinates" : [ [ 27.180197799176803, 38.4757673126081 ], [ 27.17692240318334, 38.47065712719112 ] ]
+  }, {
+    "id" : "1083031132",
+    "sourceId" : "1067213455",
+    "targetId" : "637786129",
+    "distance" : 3390.048037294091,
+    "normalizedWeight" : 0.9726010700695854,
+    "coordinates" : [ [ 27.091742421535056, 38.47503410244621 ], [ 27.08992010269423, 38.47415155211778 ] ]
+  }, {
+    "id" : "268462801",
+    "sourceId" : "-1341209375",
+    "targetId" : "13587347",
+    "distance" : 40425.369276204336,
+    "normalizedWeight" : 0.6842001861939768,
+    "coordinates" : [ [ 26.99836660597811, 38.39147883413244 ], [ 26.9898273714447, 38.47160589893039 ] ]
+  }, {
+    "id" : "992547326",
+    "sourceId" : "831463691",
+    "targetId" : "1631713631",
+    "distance" : 3037.760781882174,
+    "normalizedWeight" : 0.9753443959660587,
+    "coordinates" : [ [ 27.003910722480075, 38.39455822687721 ], [ 27.017254299367757, 38.37077297407825 ] ]
+  }, {
+    "id" : "1884169878",
+    "sourceId" : "-373097925",
+    "targetId" : "-883481887",
+    "distance" : 641.0847364367926,
+    "normalizedWeight" : 0.9940077548015627,
+    "coordinates" : [ [ 27.212505996975775, 38.45886444812528 ], [ 27.218667762849886, 38.45982447247354 ] ]
+  }, {
+    "id" : "1381235855",
+    "sourceId" : "-1828173627",
+    "targetId" : "-1583764383",
+    "distance" : 3146.9285042903707,
+    "normalizedWeight" : 0.9744942867573357,
+    "coordinates" : [ [ 27.168520168184223, 38.45309752055015 ], [ 27.17664954589723, 38.46295107032509 ] ]
+  }, {
+    "id" : "1271769363",
+    "sourceId" : "-782960895",
+    "targetId" : "1070956609",
+    "distance" : 2396.274973219212,
+    "normalizedWeight" : 0.9803397643879663,
+    "coordinates" : [ [ 27.154277012750164, 38.42241511394591 ], [ 27.1523353082946, 38.42559561514221 ] ]
+  }, {
+    "id" : "863476119",
+    "sourceId" : "870014473",
+    "targetId" : "503603995",
+    "distance" : 4069.8790750132393,
+    "normalizedWeight" : 0.9673071002697964,
+    "coordinates" : [ [ 27.20905540271214, 38.371533982022825 ], [ 27.18265074518869, 38.3605911591909 ] ]
+  }, {
+    "id" : "1202306377",
+    "sourceId" : "1247456631",
+    "targetId" : "740370769",
+    "distance" : 1242.681315194775,
+    "normalizedWeight" : 0.9893230111771963,
+    "coordinates" : [ [ 27.088371172027443, 38.48609784045328 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "1970442129",
+    "sourceId" : "-508561095",
+    "targetId" : "-495388751",
+    "distance" : 59344.70724323754,
+    "normalizedWeight" : 0.5368718085936997,
+    "coordinates" : [ [ 26.523399529192243, 38.6247718279797 ], [ 26.762692823993692, 38.335568600477764 ] ]
+  }, {
+    "id" : "1820155545",
+    "sourceId" : "-1051251765",
+    "targetId" : "637786129",
+    "distance" : 818.3152938676935,
+    "normalizedWeight" : 0.9926276277308911,
+    "coordinates" : [ [ 27.087390031695154, 38.46919705723632 ], [ 27.08992010269423, 38.47415155211778 ] ]
+  }, {
+    "id" : "2100855772",
+    "sourceId" : "622097871",
+    "targetId" : "-1819840007",
+    "distance" : 336.0856915485113,
+    "normalizedWeight" : 0.9963828386724319,
+    "coordinates" : [ [ 27.221201365644525, 38.47228974009593 ], [ 27.22090465853926, 38.47021089945228 ] ]
+  }, {
+    "id" : "1589264478",
+    "sourceId" : "1262554435",
+    "targetId" : "-160969361",
+    "distance" : 1323.361643676354,
+    "normalizedWeight" : 0.9886947385642666,
+    "coordinates" : [ [ 27.167849597895408, 38.417016382688786 ], [ 27.162596518785293, 38.42464557986909 ] ]
+  }, {
+    "id" : "640184513",
+    "sourceId" : "-671878237",
+    "targetId" : "-1489397737",
+    "distance" : 3355.612837673605,
+    "normalizedWeight" : 0.972869223326389,
+    "coordinates" : [ [ 27.211280080739137, 38.43861867846285 ], [ 27.234517743190302, 38.44932586263338 ] ]
+  }, {
+    "id" : "1928094727",
+    "sourceId" : "1402965039",
+    "targetId" : "501507721",
+    "distance" : 696.8611226760654,
+    "normalizedWeight" : 0.9935734137845906,
+    "coordinates" : [ [ 27.171695349470014, 38.472560562209516 ], [ 27.17692240318334, 38.47065712719112 ] ]
+  }, {
+    "id" : "963139463",
+    "sourceId" : "1407660565",
+    "targetId" : "-551329927",
+    "distance" : 1539.5339008529465,
+    "normalizedWeight" : 0.9870113652883353,
+    "coordinates" : [ [ 27.14766651519735, 38.424973552363994 ], [ 27.14721955447551, 38.417397125271265 ] ]
+  }, {
+    "id" : "820007439",
+    "sourceId" : "-1090263601",
+    "targetId" : "-1135340485",
+    "distance" : 1964.094634061851,
+    "normalizedWeight" : 0.9837052324772695,
+    "coordinates" : [ [ 27.18845342055323, 38.46690132423279 ], [ 27.19843268439267, 38.47718072516701 ] ]
+  }, {
+    "id" : "1063479692",
+    "sourceId" : "-724477247",
+    "targetId" : "231171113",
+    "distance" : 5633.891779657768,
+    "normalizedWeight" : 0.955127844593778,
+    "coordinates" : [ [ 27.153302417874585, 38.405148378329166 ], [ 27.13902813910113, 38.361403221509356 ] ]
+  }, {
+    "id" : "1562785748",
+    "sourceId" : "327157733",
+    "targetId" : "1813149297",
+    "distance" : 2814.7868601046516,
+    "normalizedWeight" : 0.9770807350599474,
+    "coordinates" : [ [ 26.990207969760856, 38.494811751491625 ], [ 26.970525732163466, 38.48107103613099 ] ]
+  }, {
+    "id" : "2001521081",
+    "sourceId" : "-1624452895",
+    "targetId" : "1407660565",
+    "distance" : 13734.896542969107,
+    "normalizedWeight" : 0.8920438249102957,
+    "coordinates" : [ [ 27.129675403348298, 38.458594716789264 ], [ 27.14766651519735, 38.424973552363994 ] ]
+  }, {
+    "id" : "2000247244",
+    "sourceId" : "-160969361",
+    "targetId" : "665141693",
+    "distance" : 587.7737982977459,
+    "normalizedWeight" : 0.9944228969190121,
+    "coordinates" : [ [ 27.162596518785293, 38.42464557986909 ], [ 27.157197357253043, 38.42365973767 ] ]
+  }, {
+    "id" : "2051539135",
+    "sourceId" : "-410272219",
+    "targetId" : "1995933769",
+    "distance" : 1249.6310747884654,
+    "normalizedWeight" : 0.9892688921161893,
+    "coordinates" : [ [ 27.209874878453302, 38.48244657119185 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "602666268",
+    "sourceId" : "-1624452895",
+    "targetId" : "509212547",
+    "distance" : 9145.536619494975,
+    "normalizedWeight" : 0.9277820179129974,
+    "coordinates" : [ [ 27.129675403348298, 38.458594716789264 ], [ 27.15733836310961, 38.47087096902916 ] ]
+  }, {
+    "id" : "1826324003",
+    "sourceId" : "-856038679",
+    "targetId" : "1500792691",
+    "distance" : 296.0935737107168,
+    "normalizedWeight" : 0.996694264677301,
+    "coordinates" : [ [ 27.180197799176803, 38.4757673126081 ], [ 27.181329561674186, 38.47364928094205 ] ]
+  }, {
+    "id" : "967769942",
+    "sourceId" : "-703827689",
+    "targetId" : "-560797529",
+    "distance" : 377.2107703321123,
+    "normalizedWeight" : 0.9960625900915129,
+    "coordinates" : [ [ 27.22290970080855, 38.46949292401393 ], [ 27.219668535027147, 38.468978678800624 ] ]
+  }, {
+    "id" : "584379436",
+    "sourceId" : "-1461885421",
+    "targetId" : "-720305931",
+    "distance" : 773.8477642092191,
+    "normalizedWeight" : 0.9929739045938496,
+    "coordinates" : [ [ 27.068389182202562, 38.471264652337645 ], [ 27.073055544769808, 38.47030737053841 ] ]
+  }, {
+    "id" : "787005460",
+    "sourceId" : "1424268931",
+    "targetId" : "-671878237",
+    "distance" : 4982.781974832035,
+    "normalizedWeight" : 0.9601981568505684,
+    "coordinates" : [ [ 27.183030184265373, 38.45746416752818 ], [ 27.211280080739137, 38.43861867846285 ] ]
+  }, {
+    "id" : "1390007332",
+    "sourceId" : "1667905107",
+    "targetId" : "952892343",
+    "distance" : 2426.2983815986927,
+    "normalizedWeight" : 0.9801059665640527,
+    "coordinates" : [ [ 27.227112144928213, 38.470276534830454 ], [ 27.22789882466805, 38.47437435170931 ] ]
+  }, {
+    "id" : "731838819",
+    "sourceId" : "1194402671",
+    "targetId" : "-1055579681",
+    "distance" : 1277.1427527764536,
+    "normalizedWeight" : 0.989054653600545,
+    "coordinates" : [ [ 26.99166677363392, 38.4999164378424 ], [ 27.001071659412325, 38.49757555280289 ] ]
+  }, {
+    "id" : "1094609859",
+    "sourceId" : "-1624452895",
+    "targetId" : "-844727637",
+    "distance" : 12129.103400669786,
+    "normalizedWeight" : 0.9045484325677542,
+    "coordinates" : [ [ 27.129675403348298, 38.458594716789264 ], [ 27.163806537773343, 38.44384216071525 ] ]
+  }, {
+    "id" : "1671053671",
+    "sourceId" : "-476887835",
+    "targetId" : "-89915263",
+    "distance" : 1099.8849368680742,
+    "normalizedWeight" : 0.9904349929380131,
+    "coordinates" : [ [ 27.094717041191842, 38.480152563400466 ], [ 27.09982171705014, 38.47401554347372 ] ]
+  }, {
+    "id" : "1962061324",
+    "sourceId" : "-1583764383",
+    "targetId" : "-2034379747",
+    "distance" : 636.5377037906139,
+    "normalizedWeight" : 0.9940431633842427,
+    "coordinates" : [ [ 27.17664954589723, 38.46295107032509 ], [ 27.175298017260218, 38.466055455535844 ] ]
+  }, {
+    "id" : "1645849830",
+    "sourceId" : "-883481887",
+    "targetId" : "-1489397737",
+    "distance" : 2925.8368822304856,
+    "normalizedWeight" : 0.9762159680358167,
+    "coordinates" : [ [ 27.218667762849886, 38.45982447247354 ], [ 27.234517743190302, 38.44932586263338 ] ]
+  }, {
+    "id" : "868776247",
+    "sourceId" : "-1230831949",
+    "targetId" : "-1029024345",
+    "distance" : 598.9869369668232,
+    "normalizedWeight" : 0.9943355781380484,
+    "coordinates" : [ [ 27.171343218814116, 38.3917201280826 ], [ 27.176786893491606, 38.39192539301175 ] ]
+  }, {
+    "id" : "174402915",
+    "sourceId" : "-1988600683",
+    "targetId" : "1631713631",
+    "distance" : 5360.719215634836,
+    "normalizedWeight" : 0.9572550897824064,
+    "coordinates" : [ [ 27.045357478029523, 38.38430417612696 ], [ 27.017254299367757, 38.37077297407825 ] ]
+  }, {
+    "id" : "397534391",
+    "sourceId" : "-481714009",
+    "targetId" : "-160969361",
+    "distance" : 726.955214382102,
+    "normalizedWeight" : 0.9933390655365637,
+    "coordinates" : [ [ 27.15904928722468, 38.426922451871135 ], [ 27.162596518785293, 38.42464557986909 ] ]
+  }, {
+    "id" : "169778457",
+    "sourceId" : "-932562203",
+    "targetId" : "1344532723",
+    "distance" : 197.51111753662852,
+    "normalizedWeight" : 0.997461944463628,
+    "coordinates" : [ [ 27.091330185712486, 38.475430207354414 ], [ 27.091575220040678, 38.47707363040232 ] ]
+  }, {
+    "id" : "1129439320",
+    "sourceId" : "-1242656213",
+    "targetId" : "-1586871577",
+    "distance" : 934.3753861035814,
+    "normalizedWeight" : 0.9917238463658642,
+    "coordinates" : [ [ 27.08540173085398, 38.469024008647956 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "277318541",
+    "sourceId" : "-2034379747",
+    "targetId" : "2067476865",
+    "distance" : 146.72413885016235,
+    "normalizedWeight" : 0.9978574320428517,
+    "coordinates" : [ [ 27.175298017260218, 38.466055455535844 ], [ 27.174795121897024, 38.467175680870824 ] ]
+  }, {
+    "id" : "12586957",
+    "sourceId" : "-2133910563",
+    "targetId" : "-1135340485",
+    "distance" : 613.7566092894482,
+    "normalizedWeight" : 0.9942205639729242,
+    "coordinates" : [ [ 27.20274042514533, 38.48088280948834 ], [ 27.19843268439267, 38.47718072516701 ] ]
+  }, {
+    "id" : "1633156697",
+    "sourceId" : "860166637",
+    "targetId" : "-556789345",
+    "distance" : 14730.617972117694,
+    "normalizedWeight" : 0.8842899583133824,
+    "coordinates" : [ [ 27.12723577844192, 38.40762215147028 ], [ 27.11932764979911, 38.4605185712818 ] ]
+  }, {
+    "id" : "2022648735",
+    "sourceId" : "1533958325",
+    "targetId" : "-256660657",
+    "distance" : 128159.283354951,
+    "normalizedWeight" : 0.0010000000000000009,
+    "coordinates" : [ [ 26.511934528662458, 38.64112327859088 ], [ 27.175163051040677, 38.545038866177514 ] ]
+  }, {
+    "id" : "269256479",
+    "sourceId" : "-2034538937",
+    "targetId" : "984259133",
+    "distance" : 3997.0225443557697,
+    "normalizedWeight" : 0.9678744475246556,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 26.83626581352166, 38.182380067547285 ] ]
+  }, {
+    "id" : "848578944",
+    "sourceId" : "-2034538937",
+    "targetId" : "1631713631",
+    "distance" : 37269.25371001525,
+    "normalizedWeight" : 0.7087774407837439,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 27.017254299367757, 38.37077297407825 ] ]
+  }, {
+    "id" : "1337799851",
+    "sourceId" : "-745058253",
+    "targetId" : "1777227867",
+    "distance" : 4286.596541000076,
+    "normalizedWeight" : 0.9656194813522043,
+    "coordinates" : [ [ 27.232469666712063, 38.48444117785216 ], [ 27.24644983548839, 38.476659734505425 ] ]
+  }, {
+    "id" : "590778400",
+    "sourceId" : "-1341209375",
+    "targetId" : "1631713631",
+    "distance" : 3317.2403226003307,
+    "normalizedWeight" : 0.9731680371855229,
+    "coordinates" : [ [ 26.99836660597811, 38.39147883413244 ], [ 27.017254299367757, 38.37077297407825 ] ]
+  }, {
+    "id" : "126205074",
+    "sourceId" : "-58829739",
+    "targetId" : "-1705427045",
+    "distance" : 1618.826939329854,
+    "normalizedWeight" : 0.9863938957587907,
+    "coordinates" : [ [ 27.18650682982308, 38.46160730595667 ], [ 27.17902975809403, 38.47015835876768 ] ]
+  }, {
+    "id" : "497975993",
+    "sourceId" : "-1534848043",
+    "targetId" : "952892343",
+    "distance" : 3496.174579476767,
+    "normalizedWeight" : 0.9717746430927353,
+    "coordinates" : [ [ 27.224042110166028, 38.474659481386695 ], [ 27.22789882466805, 38.47437435170931 ] ]
+  }, {
+    "id" : "1699329617",
+    "sourceId" : "-593203817",
+    "targetId" : "-844727637",
+    "distance" : 4921.632811373733,
+    "normalizedWeight" : 0.9606743366756565,
+    "coordinates" : [ [ 27.164011227325243, 38.459659647437974 ], [ 27.163806537773343, 38.44384216071525 ] ]
+  }, {
+    "id" : "1874193580",
+    "sourceId" : "-173597709",
+    "targetId" : "-78732027",
+    "distance" : 3458.604922509888,
+    "normalizedWeight" : 0.9720672049475726,
+    "coordinates" : [ [ 27.164898778988537, 38.403242754859306 ], [ 27.15425679474527, 38.418432601281815 ] ]
+  }, {
+    "id" : "2053062980",
+    "sourceId" : "-883481887",
+    "targetId" : "-671878237",
+    "distance" : 3358.7257142519543,
+    "normalizedWeight" : 0.9728449827817802,
+    "coordinates" : [ [ 27.218667762849886, 38.45982447247354 ], [ 27.211280080739137, 38.43861867846285 ] ]
+  }, {
+    "id" : "737521899",
+    "sourceId" : "-1476246679",
+    "targetId" : "188928337",
+    "distance" : 9247.403025287833,
+    "normalizedWeight" : 0.9269887654047129,
+    "coordinates" : [ [ 26.82330142514423, 38.189117982051286 ], [ 26.835335445354087, 38.18906217995372 ] ]
+  }, {
+    "id" : "1083381644",
+    "sourceId" : "-799625653",
+    "targetId" : "870014473",
+    "distance" : 3436.1595452926044,
+    "normalizedWeight" : 0.972241991243785,
+    "coordinates" : [ [ 27.201931004244233, 38.384079967628125 ], [ 27.20905540271214, 38.371533982022825 ] ]
+  }, {
+    "id" : "676276078",
+    "sourceId" : "-100512719",
+    "targetId" : "1813149297",
+    "distance" : 62190.07932708563,
+    "normalizedWeight" : 0.5147143708697731,
+    "coordinates" : [ [ 26.767234581614833, 38.33170809125841 ], [ 26.970525732163466, 38.48107103613099 ] ]
+  }, {
+    "id" : "341474172",
+    "sourceId" : "1390225147",
+    "targetId" : "740370769",
+    "distance" : 4147.826613636393,
+    "normalizedWeight" : 0.9667001083960165,
+    "coordinates" : [ [ 27.082404346255952, 38.46995735102174 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "417231862",
+    "sourceId" : "-1329580649",
+    "targetId" : "311915693",
+    "distance" : 27614.4550352408,
+    "normalizedWeight" : 0.7839611405141673,
+    "coordinates" : [ [ 27.012392852931026, 38.482944725305934 ], [ 27.02749097415362, 38.49918729746654 ] ]
+  }, {
+    "id" : "1943061759",
+    "sourceId" : "-2012982531",
+    "targetId" : "1070956609",
+    "distance" : 2988.257108887981,
+    "normalizedWeight" : 0.9757298902069352,
+    "coordinates" : [ [ 27.15586280168452, 38.42438785087215 ], [ 27.1523353082946, 38.42559561514221 ] ]
+  }, {
+    "id" : "1137208551",
+    "sourceId" : "-805138519",
+    "targetId" : "42044299",
+    "distance" : 405.562908610341,
+    "normalizedWeight" : 0.9958418067564242,
+    "coordinates" : [ [ 26.99554840471987, 38.49586386611736 ], [ 26.990810478275698, 38.49566967015976 ] ]
+  }, {
+    "id" : "79175575",
+    "sourceId" : "-465604887",
+    "targetId" : "-1592774029",
+    "distance" : 438.66096625909813,
+    "normalizedWeight" : 0.995584066071015,
+    "coordinates" : [ [ 27.17267614800582, 38.394567352460975 ], [ 27.17117346455076, 38.39171600350296 ] ]
+  }, {
+    "id" : "2034473589",
+    "sourceId" : "1480374431",
+    "targetId" : "-1461885421",
+    "distance" : 1966.1417689669722,
+    "normalizedWeight" : 0.9836892910598253,
+    "coordinates" : [ [ 27.052916437304933, 38.472338703654586 ], [ 27.068389182202562, 38.471264652337645 ] ]
+  }, {
+    "id" : "528788659",
+    "sourceId" : "-457250635",
+    "targetId" : "-551329927",
+    "distance" : 1203.515601872256,
+    "normalizedWeight" : 0.9896280018175359,
+    "coordinates" : [ [ 27.141578844199703, 38.424099275237886 ], [ 27.14721955447551, 38.417397125271265 ] ]
+  }, {
+    "id" : "1233649343",
+    "sourceId" : "-1988600683",
+    "targetId" : "685452229",
+    "distance" : 1586.084022150469,
+    "normalizedWeight" : 0.9866488708997996,
+    "coordinates" : [ [ 27.045357478029523, 38.38430417612696 ], [ 27.049606390733953, 38.391598839823594 ] ]
+  }, {
+    "id" : "1837945525",
+    "sourceId" : "637786129",
+    "targetId" : "740370769",
+    "distance" : 3937.8533759621323,
+    "normalizedWeight" : 0.9683352087626325,
+    "coordinates" : [ [ 27.08992010269423, 38.47415155211778 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "900936329",
+    "sourceId" : "-707786777",
+    "targetId" : "47614499",
+    "distance" : 1865.8114116246745,
+    "normalizedWeight" : 0.9844705820752431,
+    "coordinates" : [ [ 27.20791804428148, 38.4594688417662 ], [ 27.192135945133916, 38.46353036723793 ] ]
+  }, {
+    "id" : "1145962355",
+    "sourceId" : "799991071",
+    "targetId" : "-1586871577",
+    "distance" : 24872.03545104807,
+    "normalizedWeight" : 0.8053168681163896,
+    "coordinates" : [ [ 27.054835380566796, 38.3858539754481 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "1147374428",
+    "sourceId" : "-893075269",
+    "targetId" : "-2012982531",
+    "distance" : 1016.1635504553285,
+    "normalizedWeight" : 0.9910869468304869,
+    "coordinates" : [ [ 27.15554022942304, 38.422942003313324 ], [ 27.15586280168452, 38.42438785087215 ] ]
+  }, {
+    "id" : "164777617",
+    "sourceId" : "1376183553",
+    "targetId" : "870014473",
+    "distance" : 12822.37152382952,
+    "normalizedWeight" : 0.8991498257029111,
+    "coordinates" : [ [ 27.13321046477519, 38.31249622866503 ], [ 27.20905540271214, 38.371533982022825 ] ]
+  }, {
+    "id" : "2055033145",
+    "sourceId" : "-1996258439",
+    "targetId" : "2088086353",
+    "distance" : 716.9624947711393,
+    "normalizedWeight" : 0.9934168806890106,
+    "coordinates" : [ [ 26.996555426560196, 38.494698255775255 ], [ 26.99658937074419, 38.49472080679441 ] ]
+  }, {
+    "id" : "76276684",
+    "sourceId" : "831463691",
+    "targetId" : "-1341209375",
+    "distance" : 1026.803331871367,
+    "normalizedWeight" : 0.9910040928883047,
+    "coordinates" : [ [ 27.003910722480075, 38.39455822687721 ], [ 26.99836660597811, 38.39147883413244 ] ]
+  }, {
+    "id" : "1912313532",
+    "sourceId" : "634096093",
+    "targetId" : "974174191",
+    "distance" : 152.63850265359176,
+    "normalizedWeight" : 0.9978113758000161,
+    "coordinates" : [ [ 27.13078152845921, 38.32321859679262 ], [ 27.12971225081626, 38.32262926100273 ] ]
+  }, {
+    "id" : "567581340",
+    "sourceId" : "1623095827",
+    "targetId" : "-459432195",
+    "distance" : 674.4510561077398,
+    "normalizedWeight" : 0.9937479251102607,
+    "coordinates" : [ [ 27.164582701527014, 38.387516939116196 ], [ 27.16752607988577, 38.38300789485077 ] ]
+  }, {
+    "id" : "317960634",
+    "sourceId" : "100837403",
+    "targetId" : "671992203",
+    "distance" : 6927.620532231188,
+    "normalizedWeight" : 0.9450533399518293,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 27.00213561667423, 38.50525373307484 ] ]
+  }, {
+    "id" : "1388458379",
+    "sourceId" : "1424268931",
+    "targetId" : "47614499",
+    "distance" : 1186.6124157419101,
+    "normalizedWeight" : 0.9897596300485658,
+    "coordinates" : [ [ 27.183030184265373, 38.45746416752818 ], [ 27.192135945133916, 38.46353036723793 ] ]
+  }, {
+    "id" : "283252651",
+    "sourceId" : "-120176963",
+    "targetId" : "1623095827",
+    "distance" : 460.6363689598489,
+    "normalizedWeight" : 0.9954129395531286,
+    "coordinates" : [ [ 27.168017771372273, 38.386623009840875 ], [ 27.164582701527014, 38.387516939116196 ] ]
+  }, {
+    "id" : "1604400364",
+    "sourceId" : "1910632995",
+    "targetId" : "327157733",
+    "distance" : 2984.23926722779,
+    "normalizedWeight" : 0.9757611778817092,
+    "coordinates" : [ [ 26.960554024704585, 38.4950543215556 ], [ 26.990207969760856, 38.494811751491625 ] ]
+  }, {
+    "id" : "536340665",
+    "sourceId" : "685452229",
+    "targetId" : "-1586871577",
+    "distance" : 24675.066181137736,
+    "normalizedWeight" : 0.8068507041852608,
+    "coordinates" : [ [ 27.049606390733953, 38.391598839823594 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "1513683306",
+    "sourceId" : "622097871",
+    "targetId" : "1995933769",
+    "distance" : 746.8003567539013,
+    "normalizedWeight" : 0.9931845277491433,
+    "coordinates" : [ [ 27.221201365644525, 38.47228974009593 ], [ 27.21619599766382, 38.47549928794983 ] ]
+  }, {
+    "id" : "361445080",
+    "sourceId" : "-372431137",
+    "targetId" : "665141693",
+    "distance" : 85.2529389181449,
+    "normalizedWeight" : 0.9983361196254144,
+    "coordinates" : [ [ 27.1574384685825, 38.42429598261005 ], [ 27.157197357253043, 38.42365973767 ] ]
+  }, {
+    "id" : "1714565477",
+    "sourceId" : "-782960895",
+    "targetId" : "1407660565",
+    "distance" : 1755.8508471192486,
+    "normalizedWeight" : 0.9853268652917502,
+    "coordinates" : [ [ 27.154277012750164, 38.42241511394591 ], [ 27.14766651519735, 38.424973552363994 ] ]
+  }, {
+    "id" : "336130898",
+    "sourceId" : "-476887835",
+    "targetId" : "-657540915",
+    "distance" : 1288.9623858081604,
+    "normalizedWeight" : 0.9889626119360097,
+    "coordinates" : [ [ 27.094717041191842, 38.480152563400466 ], [ 27.096060419693224, 38.47338004925784 ] ]
+  }, {
+    "id" : "2137774128",
+    "sourceId" : "-805138519",
+    "targetId" : "1194402671",
+    "distance" : 863.0669748155153,
+    "normalizedWeight" : 0.9922791381293831,
+    "coordinates" : [ [ 26.99554840471987, 38.49586386611736 ], [ 26.99166677363392, 38.4999164378424 ] ]
+  }, {
+    "id" : "1115536678",
+    "sourceId" : "-865864095",
+    "targetId" : "860166637",
+    "distance" : 1476.617344947699,
+    "normalizedWeight" : 0.9875013081247004,
+    "coordinates" : [ [ 27.140901179127102, 38.4135360725219 ], [ 27.12723577844192, 38.40762215147028 ] ]
+  }, {
+    "id" : "714165709",
+    "sourceId" : "-693553229",
+    "targetId" : "870014473",
+    "distance" : 11191.614433403585,
+    "normalizedWeight" : 0.9118488322332267,
+    "coordinates" : [ [ 27.142700090833642, 38.323012292828395 ], [ 27.20905540271214, 38.371533982022825 ] ]
+  }, {
+    "id" : "1953128247",
+    "sourceId" : "-542107191",
+    "targetId" : "974174191",
+    "distance" : 764.8656207658107,
+    "normalizedWeight" : 0.993043850203109,
+    "coordinates" : [ [ 27.129348036144556, 38.317484133902845 ], [ 27.12971225081626, 38.32262926100273 ] ]
+  }, {
+    "id" : "1967696406",
+    "sourceId" : "-71183737",
+    "targetId" : "1039700295",
+    "distance" : 122.8309448884919,
+    "normalizedWeight" : 0.9980434927553457,
+    "coordinates" : [ [ 27.092478991594877, 38.47258128995896 ], [ 27.091767745462562, 38.47352636243499 ] ]
+  }, {
+    "id" : "1525981610",
+    "sourceId" : "1910632995",
+    "targetId" : "-508561095",
+    "distance" : 121614.33268404826,
+    "normalizedWeight" : 0.05196673919024841,
+    "coordinates" : [ [ 26.960554024704585, 38.4950543215556 ], [ 26.523399529192243, 38.6247718279797 ] ]
+  }, {
+    "id" : "429416135",
+    "sourceId" : "-1159310495",
+    "targetId" : "1972369647",
+    "distance" : 1732.1180278844854,
+    "normalizedWeight" : 0.9855116771366377,
+    "coordinates" : [ [ 27.090271702960855, 38.48719370992994 ], [ 27.081895939194666, 38.49571359668352 ] ]
+  }, {
+    "id" : "1451760105",
+    "sourceId" : "-2034538937",
+    "targetId" : "-2111349595",
+    "distance" : 46194.8366579658,
+    "normalizedWeight" : 0.6392722785444722,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 27.120546326787558, 38.31655396697979 ] ]
+  }, {
+    "id" : "1881940815",
+    "sourceId" : "-1090624973",
+    "targetId" : "1663193721",
+    "distance" : 1063.2144539969065,
+    "normalizedWeight" : 0.9907205527581633,
+    "coordinates" : [ [ 27.001989219083658, 38.49645890765492 ], [ 27.011433296005933, 38.49949054144221 ] ]
+  }, {
+    "id" : "1162697257",
+    "sourceId" : "-1159310495",
+    "targetId" : "823318839",
+    "distance" : 3218.044309301377,
+    "normalizedWeight" : 0.9739404948544549,
+    "coordinates" : [ [ 27.090271702960855, 38.48719370992994 ], [ 27.112456938555123, 38.49773878075412 ] ]
+  }, {
+    "id" : "148182963",
+    "sourceId" : "1254931901",
+    "targetId" : "-1489397737",
+    "distance" : 4987.1097234572435,
+    "normalizedWeight" : 0.9601644558730434,
+    "coordinates" : [ [ 27.21507105056749, 38.41823633015462 ], [ 27.234517743190302, 38.44932586263338 ] ]
+  }, {
+    "id" : "865090807",
+    "sourceId" : "-761620579",
+    "targetId" : "-495388751",
+    "distance" : 2030.6761081701002,
+    "normalizedWeight" : 0.9831867502462476,
+    "coordinates" : [ [ 26.74881822598883, 38.33178386507774 ], [ 26.762692823993692, 38.335568600477764 ] ]
+  }, {
+    "id" : "498765533",
+    "sourceId" : "-2034379747",
+    "targetId" : "-1705427045",
+    "distance" : 614.2576206771753,
+    "normalizedWeight" : 0.9942166625047523,
+    "coordinates" : [ [ 27.175298017260218, 38.466055455535844 ], [ 27.17902975809403, 38.47015835876768 ] ]
+  }, {
+    "id" : "793777209",
+    "sourceId" : "-1583764383",
+    "targetId" : "-1705427045",
+    "distance" : 1020.072548712311,
+    "normalizedWeight" : 0.9910565067393883,
+    "coordinates" : [ [ 27.17664954589723, 38.46295107032509 ], [ 27.17902975809403, 38.47015835876768 ] ]
+  }, {
+    "id" : "1957853150",
+    "sourceId" : "-229299359",
+    "targetId" : "-1115928237",
+    "distance" : 442.6908696764905,
+    "normalizedWeight" : 0.9955526844691109,
+    "coordinates" : [ [ 26.766317335398934, 38.32806406412439 ], [ 26.767493800665775, 38.324592976935556 ] ]
+  }, {
+    "id" : "1057369205",
+    "sourceId" : "-334797509",
+    "targetId" : "1681900545",
+    "distance" : 233.56215035314824,
+    "normalizedWeight" : 0.9971812084154149,
+    "coordinates" : [ [ 27.235151064241695, 38.46033258116765 ], [ 27.23285692516834, 38.46057121418079 ] ]
+  }, {
+    "id" : "347548611",
+    "sourceId" : "772557593",
+    "targetId" : "740370769",
+    "distance" : 3822.325715549963,
+    "normalizedWeight" : 0.9692348439827516,
+    "coordinates" : [ [ 27.086105979139067, 38.470355473050276 ], [ 27.08848955411893, 38.479098836095886 ] ]
+  }, {
+    "id" : "1923113435",
+    "sourceId" : "-1583764383",
+    "targetId" : "-58829739",
+    "distance" : 1166.3002988827443,
+    "normalizedWeight" : 0.9899178042525313,
+    "coordinates" : [ [ 27.17664954589723, 38.46295107032509 ], [ 27.18650682982308, 38.46160730595667 ] ]
+  }, {
+    "id" : "163606206",
+    "sourceId" : "864650719",
+    "targetId" : "-1157441309",
+    "distance" : 716.7481579270298,
+    "normalizedWeight" : 0.9934185497695861,
+    "coordinates" : [ [ 27.12208802162963, 38.32998531292792 ], [ 27.127154946116477, 38.32726406344626 ] ]
+  }, {
+    "id" : "900685520",
+    "sourceId" : "-465604887",
+    "targetId" : "-1029024345",
+    "distance" : 495.2268210157559,
+    "normalizedWeight" : 0.995143577316948,
+    "coordinates" : [ [ 27.17267614800582, 38.394567352460975 ], [ 27.176786893491606, 38.39192539301175 ] ]
+  }, {
+    "id" : "349081422",
+    "sourceId" : "-1329580649",
+    "targetId" : "-1090624973",
+    "distance" : 2347.9534221511108,
+    "normalizedWeight" : 0.9807160532271634,
+    "coordinates" : [ [ 27.012392852931026, 38.482944725305934 ], [ 27.001989219083658, 38.49645890765492 ] ]
+  }, {
+    "id" : "2000619707",
+    "sourceId" : "-1724458513",
+    "targetId" : "-1429105887",
+    "distance" : 2563.1160959758354,
+    "normalizedWeight" : 0.9790405417631803,
+    "coordinates" : [ [ 27.168861112361032, 38.47289508752102 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "436926860",
+    "sourceId" : "-13683185",
+    "targetId" : "952892343",
+    "distance" : 3849.9484114733086,
+    "normalizedWeight" : 0.9690197409499487,
+    "coordinates" : [ [ 27.237608207397635, 38.47634517247087 ], [ 27.22789882466805, 38.47437435170931 ] ]
+  }, {
+    "id" : "831889938",
+    "sourceId" : "-500159261",
+    "targetId" : "1842465707",
+    "distance" : 1200.0031727631479,
+    "normalizedWeight" : 0.9896553537514662,
+    "coordinates" : [ [ 27.219638769520785, 38.46903433457524 ], [ 27.214004730492597, 38.46140969758681 ] ]
+  }, {
+    "id" : "578867465",
+    "sourceId" : "-78732027",
+    "targetId" : "1423781945",
+    "distance" : 974.0466571322843,
+    "normalizedWeight" : 0.9914149188543315,
+    "coordinates" : [ [ 27.15425679474527, 38.418432601281815 ], [ 27.15548320512541, 38.42153350649886 ] ]
+  }, {
+    "id" : "104390065",
+    "sourceId" : "1430974253",
+    "targetId" : "-1534848043",
+    "distance" : 619.0121132751859,
+    "normalizedWeight" : 0.9941796383931264,
+    "coordinates" : [ [ 27.221370401624103, 38.47954392410444 ], [ 27.224042110166028, 38.474659481386695 ] ]
+  }, {
+    "id" : "1722429731",
+    "sourceId" : "-1583764383",
+    "targetId" : "1424268931",
+    "distance" : 1260.2090713398707,
+    "normalizedWeight" : 0.9891865193041546,
+    "coordinates" : [ [ 27.17664954589723, 38.46295107032509 ], [ 27.183030184265373, 38.45746416752818 ] ]
+  }, {
+    "id" : "1119785268",
+    "sourceId" : "-1090624973",
+    "targetId" : "-1055579681",
+    "distance" : 1784.9642703809075,
+    "normalizedWeight" : 0.9851001536899486,
+    "coordinates" : [ [ 27.001989219083658, 38.49645890765492 ], [ 27.001071659412325, 38.49757555280289 ] ]
+  }, {
+    "id" : "812648443",
+    "sourceId" : "2084925965",
+    "targetId" : "-1329580649",
+    "distance" : 6043.449084450003,
+    "normalizedWeight" : 0.9519385462496962,
+    "coordinates" : [ [ 27.039898016526983, 38.47622799778002 ], [ 27.012392852931026, 38.482944725305934 ] ]
+  }, {
+    "id" : "1319971133",
+    "sourceId" : "535968273",
+    "targetId" : "-883481887",
+    "distance" : 1079.955982836937,
+    "normalizedWeight" : 0.9905901833822979,
+    "coordinates" : [ [ 27.223287961484967, 38.46309681695553 ], [ 27.218667762849886, 38.45982447247354 ] ]
+  }, {
+    "id" : "802315329",
+    "sourceId" : "671992203",
+    "targetId" : "1663193721",
+    "distance" : 1405.9268484840125,
+    "normalizedWeight" : 0.9880517880714036,
+    "coordinates" : [ [ 27.00213561667423, 38.50525373307484 ], [ 27.011433296005933, 38.49949054144221 ] ]
+  }, {
+    "id" : "1090956949",
+    "sourceId" : "-160969361",
+    "targetId" : "79317247",
+    "distance" : 1388.374902267734,
+    "normalizedWeight" : 0.9881884683169956,
+    "coordinates" : [ [ 27.162596518785293, 38.42464557986909 ], [ 27.173971966951324, 38.42262340354531 ] ]
+  }, {
+    "id" : "306321878",
+    "sourceId" : "1675090537",
+    "targetId" : "-495388751",
+    "distance" : 337.8140988670588,
+    "normalizedWeight" : 0.9963693792455472,
+    "coordinates" : [ [ 26.76091638445063, 38.332134517292246 ], [ 26.762692823993692, 38.335568600477764 ] ]
+  }, {
+    "id" : "1542593639",
+    "sourceId" : "799991071",
+    "targetId" : "-1988600683",
+    "distance" : 1618.7993339561635,
+    "normalizedWeight" : 0.9863941107269321,
+    "coordinates" : [ [ 27.054835380566796, 38.3858539754481 ], [ 27.045357478029523, 38.38430417612696 ] ]
+  }, {
+    "id" : "1510970778",
+    "sourceId" : "2067476865",
+    "targetId" : "-1429105887",
+    "distance" : 1172.0818435550045,
+    "normalizedWeight" : 0.989872782296791,
+    "coordinates" : [ [ 27.174795121897024, 38.467175680870824 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "253106307",
+    "sourceId" : "-1480747375",
+    "targetId" : "-735955993",
+    "distance" : 1381.2934537201584,
+    "normalizedWeight" : 0.9882436128641986,
+    "coordinates" : [ [ 27.17268724281245, 38.41684242857944 ], [ 27.18435171516271, 38.41304756278833 ] ]
+  }, {
+    "id" : "1232265956",
+    "sourceId" : "-1135340485",
+    "targetId" : "47614499",
+    "distance" : 2910.5845775643447,
+    "normalizedWeight" : 0.9763347405481024,
+    "coordinates" : [ [ 27.19843268439267, 38.47718072516701 ], [ 27.192135945133916, 38.46353036723793 ] ]
+  }, {
+    "id" : "1689008954",
+    "sourceId" : "-670162599",
+    "targetId" : "-2094243861",
+    "distance" : 4506.204640399073,
+    "normalizedWeight" : 0.9639093525385687,
+    "coordinates" : [ [ 27.23571241724574, 38.456125686095646 ], [ 27.250475007654476, 38.465074686623765 ] ]
+  }, {
+    "id" : "2129629560",
+    "sourceId" : "-100512719",
+    "targetId" : "-495388751",
+    "distance" : 9360.566549882788,
+    "normalizedWeight" : 0.9261075401466644,
+    "coordinates" : [ [ 26.767234581614833, 38.33170809125841 ], [ 26.762692823993692, 38.335568600477764 ] ]
+  }, {
+    "id" : "647267587",
+    "sourceId" : "860166637",
+    "targetId" : "-457250635",
+    "distance" : 2584.343199292067,
+    "normalizedWeight" : 0.9788752423907507,
+    "coordinates" : [ [ 27.12723577844192, 38.40762215147028 ], [ 27.141578844199703, 38.424099275237886 ] ]
+  }, {
+    "id" : "290089683",
+    "sourceId" : "-2034538937",
+    "targetId" : "-1115928237",
+    "distance" : 20015.484766671216,
+    "normalizedWeight" : 0.843135724902474,
+    "coordinates" : [ [ 26.854952135564282, 38.208885981632086 ], [ 26.767493800665775, 38.324592976935556 ] ]
+  }, {
+    "id" : "1620968199",
+    "sourceId" : "-670162599",
+    "targetId" : "-334797509",
+    "distance" : 2271.925324104401,
+    "normalizedWeight" : 0.9813080980628112,
+    "coordinates" : [ [ 27.23571241724574, 38.456125686095646 ], [ 27.235151064241695, 38.46033258116765 ] ]
+  }, {
+    "id" : "336882574",
+    "sourceId" : "-948213349",
+    "targetId" : "-508561095",
+    "distance" : 57175.27261341193,
+    "normalizedWeight" : 0.5537655965729091,
+    "coordinates" : [ [ 26.737381460430736, 38.313756958108854 ], [ 26.523399529192243, 38.6247718279797 ] ]
+  }, {
+    "id" : "1816609755",
+    "sourceId" : "-256660657",
+    "targetId" : "1777227867",
+    "distance" : 31042.71173610756,
+    "normalizedWeight" : 0.757264672666504,
+    "coordinates" : [ [ 27.175163051040677, 38.545038866177514 ], [ 27.24644983548839, 38.476659734505425 ] ]
+  }, {
+    "id" : "632224305",
+    "sourceId" : "2084925965",
+    "targetId" : "1480374431",
+    "distance" : 1585.2304751883448,
+    "normalizedWeight" : 0.9866555176275738,
+    "coordinates" : [ [ 27.039898016526983, 38.47622799778002 ], [ 27.052916437304933, 38.472338703654586 ] ]
+  }, {
+    "id" : "870158461",
+    "sourceId" : "-77936441",
+    "targetId" : "503603995",
+    "distance" : 3199.4123166813265,
+    "normalizedWeight" : 0.9740855856207891,
+    "coordinates" : [ [ 27.198732298645268, 38.37605158159672 ], [ 27.18265074518869, 38.3605911591909 ] ]
+  }, {
+    "id" : "2011945032",
+    "sourceId" : "1715787981",
+    "targetId" : "1480374431",
+    "distance" : 30059.33122305285,
+    "normalizedWeight" : 0.7649224382714386,
+    "coordinates" : [ [ 27.027658403902, 38.404005076315876 ], [ 27.052916437304933, 38.472338703654586 ] ]
+  }, {
+    "id" : "349534067",
+    "sourceId" : "1376183553",
+    "targetId" : "-693553229",
+    "distance" : 3898.9098261340155,
+    "normalizedWeight" : 0.9686384693748256,
+    "coordinates" : [ [ 27.13321046477519, 38.31249622866503 ], [ 27.142700090833642, 38.323012292828395 ] ]
+  }, {
+    "id" : "1575734860",
+    "sourceId" : "2038209927",
+    "targetId" : "2066060327",
+    "distance" : 939.4067661421346,
+    "normalizedWeight" : 0.9916846660806204,
+    "coordinates" : [ [ 27.171917507015614, 38.476904583171844 ], [ 27.164529660529862, 38.47780286803936 ] ]
+  }, {
+    "id" : "735634548",
+    "sourceId" : "-1480747375",
+    "targetId" : "-173597709",
+    "distance" : 2016.5139293472341,
+    "normalizedWeight" : 0.9832970337473349,
+    "coordinates" : [ [ 27.17268724281245, 38.41684242857944 ], [ 27.164898778988537, 38.403242754859306 ] ]
+  }, {
+    "id" : "1912646060",
+    "sourceId" : "-560797529",
+    "targetId" : "156811259",
+    "distance" : 175.15317521577668,
+    "normalizedWeight" : 0.9976360498881598,
+    "coordinates" : [ [ 27.219668535027147, 38.468978678800624 ], [ 27.22097127916339, 38.46983565327902 ] ]
+  }, {
+    "id" : "1104968305",
+    "sourceId" : "1070956609",
+    "targetId" : "1407660565",
+    "distance" : 4131.7716631442645,
+    "normalizedWeight" : 0.9668251312595322,
+    "coordinates" : [ [ 27.1523353082946, 38.42559561514221 ], [ 27.14766651519735, 38.424973552363994 ] ]
+  }, {
+    "id" : "928533750",
+    "sourceId" : "1402965039",
+    "targetId" : "-1724458513",
+    "distance" : 408.71032928494293,
+    "normalizedWeight" : 0.9958172972105604,
+    "coordinates" : [ [ 27.171695349470014, 38.472560562209516 ], [ 27.168861112361032, 38.47289508752102 ] ]
+  }, {
+    "id" : "155325165",
+    "sourceId" : "1364398301",
+    "targetId" : "-465604887",
+    "distance" : 579.0422088740421,
+    "normalizedWeight" : 0.9944908914178633,
+    "coordinates" : [ [ 27.17726111832088, 38.3960583537232 ], [ 27.17267614800582, 38.394567352460975 ] ]
+  }, {
+    "id" : "2022949666",
+    "sourceId" : "-89915263",
+    "targetId" : "-657540915",
+    "distance" : 404.002680130034,
+    "normalizedWeight" : 0.9958539565436467,
+    "coordinates" : [ [ 27.09982171705014, 38.47401554347372 ], [ 27.096060419693224, 38.47338004925784 ] ]
+  }, {
+    "id" : "1811788873",
+    "sourceId" : "1667905107",
+    "targetId" : "1681900545",
+    "distance" : 1459.763792946966,
+    "normalizedWeight" : 0.9876325498455997,
+    "coordinates" : [ [ 27.227112144928213, 38.470276534830454 ], [ 27.23285692516834, 38.46057121418079 ] ]
+  }, {
+    "id" : "10752787",
+    "sourceId" : "1715787981",
+    "targetId" : "-2105632543",
+    "distance" : 3107.060591266501,
+    "normalizedWeight" : 0.9748047455563883,
+    "coordinates" : [ [ 27.027658403902, 38.404005076315876 ], [ 27.045687483329733, 38.392880780304836 ] ]
+  }, {
+    "id" : "1364032246",
+    "sourceId" : "1364398301",
+    "targetId" : "-173597709",
+    "distance" : 1494.3108457256171,
+    "normalizedWeight" : 0.9873635255676033,
+    "coordinates" : [ [ 27.17726111832088, 38.3960583537232 ], [ 27.164898778988537, 38.403242754859306 ] ]
+  }, {
+    "id" : "631655963",
+    "sourceId" : "-693553229",
+    "targetId" : "267867751",
+    "distance" : 2481.0717313936257,
+    "normalizedWeight" : 0.9796794363770513,
+    "coordinates" : [ [ 27.142700090833642, 38.323012292828395 ], [ 27.13240298487528, 38.326722322274044 ] ]
+  }, {
+    "id" : "250746188",
+    "sourceId" : "-1988600683",
+    "targetId" : "-40729651",
+    "distance" : 12290.98075869129,
+    "normalizedWeight" : 0.9032878636953611,
+    "coordinates" : [ [ 27.045357478029523, 38.38430417612696 ], [ 27.092863402617542, 38.33862755779758 ] ]
+  }, {
+    "id" : "1861383501",
+    "sourceId" : "-1476246679",
+    "targetId" : "-948213349",
+    "distance" : 21980.622225342682,
+    "normalizedWeight" : 0.827832836711984,
+    "coordinates" : [ [ 26.82330142514423, 38.189117982051286 ], [ 26.737381460430736, 38.313756958108854 ] ]
+  }, {
+    "id" : "192859326",
+    "sourceId" : "2054912281",
+    "targetId" : "-256660657",
+    "distance" : 17134.594959238464,
+    "normalizedWeight" : 0.8655697456971667,
+    "coordinates" : [ [ 27.157934594468042, 38.515137035563605 ], [ 27.175163051040677, 38.545038866177514 ] ]
+  }, {
+    "id" : "1436284506",
+    "sourceId" : "-1705427045",
+    "targetId" : "1500792691",
+    "distance" : 594.1856531542071,
+    "normalizedWeight" : 0.9943729666215008,
+    "coordinates" : [ [ 27.17902975809403, 38.47015835876768 ], [ 27.181329561674186, 38.47364928094205 ] ]
+  }, {
+    "id" : "1599259792",
+    "sourceId" : "1019226607",
+    "targetId" : "2092262857",
+    "distance" : 19521.9917094982,
+    "normalizedWeight" : 0.8469786464463984,
+    "coordinates" : [ [ 26.759909979466478, 38.31984257594526 ], [ 26.825451713097003, 38.199862724694775 ] ]
+  }, {
+    "id" : "1711680965",
+    "sourceId" : "-856038679",
+    "targetId" : "-1323641099",
+    "distance" : 8897.453964034525,
+    "normalizedWeight" : 0.9297138833516002,
+    "coordinates" : [ [ 27.180197799176803, 38.4757673126081 ], [ 27.176816856387, 38.48166999954081 ] ]
+  }, {
+    "id" : "184908998",
+    "sourceId" : "-1173663501",
+    "targetId" : "-481714009",
+    "distance" : 3441.928304980701,
+    "normalizedWeight" : 0.9721970688470767,
+    "coordinates" : [ [ 27.15610749831399, 38.429880201036454 ], [ 27.15904928722468, 38.426922451871135 ] ]
+  }, {
+    "id" : "1147678638",
+    "sourceId" : "-761620579",
+    "targetId" : "1675090537",
+    "distance" : 1959.360940757797,
+    "normalizedWeight" : 0.9837420946209533,
+    "coordinates" : [ [ 26.74881822598883, 38.33178386507774 ], [ 26.76091638445063, 38.332134517292246 ] ]
+  }, {
+    "id" : "106328465",
+    "sourceId" : "-119581751",
+    "targetId" : "1435991347",
+    "distance" : 4377.72527689671,
+    "normalizedWeight" : 0.9649098450617691,
+    "coordinates" : [ [ 26.505956022705714, 38.64092140312526 ], [ 26.453505728599787, 38.630250383226674 ] ]
+  }, {
+    "id" : "1342841795",
+    "sourceId" : "-1945099795",
+    "targetId" : "-1242656213",
+    "distance" : 450.62971424137834,
+    "normalizedWeight" : 0.9954908632208302,
+    "coordinates" : [ [ 27.08417862488222, 38.469169799334686 ], [ 27.08540173085398, 38.469024008647956 ] ]
+  }, {
+    "id" : "1844539960",
+    "sourceId" : "-2123418389",
+    "targetId" : "79317247",
+    "distance" : 1343.7025785519445,
+    "normalizedWeight" : 0.988536339949087,
+    "coordinates" : [ [ 27.16514767131882, 38.428672816149586 ], [ 27.173971966951324, 38.42262340354531 ] ]
+  }, {
+    "id" : "649554302",
+    "sourceId" : "13587347",
+    "targetId" : "2087635341",
+    "distance" : 39876.52981520407,
+    "normalizedWeight" : 0.6884741004024486,
+    "coordinates" : [ [ 26.9898273714447, 38.47160589893039 ], [ 27.004298742039566, 38.396166825521874 ] ]
+  }, {
+    "id" : "597560404",
+    "sourceId" : "-556789345",
+    "targetId" : "-796328669",
+    "distance" : 317.1687773587546,
+    "normalizedWeight" : 0.9965301481756311,
+    "coordinates" : [ [ 27.11932764979911, 38.4605185712818 ], [ 27.12268090742491, 38.46098277277621 ] ]
+  }, {
+    "id" : "1585529162",
+    "sourceId" : "-703827689",
+    "targetId" : "622097871",
+    "distance" : 581.999442942913,
+    "normalizedWeight" : 0.9944678628902103,
+    "coordinates" : [ [ 27.22290970080855, 38.46949292401393 ], [ 27.221201365644525, 38.47228974009593 ] ]
+  }, {
+    "id" : "1065339058",
+    "sourceId" : "-889110833",
+    "targetId" : "-1039667823",
+    "distance" : 1640.3800827178632,
+    "normalizedWeight" : 0.9862260574521293,
+    "coordinates" : [ [ 27.03340353020906, 38.39003564122775 ], [ 27.040116904221886, 38.384064502432004 ] ]
+  }, {
+    "id" : "1193563380",
+    "sourceId" : "-805138519",
+    "targetId" : "-1209689777",
+    "distance" : 33.20552513956278,
+    "normalizedWeight" : 0.9987414224453994,
+    "coordinates" : [ [ 26.99554840471987, 38.49586386611736 ], [ 26.995680398509023, 38.49529573667209 ] ]
+  }, {
+    "id" : "846079422",
+    "sourceId" : "870014473",
+    "targetId" : "-2094243861",
+    "distance" : 17324.923624135943,
+    "normalizedWeight" : 0.864087621245506,
+    "coordinates" : [ [ 27.20905540271214, 38.371533982022825 ], [ 27.250475007654476, 38.465074686623765 ] ]
+  }, {
+    "id" : "1418766148",
+    "sourceId" : "860166637",
+    "targetId" : "-1586871577",
+    "distance" : 16967.210485251868,
+    "normalizedWeight" : 0.8668731994982929,
+    "coordinates" : [ [ 27.12723577844192, 38.40762215147028 ], [ 27.08548305991397, 38.46173970430957 ] ]
+  }, {
+    "id" : "1230976651",
+    "sourceId" : "-2123418389",
+    "targetId" : "-160969361",
+    "distance" : 863.4926847489372,
+    "normalizedWeight" : 0.9922758230475378,
+    "coordinates" : [ [ 27.16514767131882, 38.428672816149586 ], [ 27.162596518785293, 38.42464557986909 ] ]
+  }, {
+    "id" : "210907972",
+    "sourceId" : "1910632995",
+    "targetId" : "-1355060633",
+    "distance" : 3880.190235755753,
+    "normalizedWeight" : 0.9687842422810751,
+    "coordinates" : [ [ 26.960554024704585, 38.4950543215556 ], [ 26.989572825683467, 38.50565249367301 ] ]
+  }, {
+    "id" : "1061605535",
+    "sourceId" : "-1671859461",
+    "targetId" : "875681401",
+    "distance" : 537.5490218052788,
+    "normalizedWeight" : 0.9948140065259584,
+    "coordinates" : [ [ 27.121724326996663, 38.32444126677276 ], [ 27.12367608376327, 38.322186179290966 ] ]
+  }, {
+    "id" : "1294245630",
+    "sourceId" : "-229299359",
+    "targetId" : "1675090537",
+    "distance" : 8876.102452582661,
+    "normalizedWeight" : 0.92988015151315,
+    "coordinates" : [ [ 26.766317335398934, 38.32806406412439 ], [ 26.76091638445063, 38.332134517292246 ] ]
+  }, {
+    "id" : "698037824",
+    "sourceId" : "823318839",
+    "targetId" : "509212547",
+    "distance" : 8391.827466733657,
+    "normalizedWeight" : 0.9336512902338522,
+    "coordinates" : [ [ 27.112456938555123, 38.49773878075412 ], [ 27.15733836310961, 38.47087096902916 ] ]
+  }, {
+    "id" : "1122059520",
+    "sourceId" : "100837403",
+    "targetId" : "-256660657",
+    "distance" : 24893.761665105256,
+    "normalizedWeight" : 0.8051476820764754,
+    "coordinates" : [ [ 27.046112911628093, 38.51804504392939 ], [ 27.175163051040677, 38.545038866177514 ] ]
+  }, {
+    "id" : "1490375476",
+    "sourceId" : "1070956609",
+    "targetId" : "113450155",
+    "distance" : 998.9223811656454,
+    "normalizedWeight" : 0.9912212069987765,
+    "coordinates" : [ [ 27.1523353082946, 38.42559561514221 ], [ 27.15508977434331, 38.42826795743449 ] ]
+  }, {
+    "id" : "1287635805",
+    "sourceId" : "2084925965",
+    "targetId" : "13587347",
+    "distance" : 9171.227490946867,
+    "normalizedWeight" : 0.9275819583540034,
+    "coordinates" : [ [ 27.039898016526983, 38.47622799778002 ], [ 26.9898273714447, 38.47160589893039 ] ]
+  }, {
+    "id" : "1338111013",
+    "sourceId" : "-1242656213",
+    "targetId" : "-1051251765",
+    "distance" : 570.0738720432181,
+    "normalizedWeight" : 0.9945607295124816,
+    "coordinates" : [ [ 27.08540173085398, 38.469024008647956 ], [ 27.087390031695154, 38.46919705723632 ] ]
+  }, {
+    "id" : "624050900",
+    "sourceId" : "-77936441",
+    "targetId" : "870014473",
+    "distance" : 1377.5208406085428,
+    "normalizedWeight" : 0.9882729908989912,
+    "coordinates" : [ [ 27.198732298645268, 38.37605158159672 ], [ 27.20905540271214, 38.371533982022825 ] ]
+  }, {
+    "id" : "591433900",
+    "sourceId" : "1342172981",
+    "targetId" : "-78732027",
+    "distance" : 46.41578282753828,
+    "normalizedWeight" : 0.9986385517299313,
+    "coordinates" : [ [ 27.154231815146733, 38.418968511083904 ], [ 27.15425679474527, 38.418432601281815 ] ]
+  }, {
+    "id" : "1754361725",
+    "sourceId" : "-805138519",
+    "targetId" : "-1055579681",
+    "distance" : 844.5908585651531,
+    "normalizedWeight" : 0.9924230150576488,
+    "coordinates" : [ [ 26.99554840471987, 38.49586386611736 ], [ 27.001071659412325, 38.49757555280289 ] ]
+  }, {
+    "id" : "109323627",
+    "sourceId" : "-77936441",
+    "targetId" : "-799625653",
+    "distance" : 2565.6927869606916,
+    "normalizedWeight" : 0.9790204765947776,
+    "coordinates" : [ [ 27.198732298645268, 38.37605158159672 ], [ 27.201931004244233, 38.384079967628125 ] ]
+  }, {
+    "id" : "491057844",
+    "sourceId" : "1430974253",
+    "targetId" : "-246478467",
+    "distance" : 713.9136944907475,
+    "normalizedWeight" : 0.9934406222596575,
+    "coordinates" : [ [ 27.221370401624103, 38.47954392410444 ], [ 27.218279743550625, 38.478893472460165 ] ]
+  }, {
+    "id" : "2099179244",
+    "sourceId" : "-1209689777",
+    "targetId" : "-1626965507",
+    "distance" : 788.1691728235255,
+    "normalizedWeight" : 0.9928623811409797,
+    "coordinates" : [ [ 26.995680398509023, 38.49529573667209 ], [ 26.99673161390555, 38.49300985427935 ] ]
+  }, {
+    "id" : "1093604059",
+    "sourceId" : "1254931901",
+    "targetId" : "-735955993",
+    "distance" : 5117.647984419215,
+    "normalizedWeight" : 0.9591479303352154,
+    "coordinates" : [ [ 27.21507105056749, 38.41823633015462 ], [ 27.18435171516271, 38.41304756278833 ] ]
+  }, {
+    "id" : "313373012",
+    "sourceId" : "-1828173627",
+    "targetId" : "-1429105887",
+    "distance" : 3134.5309509689127,
+    "normalizedWeight" : 0.9745908287938618,
+    "coordinates" : [ [ 27.168520168184223, 38.45309752055015 ], [ 27.16978899639634, 38.465222368819624 ] ]
+  }, {
+    "id" : "597396578",
+    "sourceId" : "634096093",
+    "targetId" : "-542107191",
+    "distance" : 915.516985803231,
+    "normalizedWeight" : 0.9918707002106038,
+    "coordinates" : [ [ 27.13078152845921, 38.32321859679262 ], [ 27.129348036144556, 38.317484133902845 ] ]
+  }, {
+    "id" : "1019848499",
+    "sourceId" : "1663193721",
+    "targetId" : "311915693",
+    "distance" : 28123.64787620477,
+    "normalizedWeight" : 0.7799959618553994,
+    "coordinates" : [ [ 27.011433296005933, 38.49949054144221 ], [ 27.02749097415362, 38.49918729746654 ] ]
+  }, {
+    "id" : "59894895",
+    "sourceId" : "-1060884231",
+    "targetId" : "-735955993",
+    "distance" : 3297.3076548468703,
+    "normalizedWeight" : 0.973323256549249,
+    "coordinates" : [ [ 27.178026855499507, 38.393959811125804 ], [ 27.18435171516271, 38.41304756278833 ] ]
+  }, {
+    "id" : "1391594",
+    "sourceId" : "-1230831949",
+    "targetId" : "-465604887",
+    "distance" : 433.8173843482384,
+    "normalizedWeight" : 0.9956217839375674,
+    "coordinates" : [ [ 27.171343218814116, 38.3917201280826 ], [ 27.17267614800582, 38.394567352460975 ] ]
+  } ]
+}
