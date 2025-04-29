@@ -105,6 +105,28 @@ Multi-view Anchor Graph-based Clustering (MVAGC) is an advanced clustering techn
 
 The core idea of MVAGC is to leverage the complementary information present in these different views to obtain a more robust and meaningful clustering result than using any single view alone. Instead of working with the potentially very large full graph, MVAGC utilizes a smaller set of 'anchor points'. These anchors are selected representative points from the dataset (either strategically chosen or randomly sampled).
 
+For each view of the data, MVAGC constructs a relationship matrix between data points and anchors. This relationship captures how strongly each data point connects to each anchor:
+
+\begin{equation}
+Z_{ij}^{(v)} = \frac{\text{similarity}(x_i, a_j)}{\sum_k \text{similarity}(x_i, a_k)}
+\end{equation}
+
+where $Z_{ij}^{(v)}$ indicates how strongly data point $i$ relates to anchor $j$ in view $v$, normalized to ensure the sum equals 1.
+
+The key challenge is combining these different views into a unified representation. This can be expressed as finding a consensus matrix $Z^*$ that best approximates all individual views:
+
+\begin{equation}
+Z^* = \text{argmin} \sum_{v} \text{distance}(Z^{(v)}, Z^*)
+\end{equation}
+
+Once this consensus matrix is obtained, a similarity graph between all data points can be constructed:
+
+\begin{equation}
+S = Z^* \times Z^{*T}
+\end{equation}
+
+This similarity graph captures the relationships between all data points through their connections to the anchor points, making clustering more efficient by working with a smaller set of anchors instead of all possible pairwise connections.
+
 \begin{algorithm}[H]
 \caption{Multi-view Anchor Graph-based Clustering (MVAGC)}
 \label{alg:mvagc}
