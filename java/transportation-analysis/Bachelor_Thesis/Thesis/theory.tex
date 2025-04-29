@@ -177,6 +177,18 @@ When a shorter path is discovered and the distance is updated, the predecessor i
 \text{prev}[v] = u
 \end{equation}
 
+This equation updates the predecessor pointer when a shorter path is found. After Dijkstra's algorithm completes, these predecessor pointers can be used to reconstruct the actual shortest path from source to any destination vertex. The complete path from source $s$ to target vertex $t$ can be obtained by recursively following the predecessor pointers, starting from $t$ and working backward until reaching $s$:
+
+\begin{equation}
+\text{Path}(s, t) = 
+\begin{cases}
+\langle s \rangle & \text{if } s = t \\
+\text{Path}(s, \text{prev}[t]) \cdot \langle t \rangle & \text{otherwise}
+\end{cases}
+\end{equation}
+
+where $\cdot$ denotes path concatenation. This recursive definition builds the path by starting at the destination and tracing back through predecessors until reaching the source.
+
 \begin{algorithm}[H]
 \caption{Dijkstra's Shortest Path Algorithm}
 \label{alg:dijkstra}
