@@ -139,7 +139,7 @@ The sparse graph representations required specialized clustering approaches to e
 
 For our transportation network analysis, we implemented three clustering algorithms with specific configurations tailored to the IZTECH student transportation problem. All implementations included specialized vehicle allocation logic that assigns buses with our capacity constraints (10-50 students per bus), optimizing for both fleet size and route efficiency.
 
-\subsubsection{Implementation of Spectral Clustering}
+\subsubsection{Performing Spectral Clustering on Sparse Graph Representations of IZTECH}
 \label{subsubsec:spectral_implementation}
 
 For the Spectral clustering implementation, we focused on optimizing the eigendecomposition process for large sparse matrices. Our implementation used the normalized Laplacian matrix and employed an adaptive approach to determine the number of clusters. We developed a custom post-processing step that enforces our specific bus capacity constraints (10-50 students) by iteratively merging small clusters or splitting oversized ones based on geographic proximity.
@@ -162,7 +162,7 @@ As shown in these visualizations, our Spectral clustering implementation tends t
 
 The spectral approach is particularly suitable for transportation planning scenarios that prioritize minimizing the number of vehicles while accepting potentially longer routes per vehicle.
 
-\subsubsection{Implementation of Leiden Clustering}
+\subsubsection{Performing Leiden Clustering on Sparse Graph Representations of IZTECH}
 \label{subsubsec:leiden_implementation}
 
 For the Leiden algorithm implementation, we modified the original algorithm to better handle transportation constraints. Specifically, we incorporated a custom quality function that considers both community modularity and geographic compactness. We adjusted the resolution parameter based on the sparsity of the underlying graph, with values ranging from 0.8 for complete graphs to 1.2 for sparser representations. This adaptation allowed the algorithm to find well-connected communities while respecting the spatial constraints inherent in transportation planning.
@@ -187,7 +187,7 @@ A distinctive characteristic of the Leiden implementation is its consistent perf
 
 The Leiden approach offers a balanced clustering solution for transportation planning, accommodating mixed vehicle fleets while maintaining reasonable geographic coherence within each cluster.
 
-\subsubsection{Implementation of MVAGC}
+\subsubsection{Performing MVAGC on Sparse Graph Representations of IZTECH}
 \label{subsubsec:mvagc_implementation}
 
 Our MVAGC implementation was specifically adapted for geospatial data clustering. Rather than using random sampling for anchor points, we employed a geographically stratified selection process to ensure anchor points were well-distributed across Izmir's districts. This modification improved the algorithm's ability to create geographically coherent clusters. We configured the implementation with approximately 500 anchor points and employed higher-order filtering with a standardized cutoff threshold of 0.25 for ensuring smooth community boundaries.
