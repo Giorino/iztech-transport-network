@@ -89,8 +89,14 @@ where $m$ is the total weight of all edges in the network, $A_{ij}$ represents t
 
 The algorithm operates iteratively to detect communities within a graph. Starting with each node in its own community (a singleton partition), the algorithm performs a local moving phase where individual nodes are reassigned to neighboring communities if such a move improves the overall modularity. This phase continues until no single node move can further increase modularity, resulting in an initial partition. Subsequently, a refinement phase ensures that the communities formed are well-connected by partitioning each community internally. An aggregate network is then constructed based on this refined partition, where each node represents a subcommunity from the refinement stage. The non-refined partition from the local moving phase serves as the initial community assignment for this aggregate network. For instance, if a community is split into two subcommunities during refinement, these become two distinct nodes in the aggregate network, initially assigned to the same aggregate community. The algorithm then repeats the local moving and refinement phases on the aggregate network. These steps of local moving, refinement, and aggregation are iterated until no further improvements in modularity can be achieved, yielding the final community structure. The detailed pseudocode can be found in Appendix \ref{alg:leiden_appendix}.
 
-The key innovations of the Leiden algorithm over its predecessors include faster convergence due to more efficient community detection, guaranteed well-connected communities through the refinement phase, the ability to avoid getting trapped in poor local optima by allowing more flexible node movement, and proven asymptotic guarantees for identifying optimal partitions \cite{traag2019leiden}.
+The key innovations of the Leiden algorithm over its predecessors include faster convergence due to more efficient community detection, guaranteed well-connected communities through the refinement phase, the ability to avoid getting trapped in poor local optima by allowing more flexible node movement, and proven asymptotic guarantees for identifying optimal partitions \cite{leiden}.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/Leiden_example.png}
+    \caption{Illustration of the Leiden algorithm process. The algorithm starts from a singleton partition (a), moves nodes between communities (b), refines the partition (c), creates an aggregate network (d), moves nodes in the aggregate network (e), and refines again (f). These steps are repeated until no further improvements can be made. Figure adapted from \cite{leiden}.}
+    \label{fig:leiden_algorithm}
+\end{figure}
 
 \subsection{Multi-view Anchor Graph-based Clustering (MVAGC)}
 \label{subsec:MVAGC}
