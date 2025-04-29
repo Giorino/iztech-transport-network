@@ -225,30 +225,38 @@ The MVAGC approach is well-suited for transportation planning scenarios that pri
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Graph + Algorithm} & \textbf{Avg. Cluster} & \textbf{Avg. Route} & \textbf{Avg. Fuel} \\
- & \textbf{Size} & \textbf{Length (km)} & \textbf{Cost (TL)} \\
+& \multicolumn{3}{c|}{\textbf{Average Cluster Size}} \\
 \hline
-Delaunay + Spectral & 19.8 & 17.5 & 323.4 \\
+\textbf{Algorithm / Graph} & \textbf{Delaunay} & \textbf{Gabriel} & \textbf{KNN} \\
 \hline
-Gabriel + Spectral & 20.5 & 23.4 & 434.5 \\
+Spectral & 19.8 & 20.5 & 20.7 \\
 \hline
-KNN + Spectral & 20.7 & 20.9 & 389.3 \\
+Leiden & 14.5 & 16.4 & 15.8 \\
 \hline
-Delaunay + Leiden & 14.5 & 13.7 & 227.6 \\
-\hline
-Gabriel + Leiden & 16.4 & 14.0 & 235.8 \\
-\hline
-KNN + Leiden & 15.8 & 14.1 & 244.4 \\
-\hline
-Delaunay + MVAGC & 12.7 & 16.6 & 263.9 \\
-\hline
-Gabriel + MVAGC & 14.5 & 15.8 & 265.8 \\
-\hline
-KNN + MVAGC & 14.3 & 12.4 & 205.5 \\
+MVAGC & 12.7 & 14.5 & 14.3 \\
 \hline
 \end{tabular}
-\caption{Characteristic parameters of different combinations of graph construction and clustering algorithms}
-\label{tab:sparse_clustering_comparison}
+\caption{Average cluster size for different combinations of graph construction and clustering algorithms}
+\label{tab:avg_cluster_size}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+& \multicolumn{3}{c|}{\textbf{Average Route Length (km)}} \\
+\hline
+\textbf{Algorithm / Graph} & \textbf{Delaunay} & \textbf{Gabriel} & \textbf{KNN} \\
+\hline
+Spectral & 17.5 & 23.4 & 20.9 \\
+\hline
+Leiden & 13.7 & 14.0 & 14.1 \\
+\hline
+MVAGC & 16.6 & 15.8 & 12.4 \\
+\hline
+\end{tabular}
+\caption{Average route length (km) for different combinations of graph construction and clustering algorithms}
+\label{tab:avg_route_length}
 \end{table}
 
 Table \ref{tab:sparse_clustering_comparison} provides an overview of the characteristic parameters observed when applying the different clustering approaches to sparse graph representations. These parameters illustrate the inherent tendencies of each method rather than final performance metrics, which are analyzed in Chapter~\ref{ch:experiments}.
