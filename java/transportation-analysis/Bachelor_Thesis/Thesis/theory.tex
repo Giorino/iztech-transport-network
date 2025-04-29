@@ -47,7 +47,13 @@ After establishing methods for graph construction and understanding the importan
 \subsection{Spectral Clustering}
 \label{subsec:SpectralClustering}
 
-Spectral clustering uses the eigenvalues and eigenvectors of matrices derived from the graph to perform dimensionality reduction before clustering . This approach is particularly effective for finding natural clusters in complex networks. The algorithm is summarized in Algorithm~\ref{alg:spectral_clustering}.
+Spectral clustering uses the eigenvalues and eigenvectors of matrices derived from the graph to perform dimensionality reduction before clustering. This approach transforms the clustering problem into a graph partitioning task, making it particularly effective for finding natural clusters in complex networks.
+
+For a weighted graph $G=(V,E,W)$, the approach constructs matrices that encode the graph's connectivity structure. The Laplacian matrix is defined as $\mat{L} = \mat{D} - \mat{W}$, where $\mat{W}$ is the edge weight matrix with elements representing connection strengths between vertices, and $\mat{D}$ is a diagonal matrix where $d_{ii} = \sum_{j} w_{ij}$. The normalized Laplacian, preferred for clustering tasks, is defined as $\mat{L}_{\text{norm}} = \mat{D}^{-1/2} \mat{L} \mat{D}^{-1/2} = \mat{I} - \mat{D}^{-1/2} \mat{W} \mat{D}^{-1/2}$.
+
+The final step of spectral clustering applies the k-means algorithm to this spectral embedding. By using k-means in this transformed space rather than the original data space, spectral clustering can identify clusters that would be difficult to detect with traditional distance-based methods alone. This combination of spectral embedding followed by k-means clustering makes the approach both mathematically elegant and practically effective for complex network structures.
+
+The algorithm is summarized in Algorithm~\ref{alg:spectral_clustering}.
 
 \begin{algorithm}[H]
 \caption{Spectral Clustering}
