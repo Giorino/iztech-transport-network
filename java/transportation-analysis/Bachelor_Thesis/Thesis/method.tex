@@ -146,13 +146,13 @@ For the Spectral clustering implementation, we focused on optimizing the eigende
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.7\textwidth]{./img/Spectral_Delaunay}
+\includegraphics[width=0.5\textwidth]{./img/Spectral_Delaunay}
 \vspace{0.5cm}
 
-\includegraphics[width=0.7\textwidth]{./img/Spectral_Gabriel}
+\includegraphics[width=0.5\textwidth]{./img/Spectral_Gabriel}
 \vspace{0.5cm}
 
-\includegraphics[width=0.7\textwidth]{./img/Spectral_K}
+\includegraphics[width=0.5\textwidth]{./img/Spectral_K}
 
 \caption{Spectral clustering applied to different sparse graph representations (top: Delaunay, middle: Gabriel, bottom: K-Nearest) with 200 student locations.}
 \label{fig:spectral_clustering}
@@ -169,15 +169,15 @@ The spectral approach is particularly suitable for transportation planning scena
 
 For the Leiden algorithm implementation, we modified the original algorithm to better handle transportation constraints. Specifically, we incorporated a custom quality function that considers both community modularity and geographic compactness. We adjusted the resolution parameter based on the sparsity of the underlying graph, with values ranging from 0.8 for complete graphs to 1.2 for sparser representations. This adaptation allowed the algorithm to find well-connected communities while respecting the spatial constraints inherent in transportation planning.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{./img/Leiden_Delaunay}
+\includegraphics[width=0.5\textwidth]{./img/Leiden_Delaunay}
 \vspace{0.5cm}
 
-\includegraphics[width=0.7\textwidth]{./img/Leiden_Gabriel}
+\includegraphics[width=0.5\textwidth]{./img/Leiden_Gabriel}
 \vspace{0.5cm}
 
-\includegraphics[width=0.7\textwidth]{./img/Leiden_K}
+\includegraphics[width=0.5\textwidth]{./img/Leiden_K}
 
 \caption{Leiden algorithm applied to different sparse graph representations (top: Delaunay, middle: Gabriel, bottom: K-Nearest) with 200 student locations.}
 \label{fig:leiden_clustering}
@@ -196,15 +196,15 @@ The Leiden approach offers a balanced clustering solution for transportation pla
 
 Our MVAGC implementation was specifically adapted for geospatial data clustering. Rather than using random sampling for anchor points, we employed a geographically stratified selection process to ensure anchor points were well-distributed across Izmir's districts. This modification improved the algorithm's ability to create geographically coherent clusters. We configured the implementation with approximately 500 anchor points and employed higher-order filtering with a standardized cutoff threshold of 0.25 for ensuring smooth community boundaries.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=0.7\textwidth]{./img/MVAGC_Delaunay}
+\includegraphics[width=0.5\textwidth]{./img/MVAGC_Delaunay}
 \vspace{0.5cm}
 
-\includegraphics[width=0.7\textwidth]{./img/MVAGC_Gabriel}
+\includegraphics[width=0.5\textwidth]{./img/MVAGC_Gabriel}
 \vspace{0.5cm}
 
-\includegraphics[width=0.7\textwidth]{./img/MVAGC_K}
+\includegraphics[width=0.5\textwidth]{./img/MVAGC_K}
 
 \caption{MVAGC algorithm applied to different sparse graph representations (top: Delaunay, middle: Gabriel, bottom: K-Nearest) with 200 student locations.}
 \label{fig:mvagc_clustering}
@@ -221,7 +221,7 @@ The MVAGC approach is well-suited for transportation planning scenarios that pri
 \subsubsection{Summary of Different Clustering Approaches}
 \label{subsubsec:clustering_comparison}
 
-\begin{table}[h]
+\begin{table}[!hb]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -240,7 +240,7 @@ MVAGC & 12.7 & 14.5 & 14.3 \\
 \label{tab:avg_cluster_size}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[!hb]
 \centering
 \begin{tabular}{|l|c|c|c|}
 \hline
@@ -259,10 +259,11 @@ MVAGC & 16.6 & 15.8 & 12.4 \\
 \label{tab:avg_route_length}
 \end{table}
 
-Table \ref{tab:sparse_clustering_comparison} provides an overview of the characteristic parameters observed when applying the different clustering approaches to sparse graph representations. These parameters illustrate the inherent tendencies of each method rather than final performance metrics, which are analyzed in Chapter~\ref{ch:experiments}.
+Tables \ref{tab:avg_cluster_size} and \ref{tab:avg_route_length} summarize the key performance indicators for different clustering algorithms across sparse graph representations. Table \ref{tab:avg_cluster_size} reports the average cluster size in terms of the number of students per route, while Table \ref{tab:avg_route_length} presents the corresponding average route length in kilometers. These metrics illustrate the inherent tendencies of each clustering method and graph combination rather than final performance metrics, which are analyzed in Chapter~\ref{ch:experiments}.
 
-Among the graph construction methods, the K-Nearest Neighbors approach creates network structures that balance edge sparsity with node connectivity, particularly beneficial for MVAGC. The Gabriel graph representation creates well-defined spatial partitions but can lead to more dispersed clusters when combined with Spectral clustering due to the removal of certain edges present in the Delaunay triangulation.
+From Table \ref{tab:avg_cluster_size}, MVAGC produces the smallest clusters (12.7--14.5 students), Leiden yields moderate cluster sizes (14.5--16.4 students), and Spectral generates the largest clusters (19.8--20.7 students), reflecting their relative granularity. Considering graph structures, the K-Nearest Neighbors graph tends to increase cluster sizes for Spectral (20.7 students) and decrease them for MVAGC (14.3 students).
 
+Table \ref{tab:avg_route_length} shows that Leiden achieves the shortest average routes (13.7--14.1 km), indicating a balanced trade-off between compactness and connectivity. Spectral clustering on the Gabriel graph results in the longest routes (23.4 km) due to sparser edge connectivity, whereas MVAGC attains its shortest routes on the KNN graph (12.4 km), highlighting the advantage of locally dense connections for route optimization. Overall, the K-Nearest Neighbors representation strikes a favorable balance between cluster cohesion and route efficiency across all algorithms.
 
 \section{Shortest Path Computation for Route Optimization}
 \label{sec:shortest_path}
