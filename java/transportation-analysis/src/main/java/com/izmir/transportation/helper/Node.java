@@ -13,6 +13,7 @@ public class Node {
     private final Point location;
     private final boolean isPopulationCenter;
     private final double populationWeight;
+    private boolean isOutlier;
 
     /**
      * Creates a new Node with the specified parameters.
@@ -27,6 +28,7 @@ public class Node {
         this.location = location;
         this.isPopulationCenter = isPopulationCenter;
         this.populationWeight = populationWeight;
+        this.isOutlier = false;
     }
 
     /**
@@ -55,6 +57,31 @@ public class Node {
         return populationWeight;
     }
 
+    /**
+     * Checks if this node is marked as an outlier.
+     * 
+     * @return true if the node is an outlier, false otherwise
+     */
+    public boolean isOutlier() {
+        return isOutlier;
+    }
+
+    /**
+     * Marks or unmarks this node as an outlier.
+     * 
+     * @param isOutlier true to mark as outlier, false otherwise
+     */
+    public void setOutlier(boolean isOutlier) {
+        this.isOutlier = isOutlier;
+    }
+
+    /**
+     * Resets the outlier status of this node to false.
+     */
+    public void resetOutlier() {
+        this.isOutlier = false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,6 +101,7 @@ public class Node {
                 "id='" + id + '\'' +
                 ", location=" + location +
                 (isPopulationCenter ? ", populationWeight=" + populationWeight : "") +
+                (isOutlier ? ", outlier=true" : "") +
                 '}';
     }
 } 

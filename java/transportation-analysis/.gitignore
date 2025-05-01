@@ -11,3 +11,5 @@ output/
 csv_files/
 **/cost_analysis/** 
 venv/
+graph_2000_complete_backup.json
+graph_2000_complete.json

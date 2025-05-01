@@ -4,16 +4,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.locationtech.jts.geom.Point;
 
 import com.izmir.transportation.ClusteringService;
 import com.izmir.transportation.GraphConstructionService;
 import com.izmir.transportation.IzmirBayGraph;
+import com.izmir.transportation.OutlierDetectionService;
 import com.izmir.transportation.TransportationGraph;
 import com.izmir.transportation.cost.ClusterMetrics;
 import com.izmir.transportation.cost.TransportationCostAnalysis;
@@ -37,9 +41,9 @@ public class App
     static Logger LOGGER = Logger.getLogger(App.class.getName());
     
     // Configuration properties
-    private static final int NODE_COUNT = 50; // Number of nodes to generate
+    private static final int NODE_COUNT = 200; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
-            GraphConstructionService.GraphStrategy.DELAUNAY; // Using Greedy Spanner graph
+            GraphConstructionService.GraphStrategy.GABRIEL; // Using Greedy Spanner graph
     private static final int K_VALUE = 30; // K value for spanner's stretch factor (2k-1)
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
             ClusteringService.ClusteringAlgorithm.LEIDEN; // Using SPECTRAL algorithm
@@ -48,6 +52,15 @@ public class App
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
     private static final boolean VISUALIZE_CLUSTERS = true; // Whether to visualize clusters
     private static final boolean SAVE_GRAPH = true; // Whether to save the graph for future use
+    
+    // Outlier detection configuration
+    private static final boolean APPLY_OUTLIER_DETECTION = true; // Whether to apply outlier detection
+    private static final OutlierDetectionService.OutlierAlgorithm OUTLIER_ALGORITHM = 
+            OutlierDetectionService.OutlierAlgorithm.KNN_DISTANCE; // Default outlier detection algorithm
+    private static final double OUTLIER_THRESHOLD = 2.75; // Number of standard deviations to consider as outlier
+    private static final int OUTLIER_K_VALUE = 5; // K value for KNN_DISTANCE algorithm
+    private static final boolean VISUALIZE_OUTLIERS = true; // Whether to visualize outliers
+    private static final int OUTLIER_MAX_THREADS = Runtime.getRuntime().availableProcessors(); // Use all available processors
     
     // Clustering configuration - now loaded from properties file
     private static int MAX_CLUSTERS = 55; // Increased from 12 back to 40 to ensure each community can be within 50-node limit
@@ -184,176 +197,373 @@ public class App
             Map<Integer, ClusterMetrics> clusterMetrics = null;
             Map<Integer, List<Node>> communities = null; // Declare communities map here
             
-            // Step 3: Perform clustering using specified algorithm
-            if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.SPECTRAL) {
-                LOGGER.info("Step 3: Performing Spectral Clustering with advanced configuration...");
-                LOGGER.info("Max Clusters: " + SPECTRAL_CONFIG.getNumberOfClusters() + 
-                          ", Min Size: " + SPECTRAL_CONFIG.getMinCommunitySize() + 
-                          ", Prevent Singletons: " + SPECTRAL_CONFIG.isPreventSingletons());
+            // Step 2.5: Apply outlier detection if enabled
+            if (APPLY_OUTLIER_DETECTION) {
+                LOGGER.info("Step 2.5: Detecting outliers using " + OUTLIER_ALGORITHM + " algorithm");
+                OutlierDetectionService outlierService = new OutlierDetectionService();
+                outlierService.setThreshold(OUTLIER_THRESHOLD)
+                             .setKValue(OUTLIER_K_VALUE)
+                             .setUseParallel(true)
+                             .setNumThreads(OUTLIER_MAX_THREADS);
                 
-                ClusteringService clusteringService = new ClusteringService();
-                clusteringService.setSpectralConfig(SPECTRAL_CONFIG);
+                LOGGER.info("Using " + OUTLIER_MAX_THREADS + " threads for parallel outlier detection");
                 
-                // Capture the communities map from performClustering
-                communities = clusteringService.performClustering(
+                Set<Node> outliers = outlierService.detectOutliers(
                     graph, 
-                    CLUSTERING_ALGORITHM, 
-                    VISUALIZE_CLUSTERS
+                    OUTLIER_ALGORITHM,
+                    VISUALIZE_OUTLIERS
                 );
                 
-                // Perform transportation cost analysis after getting communities
-                LOGGER.info("Performing transportation cost analysis for Spectral...");
-                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+                LOGGER.info("Detected " + outliers.size() + " outliers that will be excluded from clustering");
                 
-                // Save the cost analysis with metadata
-                LOGGER.info("Saving transportation cost analysis with metadata...");
-                TransportationCostAnalysis.saveAnalysisWithMetadata(
-                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
-            } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
-                // Girvan-Newman algorithm
-                LOGGER.info("Step 3: Performing Girvan-Newman clustering");
-                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
-                LOGGER.info("Max Iterations: " + GN_MAX_ITERATIONS + ", Early Stop: " + GN_EARLY_STOP);
-                LOGGER.info("Using Modularity Maximization: " + USE_MODULARITY_MAXIMIZATION);
+                // Create a filtered graph that explicitly excludes outliers for clustering
+                TransportationGraph filteredGraph = createFilteredGraph(graph, outliers);
                 
-                // Create and configure Girvan-Newman algorithm directly
-                GirvanNewmanClustering gnAlgorithm = new GirvanNewmanClustering(graph);
-                gnAlgorithm.setTargetCommunityCount(MAX_CLUSTERS)
-                         .setMaxIterations(GN_MAX_ITERATIONS)
-                         .setEarlyStop(GN_EARLY_STOP)
-                         .setMinCommunitySize(MIN_CLUSTER_SIZE)
-                         .setMaxCommunitySize(MAX_CLUSTER_SIZE)
-                         .setUseModularityMaximization(USE_MODULARITY_MAXIMIZATION);
-                
-                // Run the algorithm
-                communities = gnAlgorithm.detectCommunities();
-                
-                // ADDITIONAL POST-PROCESSING: Enforce maximum community size
-                LOGGER.info("Performing post-processing to enforce community size constraints");
-                communities = enforceCommunityConstraints(communities, graph, MIN_CLUSTER_SIZE, MAX_CLUSTER_SIZE);
-                LOGGER.info("After post-processing: " + communities.size() + " communities");
-                
-                // Visualize if requested
-                if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
-                    List<List<Node>> communityList = new ArrayList<>(communities.values());
-                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
-                    //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                // Use the filtered graph for clustering
+                if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.SPECTRAL) {
+                    LOGGER.info("Step 3: Performing Spectral Clustering with advanced configuration...");
+                    LOGGER.info("Max Clusters: " + SPECTRAL_CONFIG.getNumberOfClusters() + 
+                              ", Min Size: " + SPECTRAL_CONFIG.getMinCommunitySize() + 
+                              ", Prevent Singletons: " + SPECTRAL_CONFIG.isPreventSingletons());
+                    
+                    ClusteringService clusteringService = new ClusteringService();
+                    clusteringService.setSpectralConfig(SPECTRAL_CONFIG);
+                    
+                    // Capture the communities map from performClustering
+                    communities = clusteringService.performClustering(
+                        filteredGraph, 
+                        CLUSTERING_ALGORITHM, 
+                        VISUALIZE_CLUSTERS
+                    );
+                    
+                    // Perform transportation cost analysis after getting communities
+                    LOGGER.info("Performing transportation cost analysis for Spectral...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities); // Capture metrics
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
+                    // Girvan-Newman algorithm
+                    LOGGER.info("Step 3: Performing Girvan-Newman clustering");
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    LOGGER.info("Max Iterations: " + GN_MAX_ITERATIONS + ", Early Stop: " + GN_EARLY_STOP);
+                    LOGGER.info("Using Modularity Maximization: " + USE_MODULARITY_MAXIMIZATION);
+                    
+                    // Create and configure Girvan-Newman algorithm directly
+                    GirvanNewmanClustering gnAlgorithm = new GirvanNewmanClustering(filteredGraph);
+                    gnAlgorithm.setTargetCommunityCount(MAX_CLUSTERS)
+                             .setMaxIterations(GN_MAX_ITERATIONS)
+                             .setEarlyStop(GN_EARLY_STOP)
+                             .setMinCommunitySize(MIN_CLUSTER_SIZE)
+                             .setMaxCommunitySize(MAX_CLUSTER_SIZE)
+                             .setUseModularityMaximization(USE_MODULARITY_MAXIMIZATION);
+                    
+                    // Run the algorithm
+                    communities = gnAlgorithm.detectCommunities();
+                    
+                    // ADDITIONAL POST-PROCESSING: Enforce maximum community size
+                    LOGGER.info("Performing post-processing to enforce community size constraints");
+                    communities = enforceCommunityConstraints(communities, filteredGraph, MIN_CLUSTER_SIZE, MAX_CLUSTER_SIZE);
+                    LOGGER.info("After post-processing: " + communities.size() + " communities");
+                    
+                    // Visualize if requested
+                    if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                        List<List<Node>> communityList = new ArrayList<>(communities.values());
+                        filteredGraph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
+                        //filteredGraph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    }
+                    
+                    // Perform transportation cost analysis
+                    LOGGER.info("Performing transportation cost analysis...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities);
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
+                    // Infomap algorithm
+                    LOGGER.info("Step 3: Performing Infomap clustering");
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    LOGGER.info("Max Iterations: " + INFOMAP_MAX_ITERATIONS + ", Tolerance: " + INFOMAP_TOLERANCE);
+                    LOGGER.info("Force Max Clusters: " + INFOMAP_FORCE_MAX_CLUSTERS + " (Letting algorithm find natural communities)");
+                    
+                    ClusteringService clusteringService = new ClusteringService();
+                    clusteringService.setMaxClusters(MAX_CLUSTERS)
+                                    .setMinCommunitySize(MIN_CLUSTER_SIZE);
+                    
+                    // Use Infomap-specific configuration
+                    InfomapCommunityDetection infomapAlgorithm = new InfomapCommunityDetection(filteredGraph);
+                    infomapAlgorithm.setMaxClusters(MAX_CLUSTERS)
+                                   .setMinClusterSize(MIN_CLUSTER_SIZE)
+                                   .setMaxIterations(INFOMAP_MAX_ITERATIONS)
+                                   .setTolerance((float)INFOMAP_TOLERANCE)
+                                   .setForceMaxClusters(INFOMAP_FORCE_MAX_CLUSTERS)
+                                   .setUseHierarchicalRefinement(false) // Disable hierarchical refinement to prevent fragmentation
+                                   .setTeleportationProbability(0.05) // Significantly reduced to prevent "jumping" across the network
+                                   .setGeographicImportance(INFOMAP_GEOGRAPHIC_IMPORTANCE) // Add geographic importance
+                                   .setMaxGeographicDistance(INFOMAP_MAX_GEOGRAPHIC_DISTANCE); // Set max geographic distance
+                    
+                    communities = infomapAlgorithm.detectCommunities();
+                    
+                    // Visualize the communities
+                    if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                        List<List<Node>> communityList = new ArrayList<>(communities.values());
+                        filteredGraph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false); // Hide community 0
+                        //filteredGraph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    }
+                    
+                    // Perform transportation cost analysis
+                    LOGGER.info("Performing transportation cost analysis...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities);
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
+                    // MvAGC algorithm
+                    LOGGER.info("Step 3: Performing MvAGC clustering");
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    LOGGER.info("Anchor Nodes: " + MVAGC_NUM_ANCHORS);
+                    LOGGER.info("Filter Order: " + MVAGC_FILTER_ORDER + ", Alpha: " + MVAGC_ALPHA);
+                    LOGGER.info("Importance Sampling Power: " + MVAGC_SAMPLING_POWER);
+                    
+                    // Create and configure MvAGC algorithm directly
+                    MvAGCClustering mvagcAlgorithm = new MvAGCClustering(filteredGraph);
+                    mvagcAlgorithm.setNumClusters(MAX_CLUSTERS)
+                                 .setNumAnchors(MVAGC_NUM_ANCHORS)
+                                 .setFilterOrder(MVAGC_FILTER_ORDER)
+                                 .setAlpha(MVAGC_ALPHA)
+                                 .setImportanceSamplingPower(MVAGC_SAMPLING_POWER)
+                                 .setMinClusterSize(MIN_CLUSTER_SIZE)
+                                 .setMaxClusterSize(MAX_CLUSTER_SIZE)
+                                 .setForceMinClusters(true);
+                    
+                    // Log the configuration
+                    LOGGER.info("MvAGC configured with minClusterSize=" + MIN_CLUSTER_SIZE + ", loaded from application.properties");
+                    
+                    // Run the algorithm
+                    communities = mvagcAlgorithm.detectCommunities();
+                    
+                    // Visualize if requested
+                    if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                        List<List<Node>> communityList = new ArrayList<>(communities.values());
+                        filteredGraph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
+                        //filteredGraph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    }
+                    
+                    // Perform transportation cost analysis
+                    LOGGER.info("Performing transportation cost analysis...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities);
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else {
+                    // Leiden algorithm
+                    LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    
+                    ClusteringService clusteringService = new ClusteringService();
+                    clusteringService.setMaxClusters(MAX_CLUSTERS)
+                                    .setCommunityScalingFactor(COMMUNITY_SCALING_FACTOR)
+                                    .setAdaptiveResolution(USE_ADAPTIVE_RESOLUTION)
+                                    .setMinCommunitySize(MIN_CLUSTER_SIZE);
+                    
+                    // Capture the communities map from performClustering
+                    communities = clusteringService.performClustering(
+                        filteredGraph, 
+                        CLUSTERING_ALGORITHM, 
+                        VISUALIZE_CLUSTERS
+                    );
+                    
+                    // Perform transportation cost analysis after getting communities
+                    LOGGER.info("Performing transportation cost analysis for Leiden...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities); // Capture metrics
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
                 }
-                
-                // Perform transportation cost analysis
-                LOGGER.info("Performing transportation cost analysis...");
-                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
-                
-                // Save the cost analysis with metadata
-                LOGGER.info("Saving transportation cost analysis with metadata...");
-                TransportationCostAnalysis.saveAnalysisWithMetadata(
-                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
-            } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
-                // Infomap algorithm
-                LOGGER.info("Step 3: Performing Infomap clustering");
-                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
-                LOGGER.info("Max Iterations: " + INFOMAP_MAX_ITERATIONS + ", Tolerance: " + INFOMAP_TOLERANCE);
-                LOGGER.info("Force Max Clusters: " + INFOMAP_FORCE_MAX_CLUSTERS + " (Letting algorithm find natural communities)");
-                
-                ClusteringService clusteringService = new ClusteringService();
-                clusteringService.setMaxClusters(MAX_CLUSTERS)
-                                .setMinCommunitySize(MIN_CLUSTER_SIZE);
-                
-                // Use Infomap-specific configuration
-                InfomapCommunityDetection infomapAlgorithm = new InfomapCommunityDetection(graph);
-                infomapAlgorithm.setMaxClusters(MAX_CLUSTERS)
-                               .setMinClusterSize(MIN_CLUSTER_SIZE)
-                               .setMaxIterations(INFOMAP_MAX_ITERATIONS)
-                               .setTolerance((float)INFOMAP_TOLERANCE)
-                               .setForceMaxClusters(INFOMAP_FORCE_MAX_CLUSTERS)
-                               .setUseHierarchicalRefinement(false) // Disable hierarchical refinement to prevent fragmentation
-                               .setTeleportationProbability(0.05) // Significantly reduced to prevent "jumping" across the network
-                               .setGeographicImportance(INFOMAP_GEOGRAPHIC_IMPORTANCE) // Add geographic importance
-                               .setMaxGeographicDistance(INFOMAP_MAX_GEOGRAPHIC_DISTANCE); // Set max geographic distance
-                
-                communities = infomapAlgorithm.detectCommunities();
-                
-                // Visualize the communities
-                if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
-                    List<List<Node>> communityList = new ArrayList<>(communities.values());
-                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false); // Hide community 0
-                    //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
-                }
-                
-                // Perform transportation cost analysis
-                LOGGER.info("Performing transportation cost analysis...");
-                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
-                
-                // Save the cost analysis with metadata
-                LOGGER.info("Saving transportation cost analysis with metadata...");
-                TransportationCostAnalysis.saveAnalysisWithMetadata(
-                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
-            } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
-                // MvAGC algorithm
-                LOGGER.info("Step 3: Performing MvAGC clustering");
-                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
-                LOGGER.info("Anchor Nodes: " + MVAGC_NUM_ANCHORS);
-                LOGGER.info("Filter Order: " + MVAGC_FILTER_ORDER + ", Alpha: " + MVAGC_ALPHA);
-                LOGGER.info("Importance Sampling Power: " + MVAGC_SAMPLING_POWER);
-                
-                // Create and configure MvAGC algorithm directly
-                MvAGCClustering mvagcAlgorithm = new MvAGCClustering(graph);
-                mvagcAlgorithm.setNumClusters(MAX_CLUSTERS)
-                             .setNumAnchors(MVAGC_NUM_ANCHORS)
-                             .setFilterOrder(MVAGC_FILTER_ORDER)
-                             .setAlpha(MVAGC_ALPHA)
-                             .setImportanceSamplingPower(MVAGC_SAMPLING_POWER)
-                             .setMinClusterSize(MIN_CLUSTER_SIZE)
-                             .setMaxClusterSize(MAX_CLUSTER_SIZE)
-                             .setForceMinClusters(true);
-                
-                // Log the configuration
-                LOGGER.info("MvAGC configured with minClusterSize=" + MIN_CLUSTER_SIZE + ", loaded from application.properties");
-                
-                // Run the algorithm
-                communities = mvagcAlgorithm.detectCommunities();
-                
-                // Visualize if requested
-                if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
-                    List<List<Node>> communityList = new ArrayList<>(communities.values());
-                    graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
-                    //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
-                }
-                
-                // Perform transportation cost analysis
-                LOGGER.info("Performing transportation cost analysis...");
-                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
-                
-                // Save the cost analysis with metadata
-                LOGGER.info("Saving transportation cost analysis with metadata...");
-                TransportationCostAnalysis.saveAnalysisWithMetadata(
-                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
             } else {
-                // Leiden algorithm
-                LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
-                LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                LOGGER.info("Outlier detection is disabled, proceeding directly to clustering");
                 
-                ClusteringService clusteringService = new ClusteringService();
-                clusteringService.setMaxClusters(MAX_CLUSTERS)
-                                .setCommunityScalingFactor(COMMUNITY_SCALING_FACTOR)
-                                .setAdaptiveResolution(USE_ADAPTIVE_RESOLUTION)
-                                .setMinCommunitySize(MIN_CLUSTER_SIZE);
-                
-                // Capture the communities map from performClustering
-                communities = clusteringService.performClustering(
-                    graph, 
-                    CLUSTERING_ALGORITHM, 
-                    VISUALIZE_CLUSTERS
-                );
-                
-                // Perform transportation cost analysis after getting communities
-                LOGGER.info("Performing transportation cost analysis for Leiden...");
-                clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
-                
-                // Save the cost analysis with metadata
-                LOGGER.info("Saving transportation cost analysis with metadata...");
-                TransportationCostAnalysis.saveAnalysisWithMetadata(
-                    graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                // Use the original graph for clustering
+                if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.SPECTRAL) {
+                    LOGGER.info("Step 3: Performing Spectral Clustering with advanced configuration...");
+                    LOGGER.info("Max Clusters: " + SPECTRAL_CONFIG.getNumberOfClusters() + 
+                              ", Min Size: " + SPECTRAL_CONFIG.getMinCommunitySize() + 
+                              ", Prevent Singletons: " + SPECTRAL_CONFIG.isPreventSingletons());
+                    
+                    ClusteringService clusteringService = new ClusteringService();
+                    clusteringService.setSpectralConfig(SPECTRAL_CONFIG);
+                    
+                    // Capture the communities map from performClustering
+                    communities = clusteringService.performClustering(
+                        graph, 
+                        CLUSTERING_ALGORITHM, 
+                        VISUALIZE_CLUSTERS
+                    );
+                    
+                    // Perform transportation cost analysis after getting communities
+                    LOGGER.info("Performing transportation cost analysis for Spectral...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
+                    // Girvan-Newman algorithm
+                    LOGGER.info("Step 3: Performing Girvan-Newman clustering");
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    LOGGER.info("Max Iterations: " + GN_MAX_ITERATIONS + ", Early Stop: " + GN_EARLY_STOP);
+                    LOGGER.info("Using Modularity Maximization: " + USE_MODULARITY_MAXIMIZATION);
+                    
+                    // Create and configure Girvan-Newman algorithm directly
+                    GirvanNewmanClustering gnAlgorithm = new GirvanNewmanClustering(graph);
+                    gnAlgorithm.setTargetCommunityCount(MAX_CLUSTERS)
+                             .setMaxIterations(GN_MAX_ITERATIONS)
+                             .setEarlyStop(GN_EARLY_STOP)
+                             .setMinCommunitySize(MIN_CLUSTER_SIZE)
+                             .setMaxCommunitySize(MAX_CLUSTER_SIZE)
+                             .setUseModularityMaximization(USE_MODULARITY_MAXIMIZATION);
+                    
+                    // Run the algorithm
+                    communities = gnAlgorithm.detectCommunities();
+                    
+                    // ADDITIONAL POST-PROCESSING: Enforce maximum community size
+                    LOGGER.info("Performing post-processing to enforce community size constraints");
+                    communities = enforceCommunityConstraints(communities, graph, MIN_CLUSTER_SIZE, MAX_CLUSTER_SIZE);
+                    LOGGER.info("After post-processing: " + communities.size() + " communities");
+                    
+                    // Visualize if requested
+                    if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                        List<List<Node>> communityList = new ArrayList<>(communities.values());
+                        graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
+                        //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    }
+                    
+                    // Perform transportation cost analysis
+                    LOGGER.info("Performing transportation cost analysis...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
+                    // Infomap algorithm
+                    LOGGER.info("Step 3: Performing Infomap clustering");
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    LOGGER.info("Max Iterations: " + INFOMAP_MAX_ITERATIONS + ", Tolerance: " + INFOMAP_TOLERANCE);
+                    LOGGER.info("Force Max Clusters: " + INFOMAP_FORCE_MAX_CLUSTERS + " (Letting algorithm find natural communities)");
+                    
+                    ClusteringService clusteringService = new ClusteringService();
+                    clusteringService.setMaxClusters(MAX_CLUSTERS)
+                                    .setMinCommunitySize(MIN_CLUSTER_SIZE);
+                    
+                    // Use Infomap-specific configuration
+                    InfomapCommunityDetection infomapAlgorithm = new InfomapCommunityDetection(graph);
+                    infomapAlgorithm.setMaxClusters(MAX_CLUSTERS)
+                                   .setMinClusterSize(MIN_CLUSTER_SIZE)
+                                   .setMaxIterations(INFOMAP_MAX_ITERATIONS)
+                                   .setTolerance((float)INFOMAP_TOLERANCE)
+                                   .setForceMaxClusters(INFOMAP_FORCE_MAX_CLUSTERS)
+                                   .setUseHierarchicalRefinement(false) // Disable hierarchical refinement to prevent fragmentation
+                                   .setTeleportationProbability(0.05) // Significantly reduced to prevent "jumping" across the network
+                                   .setGeographicImportance(INFOMAP_GEOGRAPHIC_IMPORTANCE) // Add geographic importance
+                                   .setMaxGeographicDistance(INFOMAP_MAX_GEOGRAPHIC_DISTANCE); // Set max geographic distance
+                    
+                    communities = infomapAlgorithm.detectCommunities();
+                    
+                    // Visualize the communities
+                    if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                        List<List<Node>> communityList = new ArrayList<>(communities.values());
+                        graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false); // Hide community 0
+                        //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    }
+                    
+                    // Perform transportation cost analysis
+                    LOGGER.info("Performing transportation cost analysis...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
+                    // MvAGC algorithm
+                    LOGGER.info("Step 3: Performing MvAGC clustering");
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    LOGGER.info("Anchor Nodes: " + MVAGC_NUM_ANCHORS);
+                    LOGGER.info("Filter Order: " + MVAGC_FILTER_ORDER + ", Alpha: " + MVAGC_ALPHA);
+                    LOGGER.info("Importance Sampling Power: " + MVAGC_SAMPLING_POWER);
+                    
+                    // Create and configure MvAGC algorithm directly
+                    MvAGCClustering mvagcAlgorithm = new MvAGCClustering(graph);
+                    mvagcAlgorithm.setNumClusters(MAX_CLUSTERS)
+                                 .setNumAnchors(MVAGC_NUM_ANCHORS)
+                                 .setFilterOrder(MVAGC_FILTER_ORDER)
+                                 .setAlpha(MVAGC_ALPHA)
+                                 .setImportanceSamplingPower(MVAGC_SAMPLING_POWER)
+                                 .setMinClusterSize(MIN_CLUSTER_SIZE)
+                                 .setMaxClusterSize(MAX_CLUSTER_SIZE)
+                                 .setForceMinClusters(true);
+                    
+                    // Log the configuration
+                    LOGGER.info("MvAGC configured with minClusterSize=" + MIN_CLUSTER_SIZE + ", loaded from application.properties");
+                    
+                    // Run the algorithm
+                    communities = mvagcAlgorithm.detectCommunities();
+                    
+                    // Visualize if requested
+                    if (VISUALIZE_CLUSTERS && !communities.isEmpty()) {
+                        List<List<Node>> communityList = new ArrayList<>(communities.values());
+                        graph.visualizeCommunities(communityList, CLUSTERING_ALGORITHM.toString(), false);
+                        //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
+                    }
+                    
+                    // Perform transportation cost analysis
+                    LOGGER.info("Performing transportation cost analysis...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                } else {
+                    // Leiden algorithm
+                    LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
+                    LOGGER.info("Target Clusters: " + MAX_CLUSTERS + ", Min Cluster Size: " + MIN_CLUSTER_SIZE + ", Max Cluster Size: " + MAX_CLUSTER_SIZE);
+                    
+                    ClusteringService clusteringService = new ClusteringService();
+                    clusteringService.setMaxClusters(MAX_CLUSTERS)
+                                    .setCommunityScalingFactor(COMMUNITY_SCALING_FACTOR)
+                                    .setAdaptiveResolution(USE_ADAPTIVE_RESOLUTION)
+                                    .setMinCommunitySize(MIN_CLUSTER_SIZE);
+                    
+                    // Capture the communities map from performClustering
+                    communities = clusteringService.performClustering(
+                        graph, 
+                        CLUSTERING_ALGORITHM, 
+                        VISUALIZE_CLUSTERS
+                    );
+                    
+                    // Perform transportation cost analysis after getting communities
+                    LOGGER.info("Performing transportation cost analysis for Leiden...");
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+                    
+                    // Save the cost analysis with metadata
+                    LOGGER.info("Saving transportation cost analysis with metadata...");
+                    TransportationCostAnalysis.saveAnalysisWithMetadata(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                }
             }
             
             // Step 4: Generate Histograms if metrics were calculated
@@ -590,5 +800,108 @@ public class App
         }
         
         return parts;
+    }
+
+    /**
+     * Creates a filtered graph that excludes outlier nodes
+     * 
+     * @param originalGraph The original graph with all nodes
+     * @param outliers The set of outlier nodes to exclude
+     * @return A new graph without the outlier nodes
+     */
+    private static TransportationGraph createFilteredGraph(TransportationGraph originalGraph, Set<Node> outliers) {
+        LOGGER.info("Creating filtered graph without outliers for clustering...");
+        
+        // Create a new graph with only non-outlier nodes
+        List<Point> nonOutlierPoints = new ArrayList<>();
+        Set<Node> nodesToKeep = new HashSet<>();
+        
+        // Collect all non-outlier nodes
+        for (Node node : originalGraph.getGraph().vertexSet()) {
+            if (!outliers.contains(node) && !node.isOutlier()) {
+                nodesToKeep.add(node);
+                nonOutlierPoints.add(node.getLocation());
+            }
+        }
+        
+        // Create a new graph with only the non-outlier points
+        TransportationGraph filteredGraph = new TransportationGraph(nonOutlierPoints);
+        filteredGraph.setGraphConstructionMethod(originalGraph.getGraphConstructionMethod());
+        
+        // Copy edges between non-outlier nodes
+        for (Node source : nodesToKeep) {
+            for (Node target : nodesToKeep) {
+                if (source.equals(target)) continue;
+                
+                DefaultWeightedEdge existingEdge = originalGraph.getGraph().getEdge(source, target);
+                if (existingEdge != null) {
+                    double weight = originalGraph.getGraph().getEdgeWeight(existingEdge);
+                    filteredGraph.addConnection(source.getLocation(), target.getLocation(), weight);
+                }
+            }
+        }
+        
+        LOGGER.info("Created filtered graph with " + nodesToKeep.size() + " nodes (excluded " + 
+                    outliers.size() + " outliers)");
+        
+        return filteredGraph;
+    }
+
+    // Helper method for SPECTRAL clustering with the appropriate graph
+    private static void spectral(TransportationGraph graph, boolean visualize) {
+        // Existing SPECTRAL clustering code but with the passed graph
+        ClusteringService clusteringService = new ClusteringService();
+        clusteringService.setMaxClusters(MAX_CLUSTERS)
+                       .setSpectralConfig(SPECTRAL_CONFIG);
+        clusteringService.performClustering(graph, 
+                                            ClusteringService.ClusteringAlgorithm.SPECTRAL,
+                                            visualize);
+    }
+
+    // Helper method for GIRVAN_NEWMAN clustering with the appropriate graph
+    private static void girvanNewman(TransportationGraph graph, boolean visualize) {
+        // Existing GIRVAN_NEWMAN clustering code but with the passed graph
+        ClusteringService clusteringService = new ClusteringService();
+        clusteringService.setMaxClusters(MAX_CLUSTERS)
+                       .setMinCommunitySize(MIN_CLUSTER_SIZE)
+                       .setUseModularityMaximization(USE_MODULARITY_MAXIMIZATION);
+        clusteringService.performClustering(graph, 
+                                            ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN,
+                                            visualize);
+    }
+
+    // Helper method for INFOMAP clustering with the appropriate graph
+    private static void infomap(TransportationGraph graph, boolean visualize) {
+        // Existing INFOMAP clustering code but with the passed graph
+        ClusteringService clusteringService = new ClusteringService();
+        clusteringService.setMaxClusters(MAX_CLUSTERS)
+                       .setMinCommunitySize(MIN_CLUSTER_SIZE);
+        clusteringService.performClustering(graph, 
+                                            ClusteringService.ClusteringAlgorithm.INFOMAP,
+                                            visualize);
+    }
+
+    // Helper method for MVAGC clustering with the appropriate graph
+    private static void mvagc(TransportationGraph graph, boolean visualize) {
+        // Existing MVAGC clustering code but with the passed graph
+        ClusteringService clusteringService = new ClusteringService();
+        clusteringService.setMaxClusters(MAX_CLUSTERS)
+                       .setMinCommunitySize(MIN_CLUSTER_SIZE);
+        clusteringService.performClustering(graph, 
+                                            ClusteringService.ClusteringAlgorithm.MVAGC,
+                                            visualize);
+    }
+
+    // Helper method for LEIDEN clustering with the appropriate graph
+    private static void leiden(TransportationGraph graph, boolean visualize) {
+        // Existing LEIDEN clustering code but with the passed graph
+        ClusteringService clusteringService = new ClusteringService();
+        clusteringService.setMaxClusters(MAX_CLUSTERS)
+                       .setMinCommunitySize(MIN_CLUSTER_SIZE)
+                       .setCommunityScalingFactor(COMMUNITY_SCALING_FACTOR)
+                       .setAdaptiveResolution(USE_ADAPTIVE_RESOLUTION);
+        clusteringService.performClustering(graph, 
+                                            ClusteringService.ClusteringAlgorithm.LEIDEN,
+                                            visualize);
     }
 }

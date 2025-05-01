@@ -1377,4 +1377,129 @@ public class TransportationGraph {
         Node target = graph.getEdgeTarget(edge);
         return (node.equals(source)) ? target : source;
     }
+
+    /**
+     * Visualizes outliers in the graph by highlighting them in black.
+     * 
+     * @param outliers Set of nodes identified as outliers
+     * @param algorithmName The name of the algorithm used for detection
+     */
+    public void visualizeOutliers(Set<Node> outliers, String algorithmName) {
+        if (outliers == null || outliers.isEmpty()) {
+            LOGGER.info("No outliers to visualize.");
+            return;
+        }
+        
+        LOGGER.info("Visualizing " + outliers.size() + " outliers detected using " + algorithmName);
+        
+        // Create a visualization frame
+        JFrame frame = new JFrame("Izmir Transportation Network - " + algorithmName + " Outliers");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(1200, 800);
+        
+        // Create a panel for drawing
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Fill with white background
+                g2d.setColor(Color.WHITE);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                
+                // Calculate scaling factors
+                double minX = Double.MAX_VALUE;
+                double maxX = Double.MIN_VALUE;
+                double minY = Double.MAX_VALUE;
+                double maxY = Double.MIN_VALUE;
+                
+                for (Node node : graph.vertexSet()) {
+                    Point location = node.getLocation();
+                    minX = Math.min(minX, location.getX());
+                    maxX = Math.max(maxX, location.getX());
+                    minY = Math.min(minY, location.getY());
+                    maxY = Math.max(maxY, location.getY());
+                }
+                
+                double width = getWidth() - 40;
+                double height = getHeight() - 40;
+                double xScale = width / (maxX - minX);
+                double yScale = height / (maxY - minY);
+                double scale = Math.min(xScale, yScale);
+                
+                // Draw edges
+                g2d.setStroke(new BasicStroke(1.0f));
+                g2d.setColor(new Color(200, 200, 200)); // Light gray for edges
+                
+                for (DefaultWeightedEdge edge : graph.edgeSet()) {
+                    Node source = graph.getEdgeSource(edge);
+                    Node target = graph.getEdgeTarget(edge);
+                    
+                    // Calculate coordinates
+                    int x1 = 20 + (int)((source.getLocation().getX() - minX) * scale);
+                    int y1 = getHeight() - 20 - (int)((source.getLocation().getY() - minY) * scale);
+                    int x2 = 20 + (int)((target.getLocation().getX() - minX) * scale);
+                    int y2 = getHeight() - 20 - (int)((target.getLocation().getY() - minY) * scale);
+                    
+                    g2d.drawLine(x1, y1, x2, y2);
+                }
+                
+                // Draw normal nodes
+                g2d.setColor(new Color(70, 130, 180)); // Steel blue for normal nodes
+                for (Node node : graph.vertexSet()) {
+                    if (!outliers.contains(node)) {
+                        // Calculate coordinates
+                        int x = 20 + (int)((node.getLocation().getX() - minX) * scale);
+                        int y = getHeight() - 20 - (int)((node.getLocation().getY() - minY) * scale);
+                        
+                        // Draw node
+                        g2d.fillOval(x - 5, y - 5, 10, 10);
+                    }
+                }
+                
+                // Draw outlier nodes in black
+                g2d.setColor(Color.BLACK);
+                for (Node node : outliers) {
+                    // Calculate coordinates
+                    int x = 20 + (int)((node.getLocation().getX() - minX) * scale);
+                    int y = getHeight() - 20 - (int)((node.getLocation().getY() - minY) * scale);
+                    
+                    // Draw node (slightly larger to highlight)
+                    g2d.fillOval(x - 7, y - 7, 14, 14);
+                }
+                
+                // Add legend
+                g2d.setFont(new Font("Arial", Font.BOLD, 14));
+                g2d.setColor(Color.BLACK);
+                g2d.drawString("Algorithm: " + algorithmName, 20, 30);
+                g2d.drawString("Outliers: " + outliers.size(), 20, 50);
+                g2d.drawString("Total Nodes: " + graph.vertexSet().size(), 20, 70);
+                
+                // Draw legend for outliers
+                g2d.fillOval(30, 90, 14, 14);
+                g2d.drawString("Outlier", 50, 100);
+                
+                // Draw legend for normal nodes
+                g2d.setColor(new Color(70, 130, 180));
+                g2d.fillOval(30, 110, 10, 10);
+                g2d.setColor(Color.BLACK);
+                g2d.drawString("Normal", 50, 120);
+            }
+        };
+        
+        frame.add(panel);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        
+        // Save visualization attempt
+        try {
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            String filename = "outliers_" + algorithmName.toLowerCase().replace(" ", "_") + "_" + timestamp;
+            saveVisualizationAttempt(panel, outliers.size(), algorithmName);
+        } catch (Exception e) {
+            LOGGER.warning("Failed to save visualization: " + e.getMessage());
+        }
+    }
 } 

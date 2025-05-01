@@ -2,8 +2,10 @@ package com.izmir.transportation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -199,6 +201,18 @@ public class ClusteringService {
             graph.createAffinityMatrix();
         }
         
+        // Count and log the number of outlier nodes
+        int outlierCount = 0;
+        List<Node> outlierNodes = new ArrayList<>();
+        for (Node node : graph.getGraph().vertexSet()) {
+            if (node.isOutlier()) {
+                outlierCount++;
+                outlierNodes.add(node);
+            }
+        }
+        
+        LOGGER.info("Found {} outlier nodes that will be excluded from clustering", outlierCount);
+        
         // Apply the appropriate clustering algorithm
         Map<Integer, List<Node>> communities;
         
@@ -267,26 +281,57 @@ public class ClusteringService {
         
         LOGGER.info("Found {} communities before post-processing", communities.size());
         
+        // Create a new community map with strict outlier filtering
+        Map<Integer, List<Node>> strictlyFilteredCommunities = new HashMap<>();
+        
+        // First, build a set of all outlier nodes for efficient lookup
+        Set<Node> outlierNodeSet = new HashSet<>(outlierNodes);
+        
+        // Now filter out outlier nodes from each community
+        for (Map.Entry<Integer, List<Node>> entry : communities.entrySet()) {
+            List<Node> nonOutlierNodes = new ArrayList<>();
+            int removedNodes = 0;
+            
+            for (Node node : entry.getValue()) {
+                // Double-check that the node is not in the outlier set and isOutlier() is false
+                if (!outlierNodeSet.contains(node) && !node.isOutlier()) {
+                    nonOutlierNodes.add(node);
+                } else {
+                    removedNodes++;
+                }
+            }
+            
+            // Only add non-empty communities
+            if (!nonOutlierNodes.isEmpty()) {
+                strictlyFilteredCommunities.put(entry.getKey(), nonOutlierNodes);
+                if (removedNodes > 0) {
+                    LOGGER.debug("Removed {} outlier nodes from community {}", removedNodes, entry.getKey());
+                }
+            } else {
+                LOGGER.debug("Community {} was empty after removing outliers", entry.getKey());
+            }
+        }
+        
+        LOGGER.info("After strict outlier filtering: {} communities remain (removed {} outlier nodes)", 
+                   strictlyFilteredCommunities.size(), outlierCount);
+        
         // Post-process to handle small communities - only for Leiden or if we're not using spectral config
         if ((algorithm == ClusteringAlgorithm.LEIDEN || algorithm == ClusteringAlgorithm.GIRVAN_NEWMAN) && minCommunitySize > 1) {
-            communities = mergeSmallCommunities(communities, graph, minCommunitySize);
-            LOGGER.info("After merging small communities: {} communities remain", communities.size());
+            strictlyFilteredCommunities = mergeSmallCommunities(strictlyFilteredCommunities, graph, minCommunitySize);
+            LOGGER.info("After merging small communities: {} communities remain", strictlyFilteredCommunities.size());
         }
         
         // Visualize the communities if requested
-        if (visualize && !communities.isEmpty()) {
-            List<List<Node>> communityList = new ArrayList<>(communities.values());
+        if (visualize && !strictlyFilteredCommunities.isEmpty()) {
+            List<List<Node>> communityList = new ArrayList<>(strictlyFilteredCommunities.values());
             graph.visualizeCommunities(communityList, algorithm.toString(), true); // Hide community 0
-            
-            // Save the community data
-            //graph.saveCommunityData(communities, algorithm.toString());
         }
         
         // Perform transportation cost analysis
         LOGGER.info("Performing transportation cost analysis...");
-        performCostAnalysis(graph, communities);
+        performCostAnalysis(graph, strictlyFilteredCommunities);
         
-        return communities;
+        return strictlyFilteredCommunities;
     }
     
     /**
