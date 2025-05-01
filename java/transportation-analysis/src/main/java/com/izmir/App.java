@@ -71,6 +71,9 @@ public class App
     private static final double GEOGRAPHIC_WEIGHT = 0.9; // Increased from 0.7 for more geographically cohesive communities
     private static final double MAX_COMMUNITY_DIAMETER = 20000.0; // Maximum allowed diameter for a community in meters (Increased significantly from 2500.0m to disable problematic splitting)
    
+    // Whether to use minibuses for small communities (< 25 nodes) or only use buses for all communities
+    private static final boolean USE_MINIBUS = false; // Set to false to use only buses
+   
     // Spectral clustering specific configuration - Initialize with default values to prevent NullPointerException
     private static SpectralClusteringConfig SPECTRAL_CONFIG = new SpectralClusteringConfig()
             .setNumberOfClusters(MAX_CLUSTERS)
@@ -236,14 +239,18 @@ public class App
                         VISUALIZE_CLUSTERS
                     );
                     
-                    // Perform transportation cost analysis after getting communities
-                    LOGGER.info("Performing transportation cost analysis for Spectral...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities); // Capture metrics
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
                     // Girvan-Newman algorithm
                     LOGGER.info("Step 3: Performing Girvan-Newman clustering");
@@ -275,14 +282,18 @@ public class App
                         //filteredGraph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                     }
                     
-                    // Perform transportation cost analysis
-                    LOGGER.info("Performing transportation cost analysis...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities);
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
                     // Infomap algorithm
                     LOGGER.info("Step 3: Performing Infomap clustering");
@@ -315,14 +326,18 @@ public class App
                         //filteredGraph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                     }
                     
-                    // Perform transportation cost analysis
-                    LOGGER.info("Performing transportation cost analysis...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities);
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
                     // MvAGC algorithm
                     LOGGER.info("Step 3: Performing MvAGC clustering");
@@ -355,14 +370,18 @@ public class App
                         //filteredGraph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                     }
                     
-                    // Perform transportation cost analysis
-                    LOGGER.info("Performing transportation cost analysis...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities);
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else {
                     // Leiden algorithm
                     LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
@@ -381,14 +400,18 @@ public class App
                         VISUALIZE_CLUSTERS
                     );
                     
-                    // Perform transportation cost analysis after getting communities
-                    LOGGER.info("Performing transportation cost analysis for Leiden...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities); // Capture metrics
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 }
             } else {
                 LOGGER.info("Outlier detection is disabled, proceeding directly to clustering");
@@ -410,14 +433,18 @@ public class App
                         VISUALIZE_CLUSTERS
                     );
                     
-                    // Perform transportation cost analysis after getting communities
-                    LOGGER.info("Performing transportation cost analysis for Spectral...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.GIRVAN_NEWMAN) {
                     // Girvan-Newman algorithm
                     LOGGER.info("Step 3: Performing Girvan-Newman clustering");
@@ -449,14 +476,18 @@ public class App
                         //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                     }
                     
-                    // Perform transportation cost analysis
-                    LOGGER.info("Performing transportation cost analysis...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.INFOMAP) {
                     // Infomap algorithm
                     LOGGER.info("Step 3: Performing Infomap clustering");
@@ -489,14 +520,18 @@ public class App
                         //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                     }
                     
-                    // Perform transportation cost analysis
-                    LOGGER.info("Performing transportation cost analysis...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else if (CLUSTERING_ALGORITHM == ClusteringService.ClusteringAlgorithm.MVAGC) {
                     // MvAGC algorithm
                     LOGGER.info("Step 3: Performing MvAGC clustering");
@@ -529,14 +564,18 @@ public class App
                         //graph.saveCommunityData(communities, CLUSTERING_ALGORITHM.toString());
                     }
                     
-                    // Perform transportation cost analysis
-                    LOGGER.info("Performing transportation cost analysis...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities);
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 } else {
                     // Leiden algorithm
                     LOGGER.info("Step 3: Performing clustering using " + CLUSTERING_ALGORITHM);
@@ -555,14 +594,18 @@ public class App
                         VISUALIZE_CLUSTERS
                     );
                     
-                    // Perform transportation cost analysis after getting communities
-                    LOGGER.info("Performing transportation cost analysis for Leiden...");
-                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities); // Capture metrics
+                    // Perform advanced transportation cost analysis with both vehicle options
+                    LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
+                    TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                    
+                    // Regular analysis for compatibility
+                    clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
                     
                     // Save the cost analysis with metadata
                     LOGGER.info("Saving transportation cost analysis with metadata...");
                     TransportationCostAnalysis.saveAnalysisWithMetadata(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE, USE_MINIBUS);
                 }
             }
             

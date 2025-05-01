@@ -53,6 +53,9 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
     
     private static final boolean USE_CLUSTERING_FOR_BUS_ASSIGNMENT = true; // Whether to use clustering for bus assignment
     
+    // Flag to determine whether to use minibuses for small communities
+    private boolean useMinibus = true;
+    
     /**
      * Loads a property as an integer with a default value.
      * 
@@ -125,6 +128,18 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
     }
     
     /**
+     * Creates a new OptimizedTransportationCostAnalyzer for the given transportation graph
+     * with the option to use minibuses for small communities.
+     * 
+     * @param transportationGraph The transportation graph to analyze
+     * @param useMinibus Whether to use minibuses for small communities (true) or only buses (false)
+     */
+    public OptimizedTransportationCostAnalyzer(TransportationGraph transportationGraph, boolean useMinibus) {
+        super(transportationGraph);
+        this.useMinibus = useMinibus;
+    }
+    
+    /**
      * Analyzes transportation costs for all communities in the graph with advanced optimization.
      * This method overrides the base implementation to use more sophisticated algorithms.
      * 
@@ -184,12 +199,13 @@ public class OptimizedTransportationCostAnalyzer extends TransportationCostAnaly
     
     /**
      * Determines the appropriate vehicle type based on community size.
+     * If useMinibus is false, always returns BUS regardless of size.
      * 
      * @param communitySize The number of nodes in the community
      * @return The appropriate vehicle type
      */
     private VehicleType determineVehicleType(int communitySize) {
-        if (communitySize <= VEHICLE_TYPE_THRESHOLD) {
+        if (useMinibus && communitySize <= VEHICLE_TYPE_THRESHOLD) {
             return VehicleType.MINIBUS;
         } else {
             return VehicleType.BUS;

@@ -13,3 +13,6 @@ csv_files/
 venv/
 graph_2000_complete_backup.json
 graph_2000_complete.json
+results/transportation_analyses/**/*.csv
+results/transportation_analyses/
+**/transportation_analyses/

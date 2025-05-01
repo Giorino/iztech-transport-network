@@ -28,6 +28,17 @@ public class TransportationCostAnalysis {
      * @param transportationGraph The transportation graph to analyze
      */
     public static void analyzeCosts(TransportationGraph transportationGraph) {
+        analyzeCosts(transportationGraph, true);
+    }
+    
+    /**
+     * Performs transportation cost analysis on the given transportation graph
+     * using the optimized transportation cost analyzer with the option to use minibuses.
+     * 
+     * @param transportationGraph The transportation graph to analyze
+     * @param useMinibus Whether to use minibuses for small communities (true) or only buses (false)
+     */
+    public static void analyzeCosts(TransportationGraph transportationGraph, boolean useMinibus) {
         System.out.println("Starting transportation cost analysis...");
         
         // Step 1: Detect communities
@@ -44,7 +55,7 @@ public class TransportationCostAnalysis {
         String communityStats = leidenCommunityDetection.getCommunityStatistics();
         System.out.println("Community Detection Results:\n" + communityStats);
         
-        analyzeCosts(transportationGraph, communities);
+        analyzeCosts(transportationGraph, communities, useMinibus);
     }
     
     /**
@@ -58,14 +69,33 @@ public class TransportationCostAnalysis {
     public static Map<Integer, ClusterMetrics> analyzeCosts(
             TransportationGraph transportationGraph, 
             Map<Integer, List<Node>> communities) {
+        return analyzeCosts(transportationGraph, communities, true);
+    }
+    
+    /**
+     * Performs transportation cost analysis on the given transportation graph
+     * and communities using the optimized transportation cost analyzer with the option to use minibuses.
+     * 
+     * @param transportationGraph The transportation graph to analyze
+     * @param communities The communities to analyze
+     * @param useMinibus Whether to use minibuses for small communities (true) or only buses (false)
+     * @return A map of community ID to ClusterMetrics containing cost and distance information.
+     */
+    public static Map<Integer, ClusterMetrics> analyzeCosts(
+            TransportationGraph transportationGraph, 
+            Map<Integer, List<Node>> communities,
+            boolean useMinibus) {
         System.out.println("Starting transportation cost analysis with pre-detected communities...");
+        if (!useMinibus) {
+            System.out.println("Minibus usage is disabled. Using only buses for all communities.");
+        }
         
         // Step 1: Print community information
         System.out.println("Found " + communities.size() + " communities for analysis");
         
         // Step 2: Analyze transportation costs using optimized analyzer
         System.out.println("\nAnalyzing transportation costs with optimized analyzer...");
-        OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(transportationGraph);
+        OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(transportationGraph, useMinibus);
         analyzer.analyzeTransportationCosts(communities);
         
         // Step 2.5: Extract metrics after analysis
@@ -139,11 +169,27 @@ public class TransportationCostAnalysis {
     public static void saveAnalysisWithMetadata(
             TransportationGraph graph, Map<Integer, List<Node>> communities,
             String clusteringAlgorithm, String graphStrategy, int kValue) {
+        saveAnalysisWithMetadata(graph, communities, clusteringAlgorithm, graphStrategy, kValue, true);
+    }
+    
+    /**
+     * Saves the transportation cost analysis with metadata to a structured folder.
+     * 
+     * @param graph The transportation graph
+     * @param communities Map of community IDs to lists of nodes in each community
+     * @param clusteringAlgorithm The clustering algorithm used in the analysis
+     * @param graphStrategy The graph construction strategy used
+     * @param kValue The k value used for graph construction (if applicable)
+     * @param useMinibus Whether to use minibuses for small communities (true) or only buses (false)
+     */
+    public static void saveAnalysisWithMetadata(
+            TransportationGraph graph, Map<Integer, List<Node>> communities,
+            String clusteringAlgorithm, String graphStrategy, int kValue, boolean useMinibus) {
         
         LOGGER.info("Saving transportation cost analysis with metadata");
         
         // Use the optimized analyzer 
-        OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(graph);
+        OptimizedTransportationCostAnalyzer analyzer = new OptimizedTransportationCostAnalyzer(graph, useMinibus);
         
         // Make sure we have the latest analysis
         analyzer.analyzeTransportationCosts(communities);
@@ -153,6 +199,57 @@ public class TransportationCostAnalysis {
             analyzer.saveAnalysisWithMetadata(clusteringAlgorithm, graphStrategy, kValue);
         } catch (IOException e) {
             LOGGER.warning("Failed to save cost analysis with metadata: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Performs transportation cost analysis for both scenarios (with and without minibus)
+     * and exports the results to Google Sheets-compatible CSV files.
+     * 
+     * @param graph The transportation graph
+     * @param communities Map of community IDs to lists of nodes in each community
+     * @param clusteringAlgorithm The clustering algorithm used in the analysis
+     * @param graphStrategy The graph construction strategy used
+     * @param kValue The k value used for graph construction (if applicable)
+     */
+    public static void analyzeAndCompareVehicleOptions(
+            TransportationGraph graph, 
+            Map<Integer, List<Node>> communities,
+            String clusteringAlgorithm, 
+            String graphStrategy, 
+            int kValue) {
+        
+        LOGGER.info("Analyzing transportation costs with both vehicle options (with/without minibuses)");
+        
+        try {
+            // Create analyzer for WITH minibuses
+            OptimizedTransportationCostAnalyzer analyzerWithMinibus = new OptimizedTransportationCostAnalyzer(graph, true);
+            analyzerWithMinibus.analyzeTransportationCosts(communities);
+            
+            // Create analyzer for WITHOUT minibuses (buses only)
+            OptimizedTransportationCostAnalyzer analyzerBusOnly = new OptimizedTransportationCostAnalyzer(graph, false);
+            analyzerBusOnly.analyzeTransportationCosts(communities);
+            
+            // Export both analyses
+            TransportationAnalysisExporter.exportAnalyses(
+                clusteringAlgorithm,
+                graphStrategy,
+                analyzerWithMinibus,
+                analyzerBusOnly
+            );
+            
+            LOGGER.info("Both analyses have been exported successfully");
+            
+            // Print summary of both analyses
+            System.out.println("\n===== ANALYSIS SUMMARY =====");
+            System.out.println("ANALYSIS WITH MINIBUSES:");
+            analyzerWithMinibus.printCostSummary();
+            
+            System.out.println("\nANALYSIS WITH BUSES ONLY:");
+            analyzerBusOnly.printCostSummary();
+            
+        } catch (IOException e) {
+            LOGGER.severe("Error exporting analyses: " + e.getMessage());
         }
     }
     
