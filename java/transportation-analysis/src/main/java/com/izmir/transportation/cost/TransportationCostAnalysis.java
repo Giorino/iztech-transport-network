@@ -203,54 +203,52 @@ public class TransportationCostAnalysis {
     }
     
     /**
-     * Performs transportation cost analysis for both scenarios (with and without minibus)
-     * and exports the results to Google Sheets-compatible CSV files.
+     * Analyzes transportation costs using both vehicle options (with/without minibuses)
+     * and exports the results.
      * 
      * @param graph The transportation graph
-     * @param communities Map of community IDs to lists of nodes in each community
-     * @param clusteringAlgorithm The clustering algorithm used in the analysis
-     * @param graphStrategy The graph construction strategy used
-     * @param kValue The k value used for graph construction (if applicable)
+     * @param communities Map of communities to their nodes
+     * @param clusteringAlgorithm The clustering algorithm used
+     * @param graphStrategy The graph construction strategy
+     * @param outlierAlgorithm The outlier detection algorithm used
+     * @param applyOutlierDetection Whether outlier detection is applied
+     * @throws IOException If there's an error exporting the results
      */
     public static void analyzeAndCompareVehicleOptions(
             TransportationGraph graph, 
             Map<Integer, List<Node>> communities,
-            String clusteringAlgorithm, 
-            String graphStrategy, 
-            int kValue) {
+            String clusteringAlgorithm,
+            String graphStrategy,
+            String outlierAlgorithm,
+            boolean applyOutlierDetection) throws IOException {
         
         LOGGER.info("Analyzing transportation costs with both vehicle options (with/without minibuses)");
         
-        try {
-            // Create analyzer for WITH minibuses
-            OptimizedTransportationCostAnalyzer analyzerWithMinibus = new OptimizedTransportationCostAnalyzer(graph, true);
-            analyzerWithMinibus.analyzeTransportationCosts(communities);
-            
-            // Create analyzer for WITHOUT minibuses (buses only)
-            OptimizedTransportationCostAnalyzer analyzerBusOnly = new OptimizedTransportationCostAnalyzer(graph, false);
-            analyzerBusOnly.analyzeTransportationCosts(communities);
-            
-            // Export both analyses
-            TransportationAnalysisExporter.exportAnalyses(
-                clusteringAlgorithm,
+        // Analysis with minibuses
+        OptimizedTransportationCostAnalyzer optimizedAnalyzer = new OptimizedTransportationCostAnalyzer(graph, true);
+        optimizedAnalyzer.analyzeTransportationCosts(communities);
+        
+        // Analysis with buses only
+        OptimizedTransportationCostAnalyzer busesOnlyAnalyzer = new OptimizedTransportationCostAnalyzer(graph, false);
+        busesOnlyAnalyzer.analyzeTransportationCosts(communities);
+        
+        // Export both analyses
+        TransportationAnalysisExporter.exportAnalyses(
+                clusteringAlgorithm, 
                 graphStrategy,
-                analyzerWithMinibus,
-                analyzerBusOnly
-            );
-            
-            LOGGER.info("Both analyses have been exported successfully");
-            
-            // Print summary of both analyses
-            System.out.println("\n===== ANALYSIS SUMMARY =====");
-            System.out.println("ANALYSIS WITH MINIBUSES:");
-            analyzerWithMinibus.printCostSummary();
-            
-            System.out.println("\nANALYSIS WITH BUSES ONLY:");
-            analyzerBusOnly.printCostSummary();
-            
-        } catch (IOException e) {
-            LOGGER.severe("Error exporting analyses: " + e.getMessage());
-        }
+                outlierAlgorithm,
+                applyOutlierDetection,
+                optimizedAnalyzer, 
+                busesOnlyAnalyzer);
+        
+        LOGGER.info("Both analyses have been exported successfully");
+        
+        // Print a summary of both analyses
+        System.out.println("\n===== ANALYSIS SUMMARY =====");
+        System.out.println("ANALYSIS WITH MINIBUSES:");
+        optimizedAnalyzer.printCostSummary();
+        System.out.println("\nANALYSIS WITH BUSES ONLY:");
+        busesOnlyAnalyzer.printCostSummary();
     }
     
     /**

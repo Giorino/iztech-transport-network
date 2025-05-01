@@ -42,12 +42,16 @@ public class TransportationAnalysisExporter {
      * 
      * @param clusteringAlgorithm The clustering algorithm used
      * @param graphStrategy The graph construction strategy used
+     * @param outlierAlgorithm The outlier detection algorithm used
+     * @param applyOutlierDetection Whether outlier detection is applied
      * @param analyzers Array of analyzers containing the analysis results (first with minibus, second buses only)
      * @throws IOException If there's an error writing to the files
      */
     public static void exportAnalyses(
             String clusteringAlgorithm, 
             String graphStrategy,
+            String outlierAlgorithm,
+            boolean applyOutlierDetection,
             OptimizedTransportationCostAnalyzer... analyzers) throws IOException {
         
         // Create directory structure
@@ -62,8 +66,12 @@ public class TransportationAnalysisExporter {
             dir.mkdirs();
         }
         
+        // Include outlier algorithm in filename
+        String outlierPart = applyOutlierDetection ? outlierAlgorithm : "NO_OUTLIER";
+        
         // Base part of the filename including the date
-        String baseFilename = todayDate + "_" + clusteringAlgorithm + "_" + graphStrategy + "_" + currentTime;
+        String baseFilename = todayDate + "_" + clusteringAlgorithm + "_" + graphStrategy + "_" + 
+                outlierPart + "_" + currentTime;
         
         // Export files with correct vehicle mode in the filename
         if (analyzers.length >= 1) {

@@ -43,10 +43,10 @@ public class App
     // Configuration properties
     private static final int NODE_COUNT = 2000; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
-            GraphConstructionService.GraphStrategy.GABRIEL; // Using Greedy Spanner graph
+            GraphConstructionService.GraphStrategy.COMPLETE; // Using Greedy Spanner graph
     private static final int K_VALUE = 30; // K value for spanner's stretch factor (2k-1)
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using SPECTRAL algorithm
+            ClusteringService.ClusteringAlgorithm.MVAGC; // Using SPECTRAL algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
@@ -57,7 +57,7 @@ public class App
     private static final boolean APPLY_OUTLIER_DETECTION = false; // Whether to apply outlier detection
     private static final OutlierDetectionService.OutlierAlgorithm OUTLIER_ALGORITHM = 
             OutlierDetectionService.OutlierAlgorithm.KNN_DISTANCE; // Default outlier detection algorithm
-    private static final double OUTLIER_THRESHOLD = 2.75; // Number of standard deviations to consider as outlier
+    private static final double OUTLIER_THRESHOLD = 5; // Number of standard deviations to consider as outlier
     private static final int OUTLIER_K_VALUE = 5; // K value for KNN_DISTANCE algorithm
     private static final boolean VISUALIZE_OUTLIERS = true; // Whether to visualize outliers
     private static final int OUTLIER_MAX_THREADS = Runtime.getRuntime().availableProcessors(); // Use all available processors
@@ -242,7 +242,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), OUTLIER_ALGORITHM.toString(), APPLY_OUTLIER_DETECTION);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
@@ -285,7 +286,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), OUTLIER_ALGORITHM.toString(), APPLY_OUTLIER_DETECTION);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
@@ -329,7 +331,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), OUTLIER_ALGORITHM.toString(), APPLY_OUTLIER_DETECTION);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
@@ -373,7 +376,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), OUTLIER_ALGORITHM.toString(), APPLY_OUTLIER_DETECTION);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
@@ -403,7 +407,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        filteredGraph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), OUTLIER_ALGORITHM.toString(), APPLY_OUTLIER_DETECTION);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(filteredGraph, communities, USE_MINIBUS);
@@ -436,7 +441,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), "NO_OUTLIER", false);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
@@ -479,7 +485,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), "NO_OUTLIER", false);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
@@ -523,7 +530,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), "NO_OUTLIER", false);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
@@ -567,7 +575,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), "NO_OUTLIER", false);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
@@ -597,7 +606,8 @@ public class App
                     // Perform advanced transportation cost analysis with both vehicle options
                     LOGGER.info("Performing transportation cost analysis with vehicle options comparison...");
                     TransportationCostAnalysis.analyzeAndCompareVehicleOptions(
-                        graph, communities, CLUSTERING_ALGORITHM.toString(), GRAPH_STRATEGY.toString(), K_VALUE);
+                        graph, communities, CLUSTERING_ALGORITHM.toString(), 
+                        GRAPH_STRATEGY.toString(), "NO_OUTLIER", false);
                     
                     // Regular analysis for compatibility
                     clusterMetrics = TransportationCostAnalysis.analyzeCosts(graph, communities, USE_MINIBUS);
