@@ -98,6 +98,17 @@ public class TransportationAnalysisExporter {
             // Write each community's data
             Map<Integer, CommunityTransportationCost> costs = analyzer.getCommunityCosts();
             
+            // Track totals for summary row
+            double totalDistanceKm = 0;
+            double totalFuelLiters = 0;
+            double totalFuelCost = 0;
+            double totalFixedCost = 0;
+            double grandTotalCost = 0;
+            int totalVehicles = 0;
+            int totalNodeCount = 0;
+            int busCount = 0;
+            int minibusCount = 0;
+            
             for (CommunityTransportationCost cost : costs.values()) {
                 VehicleType vehicleType = VehicleType.BUS; // Default
                 
@@ -107,10 +118,26 @@ public class TransportationAnalysisExporter {
                 
                 String vehicleTypeStr = vehicleType.name();
                 
+                // Count vehicle types
+                if (vehicleType == VehicleType.BUS) {
+                    busCount += cost.getBusCount();
+                } else {
+                    minibusCount += cost.getBusCount();
+                }
+                
                 double fixedCostPerVehicle = vehicleType.getFixedCost();
                 double fixedCost = cost.getBusCount() * fixedCostPerVehicle;
                 double fuelCost = cost.getTotalFuelLiters() * OptimizedTransportationCostAnalyzer.FUEL_COST_PER_LITER;
                 double totalCost = fuelCost + fixedCost;
+                
+                // Update totals
+                totalDistanceKm += cost.getTotalDistanceKm();
+                totalFuelLiters += cost.getTotalFuelLiters();
+                totalFuelCost += fuelCost;
+                totalFixedCost += fixedCost;
+                grandTotalCost += totalCost;
+                totalVehicles += cost.getBusCount();
+                totalNodeCount += cost.getNodeCount();
                 
                 writer.write(cost.getCommunityId() + ";");
                 writer.write(cost.getNodeCount() + ";");
@@ -122,6 +149,20 @@ public class TransportationAnalysisExporter {
                 writer.write(formatDecimal(fixedCost) + ";");
                 writer.write(formatDecimal(totalCost) + "\n");
             }
+            
+            // Write a blank line for readability
+            writer.write("\n");
+            
+            // Write the totals row
+            writer.write("TOTAL;");
+            writer.write(totalNodeCount + ";");
+            writer.write(";"); // No vehicle type for total
+            writer.write(totalVehicles + " (B:" + busCount + " M:" + minibusCount + ");");
+            writer.write(formatDecimal(totalDistanceKm) + ";");
+            writer.write(formatDecimal(totalFuelLiters) + ";");
+            writer.write(formatDecimal(totalFuelCost) + ";");
+            writer.write(formatDecimal(totalFixedCost) + ";");
+            writer.write(formatDecimal(grandTotalCost) + "\n");
         }
         
         System.out.println("Simplified analysis exported to: " + filename);

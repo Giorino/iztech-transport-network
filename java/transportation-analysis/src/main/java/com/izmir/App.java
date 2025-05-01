@@ -41,7 +41,7 @@ public class App
     static Logger LOGGER = Logger.getLogger(App.class.getName());
     
     // Configuration properties
-    private static final int NODE_COUNT = 200; // Number of nodes to generate
+    private static final int NODE_COUNT = 2000; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
             GraphConstructionService.GraphStrategy.GABRIEL; // Using Greedy Spanner graph
     private static final int K_VALUE = 30; // K value for spanner's stretch factor (2k-1)
@@ -54,7 +54,7 @@ public class App
     private static final boolean SAVE_GRAPH = true; // Whether to save the graph for future use
     
     // Outlier detection configuration
-    private static final boolean APPLY_OUTLIER_DETECTION = true; // Whether to apply outlier detection
+    private static final boolean APPLY_OUTLIER_DETECTION = false; // Whether to apply outlier detection
     private static final OutlierDetectionService.OutlierAlgorithm OUTLIER_ALGORITHM = 
             OutlierDetectionService.OutlierAlgorithm.KNN_DISTANCE; // Default outlier detection algorithm
     private static final double OUTLIER_THRESHOLD = 2.75; // Number of standard deviations to consider as outlier
