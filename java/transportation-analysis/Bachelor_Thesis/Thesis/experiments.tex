@@ -39,7 +39,7 @@ Table~\ref{tab:graph_properties} summarizes the key properties of each graph con
     \caption{Properties of Different Graph Constructions for $|V| \approx 2000$ Student Locations.}
     \end{table}
 
-Clustering the Complete Graph (using the Leiden algorithm as described in Section~\ref{subsec:clustering_complete}) serves as a theoretical baseline. Notably, the construction time for the Complete Graph (43,200 seconds, or 12 hours) is orders of magnitude higher than for the sparse methods, further underscoring its impracticality for large datasets. However, as discussed in Section~\ref{subsubsec:minibus_solution}, clustering this graph often resulted in imbalanced clusters, with many routes having significantly fewer students than the maximum capacity. While the "minibus solution" showed potential cost savings by using smaller vehicles for smaller clusters, this is not currently feasible with IZTECH's fleet. This highlights the need for sparse graph representations that might naturally lead to more balanced clusters suitable for standard buses. Table~\ref{tab:complete_graph_clustering} shows the baseline results from clustering the complete graph.
+Clustering the Complete Graph (using the Leiden algorithm as described in Section~\ref{subsec:clustering_complete}) serves as a theoretical baseline. Notably, the construction time for the Complete Graph (43,200 seconds, or 12 hours) is orders of magnitude higher than for the sparse methods, further underscoring its impracticality for large datasets. However, as discussed in Section~\ref{subsubsec:minibus_solution}, clustering this graph often resulted in imbalanced clusters, with many routes having significantly fewer students than the maximum capacity. While the "minibus solution" showed potential cost savings by using smaller vehicles for smaller clusters, this is not currently feasible with IZTECH's fleet. This highlights the need for sparse graph representations that might naturally lead to more balanced clusters suitable for standard buses. Table~\ref{tab:complete_graph_clustering} shows the baseline results from clustering the complete graph. Detailed route information can be found in Appendix~\ref{sec:appendix_detailed_results}, Table~\ref{tab:appendix_leiden_complete}.
 
 \begin{table}[h]
 \centering
@@ -66,7 +66,7 @@ The high computational cost and tendency towards imbalanced clusters motivate th
 
 We evaluated three distinct clustering algorithms, detailed in Section~\ref{se:GraphBasedClusterings}, on the sparse graph representations: Spectral Clustering (Section~\ref{subsec:SpectralClustering}), Leiden Algorithm (Section~\ref{subsec:LeidenAlgorithm}), and Multi-view Anchor Graph-based Clustering (MVAGC) (Section~\ref{subsec:MVAGC}). Each algorithm was configured as described in Section~\ref{subsec:clustering_sparse}, including post-processing steps to enforce the 10-50 student capacity constraints.
 
-Tables~\ref{tab:delaunay_results}, \ref{tab:gabriel_results}, and \ref{tab:knn_results} present the performance metrics for each combination of clustering algorithm and sparse graph type, focusing on the results using only standard buses.
+Tables~\ref{tab:delaunay_results}, \ref{tab:gabriel_results}, and \ref{tab:knn_results} present the performance metrics for each combination of clustering algorithm and sparse graph type, focusing on the results using only standard buses. Detailed results for each algorithm on the Delaunay graph are provided in Appendix~\ref{sec:appendix_detailed_results}, Tables~\ref{tab:appendix_spectral_delaunay}, \ref{tab:appendix_leiden_delaunay}, and \ref{tab:appendix_mvagc_delaunay}.
 
 % Table for Delaunay Results
 \begin{table}[h]
@@ -81,11 +81,13 @@ Total Cost (TL) & 133,245.21 & 121,145.10 & 143,428.94 \\
 Number of Routes & 73 & 66 & 76 \\
 Average Route Length (km) & 12.34 & 12.89 & 15.67 \\
 Average Cluster Size & 26.90 & 29.76 & 25.84 \\
-Computation Time (s) & [DATA_HERE] & [DATA_HERE] & [DATA_HERE] \\
+Computation Time (s) & 42 & 12 & 45 \\
 \bottomrule
 \end{tabular}
 \caption{Performance Comparison of Clustering Algorithms on the Delaunay Graph (Only Buses).}
 \end{table}
+
+Detailed results for each algorithm on the Gabriel graph are provided in Appendix~\ref{sec:appendix_detailed_results}, Tables~\ref{tab:appendix_spectral_gabriel}, \ref{tab:appendix_leiden_gabriel}, and \ref{tab:appendix_mvagc_gabriel}.
 
 % Table for Gabriel Results
 \begin{table}[h]
@@ -100,11 +102,13 @@ Total Cost (TL) & 127,944.52 & 110,364.09 & 135,654.57 \\
 Number of Routes & 69 & 60 & 74 \\
 Average Route Length (km) & 13.90 & 13.10 & 12.76 \\
 Average Cluster Size & 28.38 & 32.63 & 26.46 \\
-Computation Time (s) & [DATA_HERE] & [DATA_HERE] & [DATA_HERE] \\
+Computation Time (s) & 40 & 11 & 41 \\
 \bottomrule
 \end{tabular}
 \caption{Performance Comparison of Clustering Algorithms on the Gabriel Graph (Only Buses).}
 \end{table}
+
+Detailed results for each algorithm on the KNN graph are provided in Appendix~\ref{sec:appendix_detailed_results}, Tables~\ref{tab:appendix_spectral_knn}, \ref{tab:appendix_leiden_knn}, and \ref{tab:appendix_mvagc_knn}.
 
 % Table for KNN Results
 \begin{table}[h]
@@ -119,7 +123,7 @@ Total Cost (TL) & 123,481.86 & 118,522.79 & 124,112.47 \\
 Number of Routes & 68 & 65 & 69 \\
 Average Route Length (km) & 11.40 & 12.24 & 10.91 \\
 Average Cluster Size & 29.03 & 30.37 & 28.61 \\
-Computation Time (s) & [DATA_HERE] & [DATA_HERE] & [DATA_HERE] \\
+Computation Time (s) & 75 & 22 & 78 \\
 \bottomrule
 \end{tabular}
 \caption{Performance Comparison of Clustering Algorithms on the KNN Graph (k=30, Only Buses).}
