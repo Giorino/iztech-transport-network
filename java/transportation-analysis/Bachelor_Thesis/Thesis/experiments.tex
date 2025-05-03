@@ -66,7 +66,7 @@ The high computational cost and tendency towards imbalanced clusters motivate th
 
 We evaluated three distinct clustering algorithms, detailed in Section~\ref{se:GraphBasedClusterings}, on the sparse graph representations: Spectral Clustering (Section~\ref{subsec:SpectralClustering}), Leiden Algorithm (Section~\ref{subsec:LeidenAlgorithm}), and Multi-view Anchor Graph-based Clustering (MVAGC) (Section~\ref{subsec:MVAGC}). Each algorithm was configured as described in Section~\ref{subsec:clustering_sparse}, including post-processing steps to enforce the 10-50 student capacity constraints.
 
-Tables~\ref{tab:delaunay_results}, \ref{tab:gabriel_results}, and \ref{tab:knn_results} present the performance metrics for each combination of clustering algorithm and sparse graph type, focusing on the results using only standard buses. Detailed results for each algorithm on the Delaunay graph are provided in Appendix~\ref{sec:appendix_detailed_results}, Tables~\ref{tab:appendix_spectral_delaunay}, \ref{tab:appendix_leiden_delaunay}, and \ref{tab:appendix_mvagc_delaunay}.
+Tables~\ref{tab:delaunay_results}, \ref{tab:gabriel_results}, and \ref{tab:knn_results} present the aggregated performance metrics for each combination of clustering algorithm and sparse graph type, focusing on the results using only standard buses. The detailed per-route results, including community IDs, node counts, distances, and costs for each specific algorithm and graph combination (Spectral/Delaunay, Leiden/Delaunay, MVAGC/Delaunay, Spectral/Gabriel, Leiden/Gabriel, MVAGC/Gabriel, Spectral/KNN, Leiden/KNN, MVAGC/KNN), can be found in Appendix~\ref{sec:appendix_detailed_results}, specifically in Tables~\ref{tab:appendix_spectral_delaunay} through \ref{tab:appendix_mvagc_knn}.
 
 % Table for Delaunay Results
 \begin{table}[h]
@@ -87,8 +87,6 @@ Computation Time (s) & 42 & 12 & 45 \\
 \caption{Performance Comparison of Clustering Algorithms on the Delaunay Graph (Only Buses).}
 \end{table}
 
-Detailed results for each algorithm on the Gabriel graph are provided in Appendix~\ref{sec:appendix_detailed_results}, Tables~\ref{tab:appendix_spectral_gabriel}, \ref{tab:appendix_leiden_gabriel}, and \ref{tab:appendix_mvagc_gabriel}.
-
 % Table for Gabriel Results
 \begin{table}[h]
 \centering
@@ -107,8 +105,6 @@ Computation Time (s) & 40 & 11 & 41 \\
 \end{tabular}
 \caption{Performance Comparison of Clustering Algorithms on the Gabriel Graph (Only Buses).}
 \end{table}
-
-Detailed results for each algorithm on the KNN graph are provided in Appendix~\ref{sec:appendix_detailed_results}, Tables~\ref{tab:appendix_spectral_knn}, \ref{tab:appendix_leiden_knn}, and \ref{tab:appendix_mvagc_knn}.
 
 % Table for KNN Results
 \begin{table}[h]
