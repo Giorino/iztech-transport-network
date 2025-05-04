@@ -130,7 +130,7 @@ Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visu
 % Placeholder for Cost Comparison Bar Chart
 \begin{figure}[h]
     \centering
-    % \includegraphics[width=0.8\textwidth]{[FIGURE_PATH_COST_BAR_CHART]}
+    \includegraphics[width=0.8\textwidth]{[img/cost_comparsison]}
     \fbox{Placeholder for Cost Comparison Bar Chart}
     \caption{Comparison of Total Transportation Cost across different graph types and clustering algorithms.}
     \label{fig:cost_comparison}
@@ -139,7 +139,7 @@ Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visu
 % Placeholder for Routes Comparison Bar Chart
 \begin{figure}[h]
     \centering
-    % \includegraphics[width=0.8\textwidth]{[FIGURE_PATH_ROUTES_BAR_CHART]}
+    \includegraphics[width=0.8\textwidth]{[img/routes_count_comparison]}
     \fbox{Placeholder for Route Count Bar Chart}
     \caption{Comparison of the Number of Routes Generated across different graph types and clustering algorithms.}
     \label{fig:routes_comparison}
@@ -155,22 +155,6 @@ Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visu
 \end{figure}
 
 The results indicate that the combination of the Gabriel graph and the Leiden algorithm yielded the lowest overall transportation cost (110,364.09 TL) and required the fewest buses (60). The Leiden/KNN combination was slightly more expensive but had a good average cluster size (30.37). The MVAGC/KNN combination yielded the shortest average routes (10.91 km) but required more buses (69) and had a higher cost (124,112.47 TL) than the top Leiden solutions. Spectral clustering generally resulted in higher costs and a comparable or higher number of routes than Leiden.
-
-\section{Experiment 3: Route Optimization Analysis}
-\label{sec:exp_route_opt}
-
-Following the clustering phase, the optimal intra-cluster route for each bus was determined using Dijkstra's algorithm (Section~\ref{subsec:DijkstrasAlgorithm}) applied to the subgraph induced by each cluster's members. The edge weights within the cluster were the Euclidean distances. This step calculates the actual path the bus would take to pick up all students in its assigned cluster, minimizing the travel distance for that specific route. The sum of these optimized route lengths forms the basis for the total cost calculation.
-
-Figure~\ref{fig:example_optimized_route} shows an example of such an optimized route computed for a single cluster obtained from the Leiden/Gabriel approach.
-
-% Placeholder for Example Optimized Route
-\begin{figure}[h]
-    \centering
-    % \includegraphics[width=0.7\textwidth]{[FIGURE_PATH_EXAMPLE_ROUTE]}
-    \fbox{Placeholder for Example Optimized Route Visualization (Leiden on Gabriel)}
-    \caption{Example of an optimized pick-up route within a single student cluster from the Leiden/Gabriel solution, calculated using Dijkstra's algorithm.}
-    \label{fig:example_optimized_route}
-\end{figure}
 
 \section{Discussion}
 \label{sec:discussion}
