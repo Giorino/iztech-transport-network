@@ -77,14 +77,14 @@ Tables~\ref{tab:delaunay_results}, \ref{tab:gabriel_results}, and \ref{tab:knn_r
 \toprule
 Metric & Spectral & Leiden & MVAGC \\
 \midrule
-Total Cost (TL) & 133,245.21 & 121,145.10 & 143,428.94 \\
-Number of Routes & 73 & 66 & 76 \\
-Average Route Length (km) & 12.34 & 12.89 & 15.67 \\
-Average Cluster Size & 26.90 & 29.76 & 25.84 \\
+Total Cost (TL) & 128,448.02 & 124,274.31 & 151,810.10 \\
+Number of Routes & 72 & 67 & 80 \\
+Average Route Length (km) & 10.12 & 13.93 & 16.23 \\
+Average Cluster Size & 27.47 & 29.52 & 24.73 \\
 Computation Time (s) & 42 & 12 & 45 \\
 \bottomrule
 \end{tabular}
-\caption{Performance Comparison of Clustering Algorithms on the Delaunay Graph (Only Buses).}
+\caption{Performance Comparison of Clustering Algorithms on the Delaunay Graph (Only Buses, No Outlier Removal).} % Updated Caption
 \end{table}
 
 % Table for Gabriel Results
@@ -96,14 +96,14 @@ Computation Time (s) & 42 & 12 & 45 \\
 \toprule
 Metric & Spectral & Leiden & MVAGC \\
 \midrule
-Total Cost (TL) & 127,944.52 & 110,364.09 & 135,654.57 \\
-Number of Routes & 69 & 60 & 74 \\
-Average Route Length (km) & 13.90 & 13.10 & 12.76 \\
-Average Cluster Size & 28.38 & 32.63 & 26.46 \\
-Computation Time (s) & 40 & 11 & 41 \\
+Total Cost (TL) & 123,648.12 & 115,095.07 & 130,155.86 \\
+Number of Routes & 68 & 62 & 69 \\
+Average Route Length (km) & 11.96 & 14.01 & 15.62 \\
+Average Cluster Size & 28.94 & 31.74 & 28.52 \\
+Computation Time (s) & 40 & 11 & 41 \\ 
 \bottomrule
 \end{tabular}
-\caption{Performance Comparison of Clustering Algorithms on the Gabriel Graph (Only Buses).}
+\caption{Performance Comparison of Clustering Algorithms on the Gabriel Graph (Only Buses, No Outlier Removal).} % Updated Caption
 \end{table}
 
 % Table for KNN Results
@@ -115,14 +115,14 @@ Computation Time (s) & 40 & 11 & 41 \\
 \toprule
 Metric & Spectral & Leiden & MVAGC \\
 \midrule
-Total Cost (TL) & 123,481.86 & 118,522.79 & 124,112.47 \\
-Number of Routes & 68 & 65 & 69 \\
-Average Route Length (km) & 11.40 & 12.24 & 10.91 \\
-Average Cluster Size & 29.03 & 30.37 & 28.61 \\
-Computation Time (s) & 75 & 22 & 78 \\
+Total Cost (TL) & 122,696.43 & 123,075.14 & 124,970.64 \\
+Number of Routes & 67 & 67 & 69 \\
+Average Route Length (km) & 12.66 & 12.96 & 11.58 \\
+Average Cluster Size & 29.64 & 29.64 & 28.78 \\
+Computation Time (s) & 75 & 22 & 78 \\ 
 \bottomrule
 \end{tabular}
-\caption{Performance Comparison of Clustering Algorithms on the KNN Graph (k=30, Only Buses).}
+\caption{Performance Comparison of Clustering Algorithms on the KNN Graph (k=30, Only Buses, No Outlier Removal).} % Updated Caption
 \end{table}
 
 Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visual summary of the total cost and number of routes across all combinations. Figure~\ref{fig:best_clustering_viz} illustrates the geographical distribution of clusters for the best performing combination identified (Leiden algorithm on Gabriel graph, based on the lowest total cost).
@@ -154,23 +154,23 @@ Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visu
     \label{fig:best_clustering_viz}
 \end{figure}
 
-The results indicate that the combination of the Gabriel graph and the Leiden algorithm yielded the lowest overall transportation cost (110,364.09 TL) and required the fewest buses (60). The Leiden/KNN combination was slightly more expensive but had a good average cluster size (30.37). The MVAGC/KNN combination yielded the shortest average routes (10.91 km) but required more buses (69) and had a higher cost (124,112.47 TL) than the top Leiden solutions. Spectral clustering generally resulted in higher costs and a comparable or higher number of routes than Leiden.
+The results indicate that the combination of the Gabriel graph and the Leiden algorithm yielded the lowest overall transportation cost (115,095.07 TL) and required the fewest buses (62). The Spectral/KNN combination was the second-best in terms of cost (122,696.43 TL) with 67 routes. The Spectral/Gabriel combination showed a similar cost (123,648.12 TL) with slightly more routes (68). The MVAGC/Delaunay combination yielded the highest cost (151,810.10 TL) and required the most buses (80), making it the least efficient option. Interestingly, the Leiden/KNN combination (123,075.14 TL), while not offering the lowest cost, provided a balanced cluster size (29.64).
 
 \section{Discussion}
 \label{sec:discussion}
 
-The experimental evaluation demonstrates the effectiveness of graph-based methods for optimizing the IZTECH student transportation network using only standard buses. Key findings include:
+The experimental evaluation demonstrates the effectiveness of graph-based methods for optimizing the IZTECH student transportation network using only standard buses, without specific outlier removal steps during clustering post-processing. Key findings include:
 
 \begin{itemize}
     \item Sparse graph representations (Delaunay, Gabriel, KNN) are crucial for computational tractability and often lead to better routing solutions compared to the complete graph.
     \item The choice of both the sparse graph construction method and the clustering algorithm significantly impacts the final solution's cost, number of routes, and route characteristics.
-    \item Based on our primary metric of minimizing total transportation cost, the combination of the \textbf{Gabriel graph} construction and the \textbf{Leiden algorithm} provided the most promising results, achieving a total cost of \textbf{110,364.09 TL} with \textbf{60} routes. This represents a cost saving of approximately 11% compared to the baseline Leiden/Complete graph result.
-    \item Trade-offs exist: The Leiden/Gabriel combination had the lowest cost and fewest buses. The Leiden/KNN combination was slightly more expensive but had a good average cluster size (30.37). The MVAGC/KNN combination yielded the shortest average routes (10.91 km) but required more buses (69) and had a higher cost (124,112.47 TL) than the top Leiden solutions.
-    \item The Leiden algorithm demonstrated strong performance, achieving the lowest cost on the Gabriel graph and the second-lowest cost on the KNN graph.
+    \item Based on our primary metric of minimizing total transportation cost, the combination of the \textbf{Gabriel graph} construction and the \textbf{Leiden algorithm} provided the most promising results, achieving a total cost of \textbf{115,095.07 TL} with \textbf{62} routes. This represents a cost saving of approximately 7.1\% compared to the baseline Leiden/Complete graph result (123,882.96 TL).
+    \item Trade-offs exist: The Leiden/Gabriel combination had the lowest cost and fewest buses, with the highest average cluster size (31.74). The Spectral/KNN combination achieved a good balance of low cost (122,696.43 TL) and reasonable average cluster size (29.64). The MVAGC/KNN combination yielded the shortest average routes (11.58 km) but had a higher cost (124,970.64 TL).
+    \item The Leiden algorithm demonstrated strong performance, achieving the lowest cost on the Gabriel graph, though it did not perform as well on the KNN graph where Spectral clustering achieved a lower cost.
     \item All evaluated methods successfully produced routes adhering to the 10-50 student capacity constraints when applied to sparse graphs, unlike the baseline complete graph approach which tended towards imbalance (average size 29.18, but likely with wider variance not shown in summary).
 \end{itemize}
 
-These results suggest that adopting a \textbf{Gabriel graph representation combined with Leiden clustering} offers the strongest strategy for IZTECH to optimize its existing bus fleet usage, potentially leading to significant cost savings compared to less structured routing approaches or the baseline complete graph clustering. The Leiden/KNN combination presents a viable alternative if slightly higher costs are acceptable for potentially better balanced loads (average cluster size closer to 30). Further analysis could involve incorporating real road network distances instead of Euclidean distances and considering time-based constraints or traffic patterns.
+These results suggest that adopting a \textbf{Gabriel graph representation combined with Leiden clustering} offers the strongest strategy for IZTECH to optimize its existing bus fleet usage, potentially leading to significant cost savings compared to less structured routing approaches or the baseline complete graph clustering. The Spectral/KNN combination presents a viable alternative if slightly higher costs are acceptable for potentially better balanced loads. Further analysis could involve incorporating real road network distances instead of Euclidean distances and considering time-based constraints or traffic patterns, as well as explicitly comparing these results to those obtained *with* outlier removal in a separate experiment.
 
 % Remove the template figures and tables
 % \begin{figure}[h] % do NOT use parameter h!
