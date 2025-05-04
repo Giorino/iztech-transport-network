@@ -282,6 +282,17 @@ This approach leverages the efficiency of Dijkstra's algorithm while addressing 
 \section{Robustness for Clustering Graph Representation of IZTECH}
 \label{sec:robustness}
 
+To ensure the reliability and validity of the clustering results and subsequent route optimization, it is important to consider the robustness of the approach. This involves assessing how sensitive the outcomes are to variations in the input data or parameters. One crucial step performed prior to clustering was outlier detection, aimed at identifying and potentially removing data points that could disproportionately affect the clustering process and lead to impractical or inefficient routes.
+
+\subsection{Application of KNN Distance Outlier Detection}
+\label{subsec:knn_outlier_application}
+
+Before applying the clustering algorithms described in Section~\ref{sec:clustering_graph}, we implemented an outlier detection step using the K-Nearest Neighbor (KNN) distance method (detailed theoretically in Section~\ref{subsec:KNNDistanceOutlier}). The primary goal was to identify student locations from the synthetic dataset that were either unusually isolated. Such points could negatively impact the formation of sensible and efficient transportation clusters.
+
+We configured the KNN distance algorithm with $k=5$. For each student location (node), the average Euclidean distance to its 5 nearest neighbors was calculated. We then computed the mean and standard deviation of these average distances across all nodes in the dataset.
+
+A node was flagged as an outlier if its average 5-NN distance deviated significantly from the overall mean. Specifically, we used a standard deviation threshold of 5.0. Any node whose average 5-NN distance was more than 5.0 standard deviations away from the mean (either above or below) was marked as an outlier. Nodes identified as outliers were subsequently excluded from the graph representations before the clustering algorithms were executed. This preprocessing step helped to refine the dataset, removing potential noise and improving the quality and practicality of the resulting transportation clusters and routes. Our implementation leveraged parallel processing to efficiently compute the KNN distances for the 2000 student locations.
+
 % Commenting out the example algorithm from the template
 % \begin{algorithm}
 % \begin{algorithmic}[1]

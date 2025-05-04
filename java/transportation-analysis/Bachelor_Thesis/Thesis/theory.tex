@@ -216,3 +216,42 @@ where $\cdot$ denotes path concatenation. This recursive definition builds the p
 \State \Return $\text{dist}$ and $\text{prev}$ arrays
 \end{algorithmic}
 \end{algorithm}
+
+\section{Outlier Detection}
+\label{se:OutlierDetection}
+
+Before analyzing network structures like communities or shortest paths, it is often crucial to identify and handle outliers in the data. Outliers, which are data points significantly different from the majority, can arise from various sources such as data entry errors, measurement inaccuracies, or genuinely unusual but valid observations. In the context of transportation networks represented as graphs, outliers might correspond to geographically isolated locations, incorrectly mapped points, or densely clustered points representing duplicates. Failing to address outliers can skew the results of subsequent analyses like clustering or pathfinding. Various methods exist for outlier detection in spatial or graph data.
+
+\subsection{K-Nearest Neighbor (KNN) Distance Outlier Detection}
+\label{subsec:KNNDistanceOutlier}
+
+The K-Nearest Neighbor (KNN) distance-based outlier detection method identifies outliers by examining the local density of data points \cite{knn_outlier}. The core principle is that normal data points tend to have a similar density of neighbors, whereas outliers often reside in sparser regions (isolated points) or unusually dense regions (potential duplicates or overlapping points).
+
+The algorithm calculates, for each data point $p$, the distance to its $k$-th nearest neighbor, denoted as $d_k(p)$, or alternatively, the average distance to its $k$ nearest neighbors. Points with significantly larger $d_k(p)$ values compared to the rest of the dataset are considered potential outliers, as they are relatively isolated. Conversely, points with unusually small distances (approaching zero) might indicate duplicate entries or points that are too close to be distinct locations in the context of the analysis.
+
+To formally identify outliers, a threshold is typically established based on the distribution of these KNN distances. For instance, points whose KNN distance exceeds a certain number of standard deviations from the mean KNN distance across all points can be flagged as outliers. The choice of $k$ is a critical parameter, influencing the algorithm's sensitivity to local density variations. A smaller $k$ detects outliers based on very local neighborhoods, while a larger $k$ considers a broader context.
+
+\begin{algorithm}[H]
+\caption{KNN Distance-Based Outlier Detection}
+\label{alg:knn_outlier}
+\begin{algorithmic}[1]
+\Require Dataset $D = \{p_1, \dots, p_n\}$, integer $k$, threshold $t$
+\Ensure Set of outliers $O$
+
+\State Initialize $O \gets \emptyset$
+\State Initialize $knn\_distances \gets \emptyset$
+\For{each point $p_i \in D$}
+    \State Find the $k$ nearest neighbors $N_k(p_i)$ of $p_i$ in $D \setminus \{p_i\}$
+    \State Calculate the average distance to the $k$ neighbors: $avg\_dist(p_i) = \frac{1}{k} \sum_{p_j \in N_k(p_i)} \text{distance}(p_i, p_j)$
+    \Comment{Alternatively, use distance to $k$-th neighbor: $d_k(p_i) = \text{distance}(p_i, p_k)$, where $p_k$ is the $k$-th neighbor}
+    \State Add $avg\_dist(p_i)$ to $knn\_distances$
+\EndFor
+\State Calculate mean $\mu$ and standard deviation $\sigma$ of values in $knn\_distances$
+\For{each point $p_i \in D$}
+    \If{$|avg\_dist(p_i) - \mu| > t \cdot \sigma$}
+        \State Add $p_i$ to $O$
+    \EndIf
+\EndFor
+\State \Return $O$
+\end{algorithmic}
+\end{algorithm}
