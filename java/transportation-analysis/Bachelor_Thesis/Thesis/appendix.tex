@@ -2,6 +2,82 @@
 \chapter{Appendix Title}
 \label{appendix:appendix}
 
+% Global settings for more compact tables in the appendix
+\setlength{\tabcolsep}{3.5pt}  % Reduce column spacing
+\renewcommand{\arraystretch}{0.85}  % Make table rows more compact
+
+% Define a compact table environment for all tables in the appendix
+\newenvironment{compacttable}
+{\begingroup\footnotesize}
+{\endgroup}
+
+\section*{Note on Detailed Results Tables}
+The detailed clustering results tables in this appendix present the per-route results for each algorithm. To conserve space, all tables use reduced font size and compact formatting.
+
+\subsection*{Alternative Layout Options}
+For better space utilization, consider one of these alternatives:
+
+\begin{enumerate}
+    \item \textbf{Multi-column layout}: Import the multicol package in main.tex and surround tables with:
+    \begin{verbatim}
+    \begin{multicols}{2}
+    % Tables here
+    \end{multicols}
+    \end{verbatim}
+    
+    \item \textbf{Summary tables}: Instead of showing all community details, create summary tables showing statistics (min/max/avg distance, etc.) for each algorithm.
+    
+    \item \textbf{Digital appendix}: Move detailed tables to a digital appendix and only include key results in the printed thesis.
+\end{enumerate}
+
+\textbf{Example of Multi-Column Layout:} The following table demonstrates how results can be organized in a multi-column format to save space.
+
+\begin{multicols}{2}
+\begin{compacttable}
+\begin{longtable}{@{}rrr@{}}
+\caption{Example of Multi-Column Table Format}
+\label{tab:example_multicol} \\
+\toprule
+\textbf{ID} & \textbf{Nodes} & \textbf{Cost} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+1 & 25 & 1820.55 \\
+2 & 30 & 1956.23 \\
+3 & 19 & 1754.88 \\
+4 & 33 & 2014.76 \\
+5 & 27 & 1865.40 \\
+6 & 41 & 2103.92 \\
+7 & 22 & 1788.35 \\
+8 & 36 & 2055.19 \\
+9 & 16 & 1722.50 \\
+10 & 45 & 2188.67 \\
+\end{longtable}
+\end{compacttable}
+\end{multicols}
+
+\textbf{Example of Summary Table:} Instead of listing every community, a summary table can present key statistics:
+
+\begin{compacttable}
+\begin{tabularx}{\textwidth}{@{}lXXXXX@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Graph} & \textbf{Clusters} & \textbf{Avg. Dist (km)} & \textbf{Min/Max Dist} & \textbf{Avg. Cost (TL)} \\
+\midrule
+Leiden & Complete & 72 & 13.7 & 1.5/50.2 & 1850.4 \\
+Spectral & Delaunay & 74 & 10.3 & 1.2/30.3 & 1795.2 \\
+Leiden & Delaunay & 71 & 14.1 & 4.6/46.7 & 1860.7 \\
+MVAGC & Delaunay & 75 & 20.4 & 2.1/111.2 & 2055.6 \\
+Spectral & Gabriel & 67 & 12.9 & 1.6/144.1 & 1836.2 \\
+Leiden & Gabriel & 70 & 13.4 & 3.9/43.5 & 1850.8 \\
+MVAGC & Gabriel & 72 & 15.3 & 0.8/41.9 & 1881.4 \\
+Spectral & KNN & 67 & 11.8 & 2.4/29.9 & 1823.7 \\
+Leiden & KNN & 74 & 13.5 & 3.2/38.4 & 1851.2 \\
+MVAGC & KNN & 70 & 10.9 & 2.5/24.7 & 1804.5 \\
+\bottomrule
+\end{tabularx}
+\end{compacttable}
+
 Additional material can be placed here. Do not forget to refer to the appendix in the main part of your thesis.
 
 \begin{algorithm}[H]
@@ -48,25 +124,27 @@ Additional material can be placed here. Do not forget to refer to the appendix i
 \end{algorithmic}
 \end{algorithm}
 
-\usepackage{longtable} % Required for long tables
-
 \section{Detailed Clustering Results}
 \label{sec:appendix_detailed_results}
 
 This section provides the detailed per-route results for each combination of graph type and clustering algorithm evaluated in Chapter~\ref{ch:experiments}, considering only the standard bus scenario.
 
 % --- Leiden Complete (Baseline) ---
-\begin{longtable}{rrrr}
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
 \caption{Detailed Results for Leiden Clustering on Complete Graph (Only Buses)}
 \label{tab:appendix_leiden_complete} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endfirsthead
 \caption[]{Continued} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
+\endhead
+\bottomrule
+\endfoot
 0 & 17 & 24.25 & 2046.61 \\
 1 & 16 & 30.39 & 2160.80 \\
 3 & 44 & 13.68 & 1850.22 \\
@@ -135,11 +213,12 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 71 & 13 & 5.90 & 1705.67 \\
 72 & 34 & 12.31 & 1824.77 \\
 73 & 26 & 3.91 & 1668.58 \\
-\bottomrule
 \end{longtable}
+\end{compacttable}
 
 % --- Spectral Delaunay ---
-\begin{longtable}{rrrr}
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
 \caption{Detailed Results for Spectral Clustering on Delaunay Graph (Only Buses, No Outlier Removal)}
 \label{tab:appendix_spectral_delaunay} \\
 \toprule
@@ -150,6 +229,9 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 \toprule
 Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 \midrule
+\endhead
+\bottomrule
+\endfoot
 0 & 35 & 13.86 & 1853.56 \\
 1 & 45 & 3.45 & 1660.17 \\
 2 & 13 & 14.46 & 1864.71 \\
@@ -222,21 +304,25 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 71 & 42 & 12.67 & 1831.47 \\
 73 & 32 & 3.85 & 1667.53 \\
 74 & 10 & 1.19 & 1618.03 \\
-\bottomrule
 \end{longtable}
+\end{compacttable}
 
 % --- Leiden Delaunay ---
-\begin{longtable}{rrrr}
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
 \caption{Detailed Results for Leiden Clustering on Delaunay Graph (Only Buses, No Outlier Removal)}
 \label{tab:appendix_leiden_delaunay} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endfirsthead
 \caption[]{Continued} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
+\endhead
+\bottomrule
+\endfoot
 0 & 20 & 12.19 & 1822.62 \\
 1 & 14 & 13.02 & 1837.97 \\
 2 & 26 & 21.37 & 1993.17 \\
@@ -304,22 +390,25 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 70 & 37 & 11.71 & 1813.70 \\
 71 & 24 & 4.63 & 1682.01 \\
 72 & 44 & 7.03 & 1726.58 \\
-\bottomrule
 \end{longtable}
+\end{compacttable}
 
 % --- MVAGC Delaunay ---
-\begin{longtable}{rrrr}
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
 \caption{Detailed Results for MVAGC Clustering on Delaunay Graph (Only Buses, No Outlier Removal)}
 \label{tab:appendix_mvagc_delaunay} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endfirsthead
 \caption[]{Continued} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endhead
+\bottomrule
+\endfoot
 0 & 24 & 22.42 & 2012.61 \\
 2 & 36 & 24.17 & 2045.24 \\
 3 & 37 & 41.62 & 2369.58 \\
@@ -396,11 +485,12 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 104 & 54 & 5.49 & 3293.99 \\
 105 & 10 & 2.14 & 1635.80 \\
 106 & 27 & 17.28 & 1917.11 \\
-\bottomrule
 \end{longtable}
+\end{compacttable}
 
 % --- Spectral Gabriel ---
-\begin{longtable}{rrrr}
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
 \caption{Detailed Results for Spectral Clustering on Gabriel Graph (Only Buses, No Outlier Removal)}
 \label{tab:appendix_spectral_gabriel} \\
 \toprule
@@ -479,21 +569,25 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 66 & 13 & 3.77 & 1666.03 \\
 67 & 18 & 7.30 & 1731.66 \\
 71 & 26 & 3.76 & 1665.82 \\
-\bottomrule
 \end{longtable}
+\end{compacttable}
 
 % --- Leiden Gabriel ---
-\begin{longtable}{rrrr}
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
 \caption{Detailed Results for Leiden Clustering on Gabriel Graph (Only Buses, No Outlier Removal)}
 \label{tab:appendix_leiden_gabriel} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endfirsthead
 \caption[]{Continued} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
+\endhead
+\bottomrule
+\endfoot
 0 & 27 & 21.52 & 1996.02 \\
 1 & 46 & 16.17 & 1896.57 \\
 2 & 31 & 18.85 & 1946.37 \\
@@ -556,22 +650,111 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 70 & 44 & 7.90 & 1742.75 \\
 71 & 34 & 3.90 & 1668.56 \\
 72 & 43 & 5.14 & 1691.56 \\
-\bottomrule
 \end{longtable}
+\end{compacttable}
 
-% --- MVAGC Gabriel ---
-\begin{longtable}{rrrr}
-\caption{Detailed Results for MVAGC Clustering on Gabriel Graph (Only Buses, No Outlier Removal)}
-\label{tab:appendix_mvagc_gabriel} \\
+% --- Spectral KNN ---
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
+\caption{Detailed Results for Spectral Clustering on KNN Graph (k=30, Only Buses, No Outlier Removal)}
+\label{tab:appendix_spectral_knn} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endfirsthead
 \caption[]{Continued} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endhead
+\bottomrule
+\endfoot
+0 & 42 & 22.89 & 2021.67 \\
+1 & 28 & 21.55 & 1996.56 \\
+2 & 36 & 18.69 & 1943.44 \\
+3 & 25 & 11.74 & 1814.13 \\
+4 & 39 & 4.13 & 1672.68 \\
+5 & 41 & 10.18 & 1785.21 \\
+6 & 35 & 17.61 & 1923.45 \\
+7 & 32 & 15.59 & 1886.01 \\
+8 & 31 & 7.32 & 1732.14 \\
+10 & 14 & 21.40 & 1993.77 \\
+11 & 22 & 14.32 & 1862.08 \\
+12 & 14 & 20.11 & 1969.74 \\
+13 & 32 & 1.95 & 1632.35 \\
+14 & 30 & 8.89 & 1761.11 \\
+15 & 27 & 6.98 & 1725.72 \\
+16 & 29 & 10.87 & 1798.02 \\
+17 & 22 & 5.41 & 1696.69 \\
+18 & 29 & 16.68 & 1905.76 \\
+19 & 32 & 9.23 & 1767.47 \\
+20 & 36 & 8.87 & 1760.80 \\
+21 & 47 & 17.30 & 1917.54 \\
+22 & 30 & 23.69 & 2036.24 \\
+23 & 37 & 10.54 & 1791.92 \\
+24 & 37 & 14.10 & 1857.71 \\
+25 & 35 & 4.58 & 1681.09 \\
+26 & 16 & 6.70 & 1720.58 \\
+27 & 29 & 7.10 & 1728.07 \\
+28 & 21 & 19.39 & 1956.37 \\
+29 & 42 & 9.25 & 1767.81 \\
+30 & 27 & 3.69 & 1664.66 \\
+31 & 25 & 13.00 & 1837.65 \\
+32 & 40 & 8.23 & 1748.97 \\
+33 & 17 & 11.65 & 1812.47 \\
+34 & 36 & 8.95 & 1762.24 \\
+35 & 34 & 16.65 & 1905.23 \\
+36 & 40 & 18.37 & 1937.32 \\
+37 & 31 & 8.70 & 1757.67 \\
+38 & 41 & 25.88 & 2077.67 \\
+39 & 29 & 14.79 & 1870.85 \\
+40 & 40 & 12.07 & 1820.37 \\
+41 & 38 & 18.51 & 1940.02 \\
+42 & 24 & 9.05 & 1764.24 \\
+43 & 27 & 4.64 & 1682.27 \\
+44 & 32 & 6.65 & 1719.84 \\
+45 & 42 & 5.82 & 1704.27 \\
+46 & 30 & 8.13 & 1747.07 \\
+47 & 40 & 29.86 & 2151.02 \\
+48 & 28 & 12.78 & 1833.71 \\
+49 & 32 & 6.03 & 1708.14 \\
+50 & 47 & 22.74 & 2018.83 \\
+51 & 38 & 9.23 & 1767.46 \\
+52 & 22 & 21.80 & 2001.19 \\
+53 & 23 & 9.33 & 1769.29 \\
+54 & 25 & 5.46 & 1697.57 \\
+55 & 36 & 14.63 & 1867.70 \\
+56 & 14 & 15.30 & 1880.38 \\
+57 & 18 & 6.92 & 1724.66 \\
+58 & 20 & 14.62 & 1867.61 \\
+59 & 31 & 9.93 & 1780.44 \\
+60 & 24 & 10.84 & 1797.46 \\
+61 & 15 & 4.46 & 1678.96 \\
+62 & 37 & 10.34 & 1788.02 \\
+63 & 21 & 4.62 & 1681.89 \\
+64 & 34 & 5.73 & 1702.43 \\
+65 & 20 & 3.48 & 1660.68 \\
+66 & 20 & 4.44 & 1678.59 \\
+67 & 41 & 5.36 & 1695.67 \\
+\end{longtable}
+\end{compacttable}
+
+% --- MVAGC Gabriel (Restored) ---
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
+\caption{Detailed Results for MVAGC Clustering on Gabriel Graph (Only Buses, No Outlier Removal)}
+\label{tab:appendix_mvagc_gabriel} \\
+\toprule
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
+\midrule
+\endfirsthead
+\caption[]{Continued} \\
+\toprule
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
 0 & 35 & 23.15 & 2026.12 \\
 1 & 35 & 26.31 & 2084.48 \\
 2 & 37 & 12.39 & 1826.27 \\
@@ -642,22 +825,26 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 79 & 37 & 25.39 & 2067.66 \\
 80 & 45 & 8.71 & 1757.85 \\
 81 & 32 & 9.94 & 1780.80 \\
-\bottomrule
 \end{longtable}
+\end{compacttable}
 
-% --- Spectral KNN ---
-\begin{longtable}{rrrr}
-\caption{Detailed Results for Spectral Clustering on KNN Graph (k=30, Only Buses, No Outlier Removal)}
-\label{tab:appendix_spectral_knn} \\
+% --- Leiden KNN ---
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
+\caption{Detailed Results for Leiden Clustering on KNN Graph (k=30, Only Buses, No Outlier Removal)}
+\label{tab:appendix_leiden_knn} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endfirsthead
 \caption[]{Continued} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
-0 & 42 & 22.89 & 2021.67 \\
+\endhead
+\bottomrule
+\endfoot
+0 & 31 & 9.65 & 1775.36 \\
 1 & 28 & 21.55 & 1996.56 \\
 2 & 36 & 18.69 & 1943.44 \\
 3 & 25 & 11.74 & 1814.13 \\
@@ -724,174 +911,93 @@ Community ID & Node Count & Distance (km) & Total Cost (TL) \\
 65 & 20 & 3.48 & 1660.68 \\
 66 & 20 & 4.44 & 1678.59 \\
 67 & 41 & 5.36 & 1695.67 \\
-\bottomrule
 \end{longtable}
-
-% --- Leiden KNN ---
-\begin{longtable}{rrrr}
-\caption{Detailed Results for Leiden Clustering on KNN Graph (k=30, Only Buses, No Outlier Removal)}
-\label{tab:appendix_leiden_knn} \\
-\toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
-\midrule
-\endfirsthead
-\caption[]{Continued} \\
-\toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
-\midrule
-\endhead
-0 & 31 & 9.65 & 1775.36 \\
-1 & 33 & 5.05 & 1689.82 \\
-2 & 31 & 16.84 & 1908.89 \\
-3 & 21 & 3.16 & 1654.89 \\
-4 & 25 & 7.18 & 1729.55 \\
-5 & 48 & 16.48 & 1900.18 \\
-6 & 34 & 34.06 & 2228.95 \\
-8 & 19 & 15.77 & 1889.10 \\
-9 & 22 & 16.00 & 1893.09 \\
-10 & 23 & 32.16 & 2194.02 \\
-11 & 26 & 14.29 & 1861.77 \\
-12 & 30 & 14.87 & 1872.47 \\
-14 & 49 & 15.46 & 1882.89 \\
-15 & 23 & 9.62 & 1774.75 \\
-16 & 23 & 8.98 & 1762.93 \\
-18 & 37 & 15.71 & 1885.22 \\
-19 & 28 & 10.84 & 1797.43 \\
-20 & 16 & 4.88 & 1686.57 \\
-21 & 29 & 13.60 & 1848.81 \\
-22 & 29 & 13.13 & 1840.11 \\
-23 & 30 & 7.00 & 1726.04 \\
-24 & 36 & 16.55 & 1903.70 \\
-25 & 26 & 9.10 & 1765.11 \\
-26 & 31 & 16.85 & 1909.03 \\
-27 & 30 & 9.48 & 1772.21 \\
-29 & 33 & 9.00 & 1763.22 \\
-30 & 28 & 10.69 & 1794.61 \\
-31 & 35 & 8.67 & 1757.06 \\
-32 & 35 & 11.06 & 1801.62 \\
-33 & 31 & 9.60 & 1774.46 \\
-34 & 28 & 21.18 & 1989.50 \\
-35 & 34 & 13.52 & 1847.00 \\
-36 & 31 & 7.79 & 1740.74 \\
-37 & 29 & 18.46 & 1939.07 \\
-39 & 35 & 15.45 & 1882.78 \\
-40 & 16 & 5.10 & 1690.84 \\
-43 & 14 & 3.57 & 1662.37 \\
-44 & 36 & 15.40 & 1881.77 \\
-45 & 42 & 15.66 & 1887.29 \\
-46 & 32 & 11.48 & 1809.36 \\
-47 & 18 & 5.87 & 1705.01 \\
-48 & 30 & 17.07 & 1913.10 \\
-49 & 16 & 5.48 & 1697.97 \\
-50 & 39 & 15.57 & 1884.91 \\
-51 & 16 & 11.37 & 1807.34 \\
-52 & 35 & 8.44 & 1752.77 \\
-53 & 35 & 12.76 & 1833.25 \\
-54 & 27 & 17.00 & 1911.91 \\
-55 & 43 & 15.66 & 1887.27 \\
-56 & 33 & 13.88 & 1854.00 \\
-57 & 31 & 14.05 & 1856.81 \\
-59 & 29 & 6.38 & 1714.51 \\
-60 & 31 & 15.19 & 1878.48 \\
-61 & 26 & 9.79 & 1778.08 \\
-62 & 28 & 13.68 & 1850.21 \\
-63 & 34 & 20.32 & 1973.68 \\
-64 & 14 & 5.34 & 1695.34 \\
-65 & 33 & 8.57 & 1755.30 \\
-66 & 37 & 38.36 & 2310.35 \\
-67 & 32 & 13.07 & 1838.93 \\
-68 & 29 & 14.10 & 1857.65 \\
-69 & 18 & 16.85 & 1909.03 \\
-71 & 38 & 17.41 & 1919.58 \\
-72 & 35 & 13.99 & 1855.72 \\
-74 & 37 & 19.98 & 1967.15 \\
-75 & 29 & 13.31 & 1843.31 \\
-76 & 22 & 14.62 & 1867.49 \\
-79 & 33 & 6.14 & 1710.22 \\
-\bottomrule
-\end{longtable}
+\end{compacttable}
 
 % --- MVAGC KNN ---
-\begin{longtable}{rrrr}
+\begin{compacttable}
+\begin{longtable}{@{}rrrr@{}}
 \caption{Detailed Results for MVAGC Clustering on KNN Graph (k=30, Only Buses, No Outlier Removal)}
 \label{tab:appendix_mvagc_knn} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endfirsthead
 \caption[]{Continued} \\
 \toprule
-Community ID & Node Count & Distance (km) & Total Cost (TL) \\
+\textbf{Community ID} & \textbf{Node Count} & \textbf{Distance (km)} & \textbf{Total Cost (TL)} \\
 \midrule
 \endhead
-0 & 31 & 12.16 & 1822.10 \\
-1 & 28 & 9.58 & 1773.97 \\
-2 & 17 & 13.30 & 1843.16 \\
-3 & 29 & 12.82 & 1834.24 \\
-4 & 31 & 10.39 & 1789.06 \\
-5 & 33 & 12.03 & 1819.68 \\
-6 & 33 & 15.49 & 1883.91 \\
-7 & 27 & 12.84 & 1834.66 \\
-9 & 26 & 8.35 & 1751.14 \\
-10 & 35 & 12.87 & 1835.28 \\
-11 & 33 & 13.07 & 1838.91 \\
-12 & 24 & 19.59 & 1960.14 \\
-13 & 39 & 7.99 & 1744.65 \\
-14 & 19 & 9.47 & 1771.95 \\
-15 & 31 & 9.48 & 1772.26 \\
-16 & 31 & 24.70 & 2055.05 \\
-17 & 31 & 4.65 & 1682.37 \\
-18 & 31 & 16.85 & 1909.11 \\
-19 & 17 & 10.92 & 1798.89 \\
-20 & 25 & 4.06 & 1671.46 \\
-22 & 29 & 20.00 & 1967.49 \\
-24 & 26 & 14.85 & 1872.13 \\
-25 & 30 & 15.05 & 1875.72 \\
-26 & 26 & 7.54 & 1736.12 \\
-27 & 32 & 14.30 & 1861.93 \\
-28 & 38 & 12.25 & 1823.55 \\
-29 & 27 & 8.29 & 1750.01 \\
-30 & 30 & 4.92 & 1687.33 \\
-31 & 24 & 11.13 & 1802.81 \\
-32 & 25 & 8.59 & 1755.61 \\
-33 & 17 & 2.54 & 1642.97 \\
-34 & 43 & 8.65 & 1756.81 \\
-35 & 30 & 7.13 & 1728.51 \\
-36 & 37 & 9.39 & 1770.48 \\
-37 & 30 & 10.05 & 1782.80 \\
-38 & 41 & 10.92 & 1798.82 \\
-39 & 35 & 4.65 & 1682.42 \\
-40 & 20 & 10.20 & 1785.49 \\
-41 & 32 & 13.21 & 1841.56 \\
-42 & 24 & 15.56 & 1885.23 \\
-43 & 34 & 13.60 & 1848.71 \\
-44 & 38 & 5.24 & 1693.31 \\
-45 & 29 & 15.32 & 1880.66 \\
-46 & 30 & 8.36 & 1751.42 \\
-47 & 24 & 6.61 & 1719.01 \\
-48 & 29 & 14.51 & 1865.59 \\
-49 & 38 & 10.22 & 1785.85 \\
-50 & 20 & 5.54 & 1699.00 \\
-51 & 23 & 9.99 & 1781.72 \\
-52 & 30 & 7.60 & 1737.21 \\
-53 & 42 & 5.63 & 1700.64 \\
-54 & 39 & 11.52 & 1810.09 \\
-55 & 23 & 7.44 & 1734.17 \\
-56 & 22 & 14.10 & 1857.56 \\
-57 & 23 & 7.94 & 1743.60 \\
-58 & 12 & 4.82 & 1685.15 \\
-59 & 45 & 9.27 & 1768.03 \\
-60 & 26 & 6.11 & 1709.58 \\
-61 & 37 & 13.80 & 1852.71 \\
-62 & 23 & 8.91 & 1761.73 \\
-63 & 32 & 13.81 & 1852.87 \\
-64 & 28 & 10.91 & 1798.69 \\
-65 & 33 & 18.57 & 1940.96 \\
-66 & 24 & 8.24 & 1749.18 \\
-67 & 29 & 13.55 & 1847.93 \\
-68 & 37 & 10.69 & 1794.57 \\
-69 & 31 & 13.11 & 1839.68 \\
 \bottomrule
+\endfoot
+0 & 31 & 12.16 & 1822.10 \\
+1 & 28 & 21.55 & 1996.56 \\
+2 & 36 & 18.69 & 1943.44 \\
+3 & 25 & 11.74 & 1814.13 \\
+4 & 39 & 4.13 & 1672.68 \\
+5 & 41 & 10.18 & 1785.21 \\
+6 & 35 & 17.61 & 1923.45 \\
+7 & 32 & 15.59 & 1886.01 \\
+8 & 31 & 7.32 & 1732.14 \\
+10 & 14 & 21.40 & 1993.77 \\
+11 & 22 & 14.32 & 1862.08 \\
+12 & 14 & 20.11 & 1969.74 \\
+13 & 32 & 1.95 & 1632.35 \\
+14 & 30 & 8.89 & 1761.11 \\
+15 & 27 & 6.98 & 1725.72 \\
+16 & 29 & 10.87 & 1798.02 \\
+17 & 22 & 5.41 & 1696.69 \\
+18 & 29 & 16.68 & 1905.76 \\
+19 & 32 & 9.23 & 1767.47 \\
+20 & 36 & 8.87 & 1760.80 \\
+21 & 47 & 17.30 & 1917.54 \\
+22 & 30 & 23.69 & 2036.24 \\
+23 & 37 & 10.54 & 1791.92 \\
+24 & 37 & 14.10 & 1857.71 \\
+25 & 35 & 4.58 & 1681.09 \\
+26 & 16 & 6.70 & 1720.58 \\
+27 & 29 & 7.10 & 1728.07 \\
+28 & 21 & 19.39 & 1956.37 \\
+29 & 42 & 9.25 & 1767.81 \\
+30 & 27 & 3.69 & 1664.66 \\
+31 & 25 & 13.00 & 1837.65 \\
+32 & 40 & 8.23 & 1748.97 \\
+33 & 17 & 11.65 & 1812.47 \\
+34 & 36 & 8.95 & 1762.24 \\
+35 & 34 & 16.65 & 1905.23 \\
+36 & 40 & 18.37 & 1937.32 \\
+37 & 31 & 8.70 & 1757.67 \\
+38 & 41 & 25.88 & 2077.67 \\
+39 & 29 & 14.79 & 1870.85 \\
+40 & 40 & 12.07 & 1820.37 \\
+41 & 38 & 18.51 & 1940.02 \\
+42 & 24 & 9.05 & 1764.24 \\
+43 & 27 & 4.64 & 1682.27 \\
+44 & 32 & 6.65 & 1719.84 \\
+45 & 42 & 5.82 & 1704.27 \\
+46 & 30 & 8.13 & 1747.07 \\
+47 & 40 & 29.86 & 2151.02 \\
+48 & 28 & 12.78 & 1833.71 \\
+49 & 32 & 6.03 & 1708.14 \\
+50 & 47 & 22.74 & 2018.83 \\
+51 & 38 & 9.23 & 1767.46 \\
+52 & 22 & 21.80 & 2001.19 \\
+53 & 23 & 9.33 & 1769.29 \\
+54 & 25 & 5.46 & 1697.57 \\
+55 & 36 & 14.63 & 1867.70 \\
+56 & 14 & 15.30 & 1880.38 \\
+57 & 18 & 6.92 & 1724.66 \\
+58 & 20 & 14.62 & 1867.61 \\
+59 & 31 & 9.93 & 1780.44 \\
+60 & 24 & 10.84 & 1797.46 \\
+61 & 15 & 4.46 & 1678.96 \\
+62 & 37 & 10.34 & 1788.02 \\
+63 & 21 & 4.62 & 1681.89 \\
+64 & 34 & 5.73 & 1702.43 \\
+65 & 20 & 3.48 & 1660.68 \\
+66 & 20 & 4.44 & 1678.59 \\
+67 & 41 & 5.36 & 1695.67 \\
 \end{longtable}
+\end{compacttable}
 
 \end{appendix}

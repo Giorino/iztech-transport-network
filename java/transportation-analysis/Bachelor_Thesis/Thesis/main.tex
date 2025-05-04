@@ -32,6 +32,12 @@
 \usepackage{algpseudocode}
 \usepackage[margin=1.1in,bindingoffset=.2in]{geometry} 
 \usepackage{longtable}
+\usepackage{tabularx}   % For better table formatting
+\usepackage{multicol}    % For multi-column layouts
+
+% Set global table parameters for more compact tables
+\renewcommand{\arraystretch}{0.95}  % More compact rows
+\setlength{\tabcolsep}{4pt}         % Tighter column spacing
 
 % Add consistent notation macros for vectors, matrices, and number sets
 \newcommand{\vect}[1]{\boldsymbol{#1}}
