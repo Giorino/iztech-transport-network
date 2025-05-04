@@ -23,21 +23,21 @@ We first analyze the impact of graph representation choice on the feasibility an
 Table~\ref{tab:graph_properties} summarizes the key properties of each graph constructed from the $|V| \approx 2000$ student locations. As expected, the sparse graphs significantly reduce the number of edges compared to the Complete Graph, making subsequent processing more computationally tractable.
 
 \begin{table}[h]
-    \centering
-    % \caption{Properties of Different Graph Constructions for $|V| \approx 2000$ Student Locations}
-    \label{tab:graph_properties}
-    \begin{tabular}{lrrrr}
-    \toprule
-    Graph Type & $|V|$ & $|E|$ & Sparsity ($\frac{|E|}{|E_{complete}|}$) & Construction Time (s) \\
-    \midrule
-    Complete & $\approx 2000$ & $ 1,999,000$ & 1.0 & $ 43,200$ \\
-    Delaunay & $\approx 2000$ & $ 5,647$ & 0.0028 & 302 \\
-    Gabriel & $\approx 2000$ & $ 3,598$ & 0.0018 & 288 \\
-    KNN (k=30) & $\approx 2000$ & $ 39,899$ & 0.0200 & $ 1,350$ \\
-    \bottomrule
-    \end{tabular}
-    \caption{Properties of Different Graph Constructions for $|V| \approx 2000$ Student Locations.}
-    \end{table}
+\centering
+% \caption{Properties of Different Graph Constructions for $|V| \approx 2000$ Student Locations}
+\label{tab:graph_properties}
+\begin{tabular}{lrrrr}
+\toprule
+Graph Type & $|V|$ & $|E|$ & Sparsity ($\frac{|E|}{|E_{complete}|}$) & Construction Time (s) \\
+\midrule
+Complete & $\approx 2000$ & $ 1,999,000$ & 1.0 & $ 43,200$ \\
+Delaunay & $\approx 2000$ & $ 5,647$ & 0.0028 & 302 \\
+Gabriel & $\approx 2000$ & $ 3,598$ & 0.0018 & 288 \\
+KNN (k=30) & $\approx 2000$ & $ 39,899$ & 0.0200 & $ 1,350$ \\
+\bottomrule
+\end{tabular}
+\caption{Properties of Different Graph Constructions for $|V| \approx 2000$ Student Locations.}
+\end{table}
 
 Clustering the Complete Graph (using the Leiden algorithm as described in Section~\ref{subsec:clustering_complete}) serves as a theoretical baseline. Notably, the construction time for the Complete Graph (43,200 seconds, or 12 hours) is orders of magnitude higher than for the sparse methods, further underscoring its impracticality for large datasets. However, as discussed in Section~\ref{subsubsec:minibus_solution}, clustering this graph often resulted in imbalanced clusters, with many routes having significantly fewer students than the maximum capacity. While the "minibus solution" showed potential cost savings by using smaller vehicles for smaller clusters, this is not currently feasible with IZTECH's fleet. This highlights the need for sparse graph representations that might naturally lead to more balanced clusters suitable for standard buses. Table~\ref{tab:complete_graph_clustering} shows the baseline results from clustering the complete graph. Detailed route information can be found in Appendix~\ref{sec:appendix_detailed_results}, Table~\ref{tab:appendix_leiden_complete}.
 
