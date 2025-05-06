@@ -41,13 +41,13 @@ legend([h1, h2], {'Total Cost', 'Number of Outliers'}, 'Location', 'best');
 % Add data labels for costs
 yyaxis left
 for i = 1:length(stdDevs)
-    text(stdDevs(i), costs(i), ['  ' num2str(costs(i), '%.1f')], 'FontSize', 11, 'VerticalAlignment', 'bottom');
+    text(stdDevs(i), costs(i), ['  ' num2str(costs(i), '%.0f')], 'FontSize', 14, 'FontWeight', 'bold', 'VerticalAlignment', 'bottom');
 end
 
 % Add data labels for number of outliers
 yyaxis right
 for i = 1:length(stdDevs)
-    text(stdDevs(i), numOutliers(i), ['  ' num2str(numOutliers(i))], 'FontSize', 11, 'VerticalAlignment', 'top', 'Color', 'r');
+    text(stdDevs(i), numOutliers(i), ['  ' num2str(numOutliers(i))], 'FontSize', 14, 'FontWeight', 'bold', 'VerticalAlignment', 'top', 'Color', 'r');
 end
 
 % Save the figure

@@ -293,6 +293,17 @@ We configured the KNN distance algorithm with $k=5$. For each student location (
 
 A node was flagged as an outlier if its average 5-NN distance deviated significantly from the overall mean. Specifically, we used a standard deviation threshold of 5.0. Any node whose average 5-NN distance was more than 5.0 standard deviations away from the mean (either above or below) was marked as an outlier. Nodes identified as outliers were subsequently excluded from the graph representations before the clustering algorithms were executed. This preprocessing step helped to refine the dataset, removing potential noise and improving the quality and practicality of the resulting transportation clusters and routes. Our implementation leveraged parallel processing to efficiently compute the KNN distances for the 2000 student locations.
 
+After identifying the optimal clustering approach, which was determined to be the Gabriel graph construction with the Leiden algorithm, we conducted a robustness analysis to further optimize the transportation costs. By systematically varying the standard deviation threshold for outlier detection, we investigated the relationship between the number of excluded outliers and the total transportation cost.
+
+Figure \ref{fig:outlier_cost} illustrates the impact of different standard deviation thresholds on both the number of outliers excluded and the resulting total transportation cost. As the threshold increases, fewer data points are classified as outliers, resulting in more students being included in the routing solution. The analysis reveals that there exists an optimal threshold value that balances the trade-off between inclusivity and cost-efficiency, proving that we could achieve further cost reductions beyond our initial Gabriel+Leiden clustering approach.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{img/KNN_distance_outlier_cost}
+\caption{Cost and Number of Outliers vs. Standard Deviation Threshold. The blue line represents the total transportation cost, while the red dashed line indicates the number of outliers excluded at each threshold level. As the standard deviation threshold increases, fewer outliers are excluded and the cost stabilizes.}
+\label{fig:outlier_cost}
+\end{figure}
+
 % Commenting out the example algorithm from the template
 % \begin{algorithm}
 % \begin{algorithmic}[1]
