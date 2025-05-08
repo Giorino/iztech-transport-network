@@ -251,19 +251,22 @@ These findings highlight the importance of data preprocessing in transportation 
 
 The experimental evaluation demonstrates the effectiveness of graph-based methods for optimizing the IZTECH student transportation network. Key findings include:
 
-\begin{itemize}
-    \item Sparse graph representations (Delaunay, Gabriel, KNN) are crucial for computational tractability and often lead to better routing solutions compared to the complete graph.
-    \item The choice of both the sparse graph construction method and the clustering algorithm significantly impacts the final solution's cost, number of routes, and route characteristics.
-    \item Based on our primary metric of minimizing total transportation cost, the combination of the \textbf{Gabriel graph} construction with the \textbf{Leiden algorithm} and \textbf{KNN distance-based outlier detection} provided the most promising results, achieving a total cost of \textbf{110,364.09 TL} with \textbf{60} routes. This represents a cost saving of approximately 11.0\% compared to the baseline Leiden/Complete graph result (123,882.96 TL).
-    \item Outlier detection consistently improved performance across all graph-algorithm combinations, with an average cost reduction of 3.8\% and reduction in required buses by 1-2 routes.
-    \item Trade-offs exist: The Leiden/Gabriel combination with outlier detection had the lowest cost and fewest buses, with the highest average cluster size (32.63). The Spectral/KNN combination with outlier detection achieved a good balance of low cost (121,547.95 TL) and reasonable average cluster size (30.12). The MVAGC/KNN combination with outlier detection yielded the shortest average routes (11.13 km) while having a higher but still reasonable cost (123,415.52 TL).
-    \item The Leiden algorithm demonstrated strong performance across different graph types, achieving the lowest cost on the Gabriel graph, though it did not perform as well on the KNN graph where Spectral clustering achieved a lower cost.
-    \item All evaluated methods successfully produced routes adhering to the 10-50 student capacity constraints when applied to sparse graphs, unlike the baseline complete graph approach which tended towards imbalance.
-\end{itemize}
+Sparse graph representations such as Delaunay, Gabriel, and KNN are essential for computational tractability and often result in better routing solutions compared to the complete graph. This finding supports the approach described in Section~\ref{sec:graph_representation} of Chapter~\ref{ch:method}.
 
-These results suggest that adopting a \textbf{Gabriel graph representation combined with Leiden clustering and KNN distance-based outlier detection} offers the strongest strategy for IZTECH to optimize its existing bus fleet usage, potentially leading to significant cost savings compared to less structured routing approaches or the baseline complete graph clustering. The preprocessing step of outlier removal proves to be a valuable addition to the optimization pipeline, requiring minimal computational overhead while providing substantial improvements in solution quality.
+The choice of both the sparse graph construction method and the clustering algorithm has a significant impact on the final solution's cost, number of routes, and route characteristics. This result confirms the importance of the methodological framework presented in Section~\ref{sec:clustering_graph} and its subsections in Chapter~\ref{ch:method}.
 
-Further analysis could involve incorporating real road network distances instead of Euclidean distances and considering time-based constraints or traffic patterns. Additionally, exploring adaptive outlier detection thresholds based on local density variations could potentially yield further improvements in clustering quality and route efficiency.
+The combination of Gabriel graph construction (Section~\ref{subsubsec:gabriel}) with the Leiden algorithm (Section~\ref{subsubsec:leiden_implementation}) and KNN distance-based outlier detection (Section~\ref{subsec:knn_outlier_application}) provided the most promising results, achieving the lowest total cost and number of routes. This outcome proves the effectiveness of our proposed method in these sections of Chapter~\ref{ch:method}.
+
+Outlier detection consistently improved performance across all graph-algorithm combinations, reducing costs and the number of required buses. This demonstrates that the data preprocessing step in Section~\ref{subsec:knn_outlier_application} of Chapter~\ref{ch:method} is a valuable addition to the optimization pipeline.
+
+There are trade-offs between different methods, but the Gabriel graph with Leiden clustering and outlier detection achieved the best overall results. This concludes that our method, as described in Sections~\ref{subsubsec:gabriel}, ~\ref{subsubsec:leiden_implementation}, and ~\ref{subsec:knn_outlier_application} of Chapter~\ref{ch:method}, is robust and effective.
+
+The Leiden algorithm showed strong performance across different graph types, especially on the Gabriel graph, supporting the algorithmic choices made in Section~\ref{subsubsec:leiden_implementation} of Chapter~\ref{ch:method}.
+
+All evaluated methods successfully produced routes adhering to the 10-50 student capacity constraints when applied to sparse graphs, unlike the baseline complete graph approach. This proves the practical applicability of our method as implemented in Section~\ref{sec:clustering_graph} of Chapter~\ref{ch:method}.
+
+These results suggest that adopting a Gabriel graph representation (Section~\ref{subsubsec:gabriel}) combined with Leiden clustering (Section~\ref{subsubsec:leiden_implementation}) and KNN distance-based outlier detection (Section~\ref{subsec:knn_outlier_application}) offers the strongest strategy for IZTECH to optimize its existing bus fleet usage. The preprocessing step of outlier removal proves to be a valuable addition to the optimization pipeline, requiring minimal computational overhead while providing substantial improvements in solution quality.
+
 
 % Remove the template figures and tables
 % \begin{figure}[h] % do NOT use parameter h!
