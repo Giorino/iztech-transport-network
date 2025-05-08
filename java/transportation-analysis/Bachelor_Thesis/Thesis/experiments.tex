@@ -131,7 +131,6 @@ Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visu
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{img/cost_comparison}
-    \fbox{Placeholder for Cost Comparison Bar Chart}
     \caption{Comparison of Total Transportation Cost across different graph types and clustering algorithms.}
     \label{fig:cost_comparison}
 \end{figure}
@@ -140,18 +139,8 @@ Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visu
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{img/route_count_comparison}
-    \fbox{Placeholder for Route Count Bar Chart}
     \caption{Comparison of the Number of Routes Generated across different graph types and clustering algorithms.}
     \label{fig:routes_comparison}
-\end{figure}
-
-% Placeholder for Best Clustering Visualization
-\begin{figure}[h]
-    \centering
-    % \includegraphics[width=0.8\textwidth]{[FIGURE_PATH_BEST_CLUSTERING]}
-    \fbox{Placeholder for Best Clustering Visualization (Leiden on Gabriel)}
-    \caption{Visualization of student clusters for the best performing combination (Leiden algorithm on Gabriel graph).}
-    \label{fig:best_clustering_viz}
 \end{figure}
 
 The results indicate that the combination of the Gabriel graph and the Leiden algorithm yielded the lowest overall transportation cost (115,095.07 TL) and required the fewest buses (62). The Spectral/KNN combination was the second-best in terms of cost (122,696.43 TL) with 67 routes. The Spectral/Gabriel combination showed a similar cost (123,648.12 TL) with slightly more routes (68). The MVAGC/Delaunay combination yielded the highest cost (151,810.10 TL) and required the most buses (80), making it the least efficient option. Interestingly, the Leiden/KNN combination (123,075.14 TL), while not offering the lowest cost, provided a balanced cluster size (29.64).
@@ -233,7 +222,7 @@ Computation Time (s) & 75 & 72 & 22 & 21 & 78 & 75 \\
 \label{tab:outlier_knn_results}
 \end{table}
 
-Figures~\ref{fig:outlier_cost_comparison} and \ref{fig:outlier_routes_comparison} provide a visual representation of the impact of outlier detection on total cost and number of routes across all graph and algorithm combinations.
+Figure~\ref{fig:outlier_cost_comparison} provides a visual representation of the impact of outlier detection on total cost across all graph and algorithm combinations.
 
 % Placeholder for Outlier Cost Comparison Chart
 \begin{figure}[h]
@@ -244,31 +233,14 @@ Figures~\ref{fig:outlier_cost_comparison} and \ref{fig:outlier_routes_comparison
     \label{fig:outlier_cost_comparison}
 \end{figure}
 
-% Placeholder for Outlier Routes Comparison Chart
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/outlier_routes_comparison}
-    \fbox{Placeholder for Outlier Impact on Route Count Comparison Chart}
-    \caption{Comparison of the Number of Routes Generated with and without outlier detection across different graph types and clustering algorithms.}
-    \label{fig:outlier_routes_comparison}
-\end{figure}
 
-The results demonstrate that outlier detection consistently improves transportation network efficiency across all graph construction methods and clustering algorithms. Key observations include:
+The results demonstrate that outlier detection consistently improves transportation network efficiency across all graph construction methods and clustering algorithms.
 
-\begin{itemize}
-    \item \textbf{Cost Reduction:} Applying KNN distance-based outlier detection led to an average cost reduction of 3.8\% across all combinations. The most significant improvement was observed with the Leiden algorithm on the Gabriel graph, where costs decreased by 4.1\% (from 115,095.07 TL to 110,364.09 TL).
-    
-    \item \textbf{Reduced Number of Routes:} Outlier detection consistently reduced the number of required routes by 1-2 buses across all combinations. The Gabriel graph with Leiden clustering showed the largest reduction, requiring 60 buses with outlier detection compared to 62 without, representing a 3.2\% reduction in the required fleet size.
-    
-    \item \textbf{Improved Cluster Efficiency:} The average cluster size increased consistently when outlier detection was applied, suggesting more effective utilization of bus capacity. For example, the average cluster size for Leiden/Gabriel increased from 31.74 to 32.63 students per bus.
-    
-    \item \textbf{Shorter Average Routes:} Despite having larger clusters, the average route length decreased across all combinations when outlier detection was applied. For instance, the Leiden/Gabriel combination showed a 6.5\% reduction in average route length (from 14.01 km to 13.10 km).
-    
-    \item \textbf{Computational Efficiency:} The preprocessing step for outlier detection added negligible computational overhead while improving solution quality, with overall computation times remaining similar or slightly reduced due to the smaller dataset after outlier removal.
-\end{itemize}
+Key observations highlight several benefits. Firstly, applying KNN distance-based outlier detection led to an average cost reduction of 3.8\% across all combinations. The most significant improvement was observed with the Leiden algorithm on the Gabriel graph, where costs decreased by 4.1\% (from 115,095.07 TL to 110,364.09 TL). Secondly, outlier detection consistently reduced the number of required routes by 1-2 buses across all combinations. The Gabriel graph with Leiden clustering showed the largest reduction, requiring 60 buses with outlier detection compared to 62 without, representing a 3.2\% reduction in the required fleet size.
+
+Furthermore, the average cluster size increased consistently when outlier detection was applied, suggesting more effective utilization of bus capacity. For example, the average cluster size for Leiden/Gabriel increased from 31.74 to 32.63 students per bus. Despite having larger clusters, the average route length decreased across all combinations when outlier detection was applied. For instance, the Leiden/Gabriel combination showed a 6.5\% reduction in average route length (from 14.01 km to 13.10 km). Lastly, the preprocessing step for outlier detection added negligible computational overhead while improving solution quality, with overall computation times remaining similar or slightly reduced due to the smaller dataset after outlier removal.
 
 The combination of the Gabriel graph construction with the Leiden clustering algorithm continued to yield the best performance, achieving the lowest overall transportation cost of 110,364.09 TL when outlier detection was applied. This represents a significant improvement over the baseline Leiden/Complete graph result (123,882.96 TL) reported in Section~\ref{sec:exp_sparsity}, with a total cost reduction of approximately 11.0\%.
-
 
 The consistent improvement in performance metrics across all combinations suggests that the KNN distance-based outlier detection effectively identified and removed problematic data points that would have led to suboptimal routing solutions. By eliminating geographic outliers, the clustering algorithms were able to form more cohesive and balanced communities, leading to more efficient bus routes.
 
