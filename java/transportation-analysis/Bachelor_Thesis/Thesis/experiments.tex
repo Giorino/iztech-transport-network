@@ -161,20 +161,6 @@ The results indicate that the combination of the Gabriel graph and the Leiden al
 
 In this experiment, we investigate the impact of applying the KNN distance-based outlier detection method, as described in Section~\ref{subsec:knn_outlier_application}, on the quality and efficiency of the resulting transportation network clusters. The outlier detection process was designed to identify and remove anomalous student locations that could potentially skew clustering results and lead to suboptimal routes.
 
-\subsection{Experimental Setup}
-\label{subsec:outlier_setup}
-
-To evaluate the effectiveness of outlier detection, we conducted comparative experiments using identical graph construction and clustering algorithms, with and without the outlier detection preprocessing step. Specifically:
-
-\begin{itemize}
-    \item \textbf{With Outlier Detection (KNN Distance):} Student locations were preprocessed using the KNN distance outlier detection method with $k=5$ and a threshold of 5.0 standard deviations, as detailed in Section~\ref{subsec:knn_outlier_application}.
-    \item \textbf{Without Outlier Detection (No Outlier):} All student locations were included in the graph construction and clustering process without any preprocessing for outlier detection.
-\end{itemize}
-
-We applied this comparison across all combinations of graph construction methods (Delaunay, Gabriel, KNN) and clustering algorithms (Spectral, Leiden, MVAGC) to comprehensively assess the impact of outlier detection.
-
-\subsection{Results and Analysis}
-\label{subsec:outlier_results}
 
 Tables~\ref{tab:outlier_gabriel_results}, \ref{tab:outlier_delaunay_results}, and \ref{tab:outlier_knn_results} present the comparative results for each graph construction method with and without outlier detection, focusing on key performance metrics.
 
@@ -283,8 +269,6 @@ The results demonstrate that outlier detection consistently improves transportat
 
 The combination of the Gabriel graph construction with the Leiden clustering algorithm continued to yield the best performance, achieving the lowest overall transportation cost of 110,364.09 TL when outlier detection was applied. This represents a significant improvement over the baseline Leiden/Complete graph result (123,882.96 TL) reported in Section~\ref{sec:exp_sparsity}, with a total cost reduction of approximately 11.0\%.
 
-\subsection{Discussion on Outlier Detection Impact}
-\label{subsec:outlier_discussion}
 
 The consistent improvement in performance metrics across all combinations suggests that the KNN distance-based outlier detection effectively identified and removed problematic data points that would have led to suboptimal routing solutions. By eliminating geographic outliers, the clustering algorithms were able to form more cohesive and balanced communities, leading to more efficient bus routes.
 
