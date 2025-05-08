@@ -39,7 +39,7 @@ KNN (k=30) & $\approx 2000$ & $3.9899 \times 10^{4}$ & $1.35 \times 10^{3}$ \\
 \caption{Properties of Different Graph Constructions for $|V| \approx 2000$ Student Locations, where $|E_{complete}| = 1.999 \times 10^{6}$.}
 \end{table}
 
-Clustering the Complete Graph (using the Leiden algorithm as described in Section~\ref{subsec:clustering_complete}) serves as a theoretical baseline. Notably, the construction time for the Complete Graph (43,200 seconds, or 12 hours) is orders of magnitude higher than for the sparse methods, further underscoring its impracticality for large datasets. However, as discussed in Section~\ref{subsubsec:minibus_solution}, clustering this graph often resulted in imbalanced clusters, with many routes having significantly fewer students than the maximum capacity. While the "minibus solution" showed potential cost savings by using smaller vehicles for smaller clusters, this is not currently feasible with IZTECH's fleet. This highlights the need for sparse graph representations that might naturally lead to more balanced clusters suitable for standard buses. Table~\ref{tab:complete_graph_clustering} shows the baseline results from clustering the complete graph. Detailed route information can be found in Appendix~\ref{sec:appendix_detailed_results}, Table~\ref{tab:appendix_leiden_complete}.
+Clustering the Complete Graph (using the Leiden algorithm as described in Section~\ref{subsec:clustering_complete}) serves as a theoretical baseline. Notably, the construction time for the Complete Graph (43,200 seconds, or 12 hours) is orders of magnitude higher than for the sparse methods, further underscoring its impracticality for large datasets. Moreover, clustering this graph often resulted in imbalanced clusters (see Section~\ref{subsubsec:minibus_solution} for discussion on potential mitigation and current limitations), highlighting the need for sparse graph representations. Table~\ref{tab:complete_graph_clustering} shows the baseline results from clustering the complete graph. Detailed route information can be found in Appendix~\ref{sec:appendix_detailed_results}, Table~\ref{tab:appendix_leiden_complete}.
 
 \begin{table}[h]
 \centering
@@ -125,7 +125,7 @@ Computation Time (s) & 75 & 22 & 78 \\
 \caption{Performance Comparison of Clustering Algorithms on the KNN Graph (k=30, Only Buses, No Outlier Removal).} % Updated Caption
 \end{table}
 
-Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visual summary of the total cost and number of routes across all combinations. Figure~\ref{fig:best_clustering_viz} illustrates the geographical distribution of clusters for the best performing combination identified (Leiden algorithm on Gabriel graph, based on the lowest total cost).
+Figures~\ref{fig:cost_comparison} and \ref{fig:routes_comparison} provide a visual summary of the total cost and number of routes across all combinations. 
 
 % Placeholder for Cost Comparison Bar Chart
 \begin{figure}[h]
@@ -242,11 +242,7 @@ Furthermore, the average cluster size increased consistently when outlier detect
 
 The combination of the Gabriel graph construction with the Leiden clustering algorithm continued to yield the best performance, achieving the lowest overall transportation cost of 110,364.09 TL when outlier detection was applied. This represents a significant improvement over the baseline Leiden/Complete graph result (123,882.96 TL) reported in Section~\ref{sec:exp_sparsity}, with a total cost reduction of approximately 11.0\%.
 
-The consistent improvement in performance metrics across all combinations suggests that the KNN distance-based outlier detection effectively identified and removed problematic data points that would have led to suboptimal routing solutions. By eliminating geographic outliers, the clustering algorithms were able to form more cohesive and balanced communities, leading to more efficient bus routes.
-
-The most substantial improvements were observed with the Leiden algorithm, indicating its particular sensitivity to outliers. This is consistent with the algorithm's community detection approach, which relies on local connectivity patterns that can be disrupted by anomalous data points.
-
-The Gabriel graph consistently showed the greatest benefit from outlier detection, likely because its sparser connectivity structure is more vulnerable to the influence of outliers. By removing these problematic points, the Gabriel graph's natural ability to capture meaningful geographic relationships was enhanced, allowing it to produce more effective transportation clusters.
+These outcomes confirm that the application of KNN distance-based outlier detection, as detailed in Section~\ref{subsec:knn_outlier_application}, effectively enhances solution quality by refining the dataset.
 
 These findings highlight the importance of data preprocessing in transportation network optimization. The KNN distance-based outlier detection method provided a computationally efficient way to improve the quality of the resulting clusters without significantly increasing the overall processing time. For real-world transportation planning scenarios, this suggests that investing in outlier detection and data cleaning can yield substantial returns in terms of operational efficiency and cost savings.
 
