@@ -1,5 +1,8 @@
 \begin{abstract}
-Here comes the abstract that summarizes your work.
+This study investigates the optimization of the student transportation network for the Izmir Institute of Technology (IZTECH) using graph-based methodologies. The primary objective is to minimize total transportation costs while adhering to vehicle capacity constraints (10-50 students per bus) for a synthetically generated dataset of approximately 2000 student locations across Izmir.
+The study systematically evaluates various graph construction techniques, including Complete Graph, Delaunay Triangulation, Gabriel Graph, and K-Nearest Neighbors (KNN) graph, in conjunction with three distinct clustering algorithms: Spectral Clustering, the Leiden Algorithm, and Multi-view Anchor Graph-based Clustering (MVAGC). Furthermore, the impact of a K-Nearest Neighbor (KNN) distance-based outlier detection method on overall network efficiency is assessed.
+Experimental results demonstrate that sparse graph representations are crucial for computational tractability and improved routing solutions compared to a complete graph. The combination of Gabriel Graph construction with the Leiden algorithm and KNN distance-based outlier detection yielded the most significant improvements, achieving the lowest total transportation cost (110,364.09 TL) and the fewest number of required bus routes (60). This represents an approximate 11.0\% cost reduction compared to the baseline complete graph approach with Leiden clustering.
+The findings confirm that appropriate data preprocessing, sparse graph representation, and effective clustering algorithms are essential for optimizing transportation networks. Specifically, the Gabriel graph combined with Leiden clustering and outlier removal offers a robust and efficient strategy for IZTECH to enhance its student transportation system.
 \end{abstract}
 
 
