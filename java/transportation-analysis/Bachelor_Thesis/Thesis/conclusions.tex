@@ -1,4 +1,57 @@
 \chapter{Conclusions and Future Work}
 \label{ch:conclusions}
-Here come the conclusions and hints to future research activities. 
+
+This thesis has investigated the application of graph theory and community detection algorithms to optimize the transportation network for students of Izmir Institute of Technology. By representing student locations as nodes in a graph and applying various graph construction methods and clustering algorithms, we have developed an effective methodology for identifying optimal bus routes that minimize transportation costs while adhering to practical capacity constraints.
+
+\section{Summary of Findings}
+
+Our research demonstrates that graph-based approaches offer powerful tools for transportation network optimization. The comparative analysis of different graph construction methods revealed that sparse representations such as Delaunay triangulation, Gabriel graphs, and K-Nearest Neighbors significantly outperform complete graphs both in computational efficiency and solution quality. Specifically, the Gabriel graph emerged as the most effective representation, balancing connectivity and sparsity to capture essential spatial relationships while eliminating redundant edges.
+
+Among the clustering algorithms evaluated, the Leiden algorithm consistently produced the highest quality solutions across different graph representations. When combined with the Gabriel graph, Leiden clustering achieved a 11.0\% reduction in total transportation costs compared to baseline approaches. This performance validates the algorithm's refinement mechanism that ensures well-connected communities while optimizing modularity.
+
+The integration of K-Nearest Neighbor distance-based outlier detection as a preprocessing step further enhanced performance across all graph-algorithm combinations. This additional step improved solution quality by excluding anomalous data points that would otherwise lead to inefficient routes, resulting in an average cost reduction of 3.8\% across all methods.
+
+Our experimental results conclusively demonstrate that the combination of Gabriel graph construction, Leiden algorithm clustering, and KNN distance-based outlier detection represents the optimal strategy for IZTECH's transportation network, yielding the lowest total cost (110,364.09 TL) and requiring the fewest buses (60) while maintaining adherence to capacity constraints.
+
+\section{Methodological Contributions}
+
+This research makes several methodological contributions to transportation network optimization:
+
+First, we have established a comprehensive framework for comparing different graph construction methods in the context of transportation planning, demonstrating the advantages of sparse representations for large-scale networks.
+
+Second, our systematic evaluation of clustering algorithms highlights the effectiveness of community detection approaches for identifying optimal bus routes, with particular emphasis on the Leiden algorithm's capabilities for transportation applications.
+
+Third, the implementation of outlier detection as a preprocessing step represents a novel enhancement to the transportation planning pipeline, offering significant benefits with minimal computational overhead.
+
+Finally, our integrated methodology combining optimal graph representation, clustering, and preprocessing provides a practical and scalable approach that can be applied to similar transportation optimization problems in other educational institutions or urban settings.
+
+\section{Future Work}
+
+Building upon the foundations established in this thesis, several promising directions for future research emerge:
+
+\subsection{Methodological Advancements}
+
+Future methodological improvements could include:
+
+\begin{itemize}
+    \item \textbf{Dynamic routing:} Extending the current static model to incorporate time-varying demand patterns and traffic conditions, enabling more responsive transportation planning.
+    
+    \item \textbf{Multi-objective optimization:} Incorporating additional objectives beyond cost minimization, such as reducing environmental impact, minimizing travel time, or maximizing service coverage.
+    
+    \item \textbf{Machine learning integration:} Developing predictive models to anticipate changes in student residential patterns and optimize routes proactively.
+\end{itemize}
+
+\subsection{Practical Implementations}
+
+Key practical extensions of this work include:
+
+\begin{itemize}
+    \item \textbf{Management interface development:} Creating an interactive user interface for transportation managers to visualize, analyze, and modify routes. This system could provide real-time monitoring of buses, allow for manual adjustments when necessary, and generate comprehensive reports on key performance indicators such as utilization rates, fuel consumption, and service reliability. Additionally, it could incorporate feedback mechanisms for continuous improvement of the routing algorithms based on operational experience.
+    
+    \item \textbf{Real-time adaptation:} Creating algorithms that can dynamically adjust routes in response to unexpected events, such as road closures or vehicle breakdowns.
+    
+    \item \textbf{Inclusive transportation services:} Expanding the methodology to integrate specialized services for elderly and disabled individuals. This would require modifications to the clustering algorithms to account for accessibility requirements, specialized vehicle assignments, and personalized pickup/drop-off scheduling. The enhanced system could prioritize certain locations based on accessibility needs and incorporate door-to-door service options within the broader network optimization framework.
+\end{itemize}
+
+These future directions would extend the practical impact of this research, transforming it from an analytical methodology into a comprehensive transportation management system that addresses the diverse needs of the entire IZTECH community while maintaining operational efficiency.
 
