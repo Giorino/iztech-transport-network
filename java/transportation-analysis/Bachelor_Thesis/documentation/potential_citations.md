@@ -12,6 +12,18 @@ This document lists sentences and concepts from the LaTeX files that may require
     **Reason:** Claim about sparsity benefits could warrant a citation from graph theory or network analysis literature.
 -   **Sentence:** "Furthermore, to effectively group students into viable bus routes, we evaluate the performance of several state-of-the-art graph clustering algorithms – namely Spectral Clustering, the Leiden Algorithm, and Multi-view Anchor Graph-based Clustering (MVAGC)."
     **Reason:** Calling algorithms "state-of-the-art" might need justification or individual citations for each algorithm's foundational paper.
+-   **Sentence:** "The problem of vehicle routing and transportation network optimization has been extensively studied, with a rich body of literature focusing on various methodologies."
+    **Reason:** General claim about extensive study; could cite a review paper on vehicle routing or transportation optimization.
+-   **Sentence:** "Graph theory provides a natural and powerful framework for modeling transportation networks, where locations are represented as vertices and travel segments as edges."
+    **Reason:** States a common application of graph theory; might benefit from a foundational citation on graph theory in network modeling or a relevant textbook.
+-   **Sentence:** "While complete graphs offer comprehensive connectivity, their $O(N^2)$ complexity is prohibitive for large datasets."
+    **Reason:** States a known property and limitation of complete graphs.
+-   **Sentence:** "Consequently, sparse graph construction methods such as K-Nearest Neighbors (KNN) graphs, Delaunay Triangulation, and Gabriel Graphs are widely adopted."
+    **Reason:** Claims these methods are "widely adopted." Foundational papers or review articles discussing their adoption in transportation/network contexts would be appropriate.
+-   **Sentence:** "Graph clustering, or community detection, seeks to identify groups of vertices that are densely connected internally while being sparsely connected to the rest of the graph."
+    **Reason:** Definition of graph clustering/community detection; could cite a foundational paper or review on the topic.
+-   **Sentence:** "Furthermore, outlier detection methods are increasingly recognized as important pre-processing steps in network analysis."
+    **Reason:** General statement about the growing importance of outlier detection in network analysis; a supporting citation would strengthen this.
 
 ## Thesis/abstract.tex
 
