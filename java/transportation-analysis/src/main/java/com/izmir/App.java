@@ -43,10 +43,10 @@ public class App
     // Configuration properties
     private static final int NODE_COUNT = 2000; // Number of nodes to generate
     private static final GraphConstructionService.GraphStrategy GRAPH_STRATEGY = 
-            GraphConstructionService.GraphStrategy.COMPLETE; // Using Greedy Spanner graph
+            GraphConstructionService.GraphStrategy.GABRIEL; // Using Greedy Spanner graph
     private static final int K_VALUE = 30; // K value for spanner's stretch factor (2k-1)
     private static final ClusteringService.ClusteringAlgorithm CLUSTERING_ALGORITHM = 
-            ClusteringService.ClusteringAlgorithm.MVAGC; // Using SPECTRAL algorithm
+            ClusteringService.ClusteringAlgorithm.LEIDEN; // Using SPECTRAL algorithm
             // Options: LEIDEN, SPECTRAL, GIRVAN_NEWMAN, INFOMAP, MVAGC
     private static final boolean USE_PARALLEL = true; // Whether to use parallel processing
     private static final boolean VISUALIZE_GRAPH = true; // Whether to visualize the graph
@@ -54,12 +54,13 @@ public class App
     private static final boolean SAVE_GRAPH = true; // Whether to save the graph for future use
     
     // Outlier detection configuration
-    private static final boolean APPLY_OUTLIER_DETECTION = false; // Whether to apply outlier detection
+    private static final boolean APPLY_OUTLIER_DETECTION = true; // Whether to apply outlier detection
     private static final OutlierDetectionService.OutlierAlgorithm OUTLIER_ALGORITHM = 
             OutlierDetectionService.OutlierAlgorithm.KNN_DISTANCE; // Default outlier detection algorithm
-    private static final double OUTLIER_THRESHOLD = 5; // Number of standard deviations to consider as outlier
+    private static final double OUTLIER_THRESHOLD = 3; // Number of standard deviations to consider as outlier
     private static final int OUTLIER_K_VALUE = 5; // K value for KNN_DISTANCE algorithm
     private static final boolean VISUALIZE_OUTLIERS = true; // Whether to visualize outliers
+    private static final boolean VISUALIZE_OUTLIER_LEGEND = true; // Whether to show the legend in outlier visualization
     private static final int OUTLIER_MAX_THREADS = Runtime.getRuntime().availableProcessors(); // Use all available processors
     
     // Clustering configuration - now loaded from properties file
@@ -214,7 +215,8 @@ public class App
                 Set<Node> outliers = outlierService.detectOutliers(
                     graph, 
                     OUTLIER_ALGORITHM,
-                    VISUALIZE_OUTLIERS
+                    VISUALIZE_OUTLIERS,
+                    VISUALIZE_OUTLIER_LEGEND
                 );
                 
                 LOGGER.info("Detected " + outliers.size() + " outliers that will be excluded from clustering");

@@ -1383,8 +1383,9 @@ public class TransportationGraph {
      * 
      * @param outliers Set of nodes identified as outliers
      * @param algorithmName The name of the algorithm used for detection
+     * @param visualizeLegend Whether to show the legend
      */
-    public void visualizeOutliers(Set<Node> outliers, String algorithmName) {
+    public void visualizeOutliers(Set<Node> outliers, String algorithmName, boolean visualizeLegend) {
         if (outliers == null || outliers.isEmpty()) {
             LOGGER.info("No outliers to visualize.");
             return;
@@ -1470,22 +1471,18 @@ public class TransportationGraph {
                     g2d.fillOval(x - 7, y - 7, 14, 14);
                 }
                 
-                // Add legend
-                g2d.setFont(new Font("Arial", Font.BOLD, 14));
-                g2d.setColor(Color.BLACK);
-                g2d.drawString("Algorithm: " + algorithmName, 20, 30);
-                g2d.drawString("Outliers: " + outliers.size(), 20, 50);
-                g2d.drawString("Total Nodes: " + graph.vertexSet().size(), 20, 70);
-                
-                // Draw legend for outliers
-                g2d.fillOval(30, 90, 14, 14);
-                g2d.drawString("Outlier", 50, 100);
-                
-                // Draw legend for normal nodes
-                g2d.setColor(new Color(70, 130, 180));
-                g2d.fillOval(30, 110, 10, 10);
-                g2d.setColor(Color.BLACK);
-                g2d.drawString("Normal", 50, 120);
+                if (visualizeLegend) { // Conditionally render legend
+                    // Draw legend for outliers
+                    // g2d.setColor(Color.BLACK); // Ensure color is set for the outlier legend item
+                    // g2d.fillOval(30, 90, 14, 14);
+                    // g2d.drawString("Outlier", 50, 100);
+                    
+                    // Draw legend for normal nodes
+                    // g2d.setColor(new Color(70, 130, 180));
+                    // g2d.fillOval(30, 110, 10, 10);
+                    // g2d.setColor(Color.BLACK);
+                    // g2d.drawString("Normal", 50, 120);
+                }
             }
         };
         

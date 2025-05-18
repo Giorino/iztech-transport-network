@@ -59,12 +59,14 @@ public class OutlierDetectionService {
      * @param graph The transportation graph
      * @param algorithm The outlier detection algorithm to use
      * @param visualize Whether to visualize the outliers
+     * @param visualizeLegend Whether to show the legend in the outlier visualization
      * @return Set of nodes identified as outliers
      */
     public Set<Node> detectOutliers(
             TransportationGraph graph, 
             OutlierAlgorithm algorithm,
-            boolean visualize) {
+            boolean visualize,
+            boolean visualizeLegend) {
         
         LOGGER.info("Detecting outliers using " + algorithm.getCode() + " algorithm with threshold " + threshold +
                    (useParallel ? " (parallel with " + numThreads + " threads)" : " (single-threaded)"));
@@ -83,7 +85,7 @@ public class OutlierDetectionService {
         
         if (visualize && !outliers.isEmpty()) {
             LOGGER.info("Visualizing " + outliers.size() + " outliers");
-            visualizeOutliers(graph, outliers, detectionAlgorithm.getName());
+            visualizeOutliers(graph, outliers, detectionAlgorithm.getName(), visualizeLegend);
         }
         
         return outliers;
@@ -121,10 +123,11 @@ public class OutlierDetectionService {
     private void visualizeOutliers(
             TransportationGraph graph, 
             Set<Node> outliers, 
-            String algorithmName) {
+            String algorithmName,
+            boolean visualizeLegend) {
         
         // Call the visualization method in TransportationGraph
-        graph.visualizeOutliers(outliers, algorithmName);
+        graph.visualizeOutliers(outliers, algorithmName, visualizeLegend);
     }
     
     /**
