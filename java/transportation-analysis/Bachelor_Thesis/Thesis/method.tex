@@ -18,7 +18,7 @@ The foundation of our analysis is a dataset comprising the geographical coordina
 \label{fig:student_map}
 \end{figure}
 
-\subsection{Complete Graph of Transportation Map}
+\subsection{Complete Graph Representation}
 \label{subsec:complete_graph}
 
 A complete graph is the natural mathematical representation of a transportation network where every location is directly connected to every other location. Formally, for our set of student locations $V$, the complete graph $G_{complete} = (V, E_{complete})$ contains an edge $e_{uv} \in E_{complete}$ for every pair of distinct vertices $u, v \in V$, resulting in $|E_{complete}| = {|V| \choose 2} = \frac{|V|(|V|-1)}{2}$ edges. The complete graph connects every pair of distinct student locations, representing maximum potential connectivity as detailed in Section~\ref{se:GraphConstructionMethodsAndSparsity}.
@@ -91,7 +91,7 @@ In our implementation, we set $k=30$ based on the average seat size of buses in 
 \label{fig:knn_graph}
 \end{figure}
 
-\section{Clustering Graph Representation of IZTECH}
+\section{Clustering Graph Representationof Transportation Map of IZTECH}
 \label{sec:clustering_graph}
 
 Once the various graph representations were constructed, we applied clustering algorithms to partition the nodes (students) into clusters, representing potential bus routes. The clustering phase is critical for identifying cohesive groups of students who can be efficiently transported together.
@@ -265,7 +265,7 @@ From Table \ref{tab:avg_cluster_size}, MVAGC produces the smallest clusters (12.
 
 Table \ref{tab:avg_route_length} shows that Leiden achieves the shortest average routes (13.7--14.1 km), indicating a balanced trade-off between compactness and connectivity. Spectral clustering on the Gabriel graph results in the longest routes (23.4 km) due to sparser edge connectivity, whereas MVAGC attains its shortest routes on the KNN graph (12.4 km), highlighting the advantage of locally dense connections for route optimization. Overall, the K-Nearest Neighbors representation strikes a favorable balance between cluster cohesion and route efficiency across all algorithms.
 
-\section{Shortest Path Computation for Route Optimization}
+\section{The Shortest Path Algorithm for Service Route Determinationn}
 \label{sec:shortest_path}
 
 After clustering the student locations into communities that represent potential bus routes, determining the optimal path through each cluster becomes essential for minimizing travel distance, time, and fuel consumption. We implemented Dijkstra's algorithm as the core method for computing optimal routes within each cluster.
@@ -279,12 +279,12 @@ This approach leverages the efficiency of Dijkstra's algorithm while addressing 
 \label{fig:route_optimization}
 \end{figure}
 
-\section{Robustness for Clustering Graph Representation of IZTECH}
+\section{Robustness for Isolated Vertices of Distant Addresses}
 \label{sec:robustness}
 
 To ensure the reliability and validity of the clustering results and subsequent route optimization, it is important to consider the robustness of the approach. This involves assessing how sensitive the outcomes are to variations in the input data or parameters. One crucial step performed prior to clustering was outlier detection, aimed at identifying and potentially removing data points that could disproportionately affect the clustering process and lead to impractical or inefficient routes.
 
-\subsection{Application of KNN Distance Outlier Detection}
+\subsection{KNN Outlier Detection}
 \label{subsec:knn_outlier_application}
 
 Before applying the clustering algorithms described in Section~\ref{sec:clustering_graph}, we implemented an outlier detection step using the K-Nearest Neighbor (KNN) distance method (detailed theoretically in Section~\ref{subsec:KNNDistanceOutlier}). The primary goal was to identify student locations from the synthetic dataset that were either unusually isolated. Such points could negatively impact the formation of sensible and efficient transportation clusters.

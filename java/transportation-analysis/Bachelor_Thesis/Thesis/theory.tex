@@ -222,7 +222,7 @@ where $\cdot$ denotes path concatenation. This recursive definition builds the p
 
 Before analyzing network structures like communities or shortest paths, it is often crucial to identify and handle outliers in the data. Outliers, which are data points significantly different from the majority, can arise from various sources such as data entry errors, measurement inaccuracies, or genuinely unusual but valid observations. In the context of transportation networks represented as graphs, outliers might correspond to geographically isolated locations, incorrectly mapped points, or densely clustered points representing duplicates. Failing to address outliers can skew the results of subsequent analyses like clustering or pathfinding. Various methods exist for outlier detection in spatial or graph data.
 
-\subsection{K-Nearest Neighbor (KNN) Distance Outlier Detection}
+\subsection{K-Nearest Neighbor (KNN) Outliers}
 \label{subsec:KNNDistanceOutlier}
 
 The K-Nearest Neighbor (KNN) distance-based outlier detection method identifies outliers by examining the local density of data points \cite{knn_outlier}. The core principle is that normal data points tend to have a similar density of neighbors, whereas outliers often reside in sparser regions (isolated points) or unusually dense regions (potential duplicates or overlapping points).
