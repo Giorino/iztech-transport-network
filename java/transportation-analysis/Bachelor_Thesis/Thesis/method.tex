@@ -21,7 +21,7 @@ The foundation of our analysis is a dataset comprising the geographical coordina
 \subsection{Complete Graph Representation}
 \label{subsec:complete_graph}
 
-A complete graph is the natural mathematical representation of a transportation network where every location is directly connected to every other location. Formally, for our set of student locations $V$, the complete graph $G_{complete} = (V, E_{complete})$ contains an edge $e_{uv} \in E_{complete}$ for every pair of distinct vertices $u, v \in V$, resulting in $|E_{complete}| = {|V| \choose 2} = \frac{|V|(|V|-1)}{2}$ edges. The complete graph connects every pair of distinct student locations, representing maximum potential connectivity as detailed in Section~\ref{se:GraphConstructionMethodsAndSparsity}.
+A complete graph is the natural mathematical representation of a transportation network where every location is directly connected to every other location. Formally, for our set of student locations $V$, the complete graph $\mathbf{G}_{complete} = \{V, E_{complete}\}$ contains an edge $e_{uv} \in E_{complete}$ for every pair of distinct vertices $u, v \in V$, resulting in $|E_{complete}| = {|V| \choose 2} = \frac{|V|(|V|-1)}{2}$ edges. The complete graph connects every pair of distinct student locations, representing maximum potential connectivity as detailed in Section~\ref{se:GraphConstructionMethodsAndSparsity}.
 
 This representation serves as our baseline model, establishing upper bounds on connectivity. However, the dense connectivity often leads to suboptimal routing solutions with higher overall costs due to the ${|V| \choose 2}$ edges making it computationally expensive for large datasets.
 
@@ -42,7 +42,7 @@ Given the computational and practical limitations of the complete graph approach
 \subsubsection{Delaunay Graph Representation}
 \label{subsubsec:delaunay}
 
-The Delaunay triangulation constructs a graph $G_{Delaunay}=(V, E_{Delaunay})$ based on the empty circumcircle property as explained in Section~\ref{se:GraphConstructionMethodsAndSparsity}. For any three vertices $p, q, r \in V$, they form a triangle in the Delaunay triangulation if and only if the circumcircle passing through $p, q, r$ contains no other vertex in $V$. This property creates a planar graph that avoids edge crossings and naturally connects proximate points.
+The Delaunay triangulation constructs a graph $\mathbf{G}_{Delaunay}=\{V, E_{Delaunay}\}$ based on the empty circumcircle property as explained in Section~\ref{se:GraphConstructionMethodsAndSparsity}. For any three vertices $p, q, r \in V$, they form a triangle in the Delaunay triangulation if and only if the circumcircle passing through $p, q, r$ contains no other vertex in $V$. This property creates a planar graph that avoids edge crossings and naturally connects proximate points.
 
 \begin{figure}[!htbp]
 \centering
@@ -54,7 +54,7 @@ The Delaunay triangulation constructs a graph $G_{Delaunay}=(V, E_{Delaunay})$ b
 \subsubsection{Gabriel Graph Representation}
 \label{subsubsec:gabriel}
 
-The Gabriel graph is a subgraph of the Delaunay triangulation that connects nodes if the circle with diameter between them contains no other nodes (see Section~\ref{se:GraphConstructionMethodsAndSparsity}). Formally, for our set of student locations $V$, the Gabriel graph $G_{Gabriel}=(V, E_{Gabriel})$ contains an edge $e_{uv} \in E_{Gabriel}$ if and only if:
+The Gabriel graph is a subgraph of the Delaunay triangulation that connects nodes if the circle with diameter between them contains no other nodes (see Section~\ref{se:GraphConstructionMethodsAndSparsity}). Formally, for our set of student locations $V$, the Gabriel graph $\mathbf{G}_{Gabriel}=\{V, E_{Gabriel}\}$ contains an edge $e_{uv} \in E_{Gabriel}$ if and only if:
 
 \begin{equation}
 d^2(u, v) < d^2(u, w) + d^2(v, w) \text{ for all } w \in V, w \neq u, w \neq v
@@ -74,13 +74,13 @@ Our implementation constructs the Gabriel graph by first generating the Delaunay
 \subsubsection{K-Nearest Neighbour Graph Representation}
 \label{subsubsec:knn}
 
-The K-Nearest Neighbors (KNN) graph connects each node to its $k$ closest neighbors, creating a sparse representation that emphasizes local connectivity as detailed in Section~\ref{se:GraphConstructionMethodsAndSparsity}. For our set of student locations $V$, the KNN graph $G_{KNN}=(V, E_{KNN})$ contains edges such that:
+The K-Nearest Neighbors (KNN) graph connects each node to its $k$ closest neighbors, creating a sparse representation that emphasizes local connectivity as detailed in Section~\ref{se:GraphConstructionMethodsAndSparsity}. For our set of student locations $V$, the KNN graph $\mathbf{G}_{KNN}=\{V, E_{KNN}\}$ contains edges such that:
 
 \begin{equation}
-E_{KNN} = \{(u, v) \mid v \in \text{kNN}(u) \text{ or } u \in \text{kNN}(v)\}
+E_{KNN} = \{(u, v) \mid v \in \text{KNN}(u) \text{ or } u \in \text{KNN}(v)\}
 \end{equation}
 
-where $\text{kNN}(u)$ represents the $k$ nearest neighbors of vertex $u$ according to Euclidean distance.
+where $\text{KNN}(u)$ represents the $k$ nearest neighbors of vertex $u$ according to Euclidean distance.
 
 In our implementation, we set $k=30$ based on the average seat size of buses in the IZTECH fleet, ensuring that each node is connected to approximately the number of students that would typically share transportation. The graph is constructed using spatial indexing for efficient neighbor queries, with edge weights based on the Euclidean distance between connected nodes.
 
