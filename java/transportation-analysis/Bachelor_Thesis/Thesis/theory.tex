@@ -1,10 +1,10 @@
 \chapter{Theoretical Background}
 \label{ch:basics}
-This chapter introduces the fundamental concepts and theories used in transportation network analysis. We begin with basic graph theory definitions essential for understanding networks. Next, we explore graph construction methods and the importance of sparsity in representing transportation systems as graphs. We then examine clustering algorithms applied to identify communities within these networks, highlighting techniques particularly suited for transportation systems. Finally, we discuss shortest path algorithms that enable efficient route determination between locations in the network.
+This chapter introduces the fundamental concepts and that are used in transportation network analysis. We begin with basic graph theory definitions essential for understanding networks. Next, we explore graph construction methods and the importance of sparsity in representing transportation systems as graphs. We then examine clustering algorithms applied to identify communities within these networks, highlighting techniques particularly suited for transportation systems. Finally, we discuss shortest path algorithms that enable efficient route determination between locations in the network.
 \section{Basic Definitions}
 \label{se:BasicDefinitions}
 
-A graph $G$ is formally defined as an ordered pair $G = (V, E, W)$ comprising a set $V$ of vertices or nodes and a set $E$ of edges, which are 2-element subsets of $V$ . The fundamental components of a graph include: \textbf{Vertices (Nodes)} which represent distinct entities in the network; \textbf{Edges} which represent the connections or relationships between vertices; \textbf{Affinity Matrix} $W$, which is a square matrix where each element $W_{ij}$ represents the weight between vertices $i$ and $j$, indicating distances, travel times, costs, or other metrics.
+A graph $G$ is formally defined as an ordered pair $G = \{V, E, \mathbf{W}\}$ comprising a set $V$ of vertices representing distinct entities, a set of edges $E$ representing the relationship between these distinct entities and an affinity matrix $\mathbf{W}\in\mathbb{R}^{N\times N}$ whose $i,j$th component $w_{i,j}$ represents the edge weight between $i$th and $j$th vertex, respectively.
 
 
 \section{Graph Construction Methods and Sparsity}
