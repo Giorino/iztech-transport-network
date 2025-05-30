@@ -41,14 +41,14 @@ where $d(u, v)$ is the Euclidean distance between vertices $u$ and $v$.
 \section{Graph-based Clustering}
 \label{se:GraphBasedClusterings}
 
-After establishing methods for graph construction and understanding the importance of sparsity in transportation networks, the next analytical step involves identifying meaningful structures within these networks. Graph-based clustering addresses this need by partitioning vertices into cohesive groups or communities based on connectivity patterns, proximity, or other relevant factors. The sparsity and connectivity patterns established during graph construction directly influence the effectiveness of these clustering techniques. For instance, the local connectivity preserved by methods like Delaunay triangulation creates graph structures particularly conducive to meaningful community detection. These clusters can represent functional zones, service areas, or natural divisions within transportation systems.
+After explaining complete and sparse graph construction for the transportation networks, the next analytical step involves identifying meaningful structures within these networks. Graph-based clustering addresses this need by partitioning vertices into cohesive groups or communities based on connectivity patterns, proximity, or other relevant factors. The following sections detail exemplary graph-based clustering methods that are used in this project.
 
 \subsection{Spectral Clustering}
 \label{subsec:SpectralClustering}
 
-Spectral clustering uses the eigenvalues and eigenvectors of matrices derived from the graph to perform dimensionality reduction before clustering. This approach transforms the clustering problem into a graph partitioning task, making it particularly effective for finding natural clusters in complex networks.
+Starting from a graph $G=\{V,E,\mathbf{W}\}$, the first step of the Spectral Clustering algorithm is to compute a Laplacian matrix and evaluate its eigenvectors corresponding to the $k$ smallest eigenvalues.
 
-For a weighted graph $G=(V,E,W)$, the approach constructs matrices that encode the graph's connectivity structure. The Laplacian matrix is defined as $\mat{L} = \mat{D} - \mat{W}$, where $\mat{W}$ is the edge weight matrix with elements representing connection strengths between vertices, and $\mat{D}$ is a diagonal matrix where $d_{ii} = \sum_{j} w_{ij}$. The normalized Laplacian, preferred for clustering tasks, is defined as $\mat{L}_{\text{norm}} = \mat{D}^{-1/2} \mat{L} \mat{D}^{-1/2} = \mat{I} - \mat{D}^{-1/2} \mat{W} \mat{D}^{-1/2}$.
+Here, the unnormalized Laplacian matrix is defined by $\mathbf{L}=\mathbf{D}-\mathbf{W}$, where $\mat{W}$ is the edge weight matrix with elements representing connection strengths between vertices, and $\mat{D}$ is a diagonal matrix where $d_{ii} = \sum_{j=1}^{N} w_{ij}$. 
 
 The final step of spectral clustering applies the k-means algorithm to this spectral embedding. By using k-means in this transformed space rather than the original data space, spectral clustering can identify clusters that would be difficult to detect with traditional distance-based methods alone. This combination of spectral embedding followed by k-means clustering makes the approach both mathematically elegant and practically effective for complex network structures.
 
@@ -58,15 +58,14 @@ The algorithm is summarized in Algorithm~\ref{alg:spectral_clustering}.
 \caption{Spectral Clustering}
 \label{alg:spectral_clustering}
 \begin{algorithmic}[1]
-\Require Graph $G = (V, E)$, number of clusters $k$
+\Require Graph $G=\{V,E,\mathbf{W}\}$ , number of clusters $k$
 \Ensure Cluster assignments for vertices $V$
 
-\State Construct the Adjacency Matrix $\mat{A}$ for the graph $G$.
-\State Construct the Edge Weight Matrix $\mat{D}$ where $\mat{d}_{ii} = \sum_j \mat{A}_{ij}$.
-\State Calculate the Laplacian Matrix $\mat{L} = \mat{D} - \mat{A}$.
-\State Compute the Normalized Laplacian $\mat{L}_{\text{norm}} = \mat{D}^{-1/2} \mat{L} \mat{D}^{-1/2} = \mat{I} - \mat{D}^{-1/2} \mat{A} \mat{D}^{-1/2}$.
-\State Find the $k$ eigenvectors $\vect{u}_1, \vect{u}_2, \dots, \vect{u}_k$ corresponding to the $k$ smallest non-zero eigenvalues of $\mat{L}_{\text{norm}}$.
-\State Form the matrix $U \in \R^{|V| \times k}$ with the eigenvectors $\vect{u}_1, \dots, \vect{u}_k$ as columns.
+\State Construct the Adjacency Matrix $\mathbf{W}$ for the graph $G$.
+\State Construct the Edge Weight Matrix $\mat{D}$ where {d}_{ii} = \sum_j \mat{W}_{ij}$.
+\State Calculate the Laplacian Matrix $\mat{L} = \mat{D} - \mathbf{W}$.
+\State Find the $k$ eigenvectors $\vect{u}_1, \vect{u}_2, \dots, \vect{u}_k$ corresponding to the $k$ smallest non-zero eigenvalues of $\mathbf{L}$.
+\State Form the matrix $\mat{U}$ \in \R^{|V| \times k}$ by determining the eigenvectors $\vect{u}_1, \dots, \vect{u}_k$ as column vectors of $\mathbf{U}$.
 \State Let $\vect{y}_i \in \R^k$ be the vector corresponding to the $i$-th row of $U$.
 \State Cluster the points $(\vect{y}_i)_{i=1, \dots, |V|}$ into $k$ clusters $C_1, \dots, C_k$ using the $k$-means algorithm.
 \State Assign vertex $v_i$ to cluster $C_j$ if row $\vect{y}_i$ was assigned to cluster $C_j$.
