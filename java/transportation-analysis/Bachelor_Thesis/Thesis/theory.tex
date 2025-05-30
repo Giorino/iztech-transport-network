@@ -80,10 +80,10 @@ The algorithm is summarized in Algorithm~\ref{alg:spectral_clustering}.
 The Leiden algorithm improves upon the Louvain algorithm for community detection by ensuring well-connected communities and optimizing modularity. Modularity is a measure that quantifies the quality of community structure in a network and is defined as:
 
 \begin{equation}
-Q = \frac{1}{2m} \sum_{i,j} \left[ A_{ij} - \frac{k_i k_j}{2m} \right] \delta(c_i, c_j)
+Q = \frac{1}{2m} \sum_{i,j} \left[ \mathbf{W}_{ij} - \frac{k_i k_j}{2m} \right] \delta(c_i, c_j)
 \end{equation}
 
-where $m$ is the total weight of all edges in the network, $A_{ij}$ represents the weight of the edge between nodes $i$ and $j$, $k_i$ and $k_j$ are the sum of the weights of the edges attached to nodes $i$ and $j$ respectively, $c_i$ and $c_j$ are the communities to which nodes $i$ and $j$ are assigned, and $\delta(c_i, c_j)$ is the Kronecker delta function that equals 1 if $c_i = c_j$ and 0 otherwise.
+where $m$ is the total weight of all edges in the network, $\mathbf{W}_{ij}$ represents the weight of the edge between nodes $i$ and $j$ from the affinity matrix $\mathbf{W}$, $k_i$ and $k_j$ are the sum of the weights of the edges attached to nodes $i$ and $j$ respectively, $c_i$ and $c_j$ are the communities to which nodes $i$ and $j$ are assigned, and $\delta(c_i, c_j)$ is the Kronecker delta function that equals 1 if $c_i = c_j$ and 0 otherwise.
 
 The algorithm operates iteratively to detect communities within a graph. Starting with each node in its own community (a singleton partition), the algorithm performs a local moving phase where individual nodes are reassigned to neighboring communities if such a move improves the overall modularity. This phase continues until no single node move can further increase modularity, resulting in an initial partition. Subsequently, a refinement phase ensures that the communities formed are well-connected by partitioning each community internally. An aggregate network is then constructed based on this refined partition, where each node represents a subcommunity from the refinement stage. The non-refined partition from the local moving phase serves as the initial community assignment for this aggregate network. For instance, if a community is split into two subcommunities during refinement, these become two distinct nodes in the aggregate network, initially assigned to the same aggregate community. The algorithm then repeats the local moving and refinement phases on the aggregate network. These steps of local moving, refinement, and aggregation are iterated until no further improvements in modularity can be achieved, yielding the final community structure. The detailed pseudocode can be found in Appendix \ref{alg:leiden_appendix}.
 
@@ -106,21 +106,21 @@ The core idea of MVAGC is to leverage the complementary information present in t
 For each view of the data, MVAGC constructs a relationship matrix between data points and anchors. This relationship captures how strongly each data point connects to each anchor:
 
 \begin{equation}
-Z_{ij}^{(v)} = \frac{\text{similarity}(x_i, a_j)}{\sum_k \text{similarity}(x_i, a_k)}
+\mathbf{Z}_{ij}^{(v)} = \frac{\text{similarity}(x_i, a_j)}{\sum_k \text{similarity}(x_i, a_k)}
 \end{equation}
 
-where $Z_{ij}^{(v)}$ indicates how strongly data point $i$ relates to anchor $j$ in view $v$, normalized to ensure the sum equals 1.
+where $\mathbf{Z}_{ij}^{(v)}$ indicates how strongly data point $i$ relates to anchor $j$ in view $v$, normalized to ensure the sum equals 1.
 
-The key challenge is combining these different views into a unified representation. This can be expressed as finding a consensus matrix $Z^*$ that best approximates all individual views:
+The key challenge is combining these different views into a unified representation. This can be expressed as finding a consensus matrix $\mathbf{Z}^*$ that best approximates all individual views:
 
 \begin{equation}
-Z^* = \text{argmin} \sum_{v} \text{distance}(Z^{(v)}, Z^*)
+\mathbf{Z}^* = \text{argmin} \sum_{v} \text{distance}(\mathbf{Z}^{(v)}, \mathbf{Z}^*)
 \end{equation}
 
 Once this consensus matrix is obtained, a similarity graph between all data points can be constructed:
 
 \begin{equation}
-S = Z^* \times Z^{*T}
+\mathbf{S} = \mathbf{Z}^* \times {\mathbf{Z}^*}^T
 \end{equation}
 
 This similarity graph captures the relationships between all data points through their connections to the anchor points, making clustering more efficient by working with a smaller set of anchors instead of all possible pairwise connections.
@@ -129,21 +129,21 @@ This similarity graph captures the relationships between all data points through
 \caption{Multi-view Anchor Graph-based Clustering (MVAGC)}
 \label{alg:mvagc}
 \begin{algorithmic}[1]
-\Require Data points $V = \{v_1, \dots, v_n\}$, Multiple view data representations $X^{(1)}, \dots, X^{(p)}$, Number of clusters $k$, Number of anchors $m$
+\Require Data points $V = \{v_1, \dots, v_n\}$, Multiple view data representations $\mathbf{X}^{(1)}, \dots, \mathbf{X}^{(p)}$, Number of clusters $k$, Number of anchors $m$
 \Ensure Cluster assignments for vertices $V$
 
-\State Select $m$ anchor points $U = \{u_1, \dots, u_m\}$ from $V$ (e.g., using k-means or random sampling).
+\State Select $m$ anchor points $U = \{\mathbf{u}_1, \dots, \mathbf{u}_m\}$ from $V$ (e.g., using k-means or random sampling).
 \For{each view $v = 1, \dots, p$}
-    \State Construct view-specific anchor relationship matrix $Z^{(v)} \in \R^{n \times m}$. $Z_{ij}^{(v)}$ represents the similarity/connection between data point $v_i$ and anchor $u_j$ in view $v$.
+    \State Construct view-specific anchor relationship matrix $\mathbf{Z}^{(v)} \in \R^{n \times m}$. $\mathbf{Z}_{ij}^{(v)}$ represents the similarity/connection between data point $v_i$ and anchor $\mathbf{u}_j$ in view $v$.
 \EndFor
-\State Fuse the view-specific matrices $\{Z^{(1)}, \dots, Z^{(p)}\}$ into a unified representation. This often involves solving an optimization problem to find a consensus matrix $Z^*$ or graph structure that integrates information across views. 
-    \Comment{E.g., Minimize $\sum_{v=1}^{p} \| Z^{(v)} - \text{f}(Z^*, \dots) \|_F^2 + \lambda \cdot \text{Regularization}(Z^*)$}
-\State Perform clustering based on the fused representation $Z^*$.
-    \If{$Z^*$ represents point-to-anchor assignments}
-        \State Apply k-means or spectral clustering on the rows of $Z^*$ (representing points in the anchor space).
-    \ElsIf{$Z^*$ is used to derive a consensus anchor graph $A_{\text{anchor}} \in \R^{m \times m}$}
-        \State Apply spectral clustering on $A_{\text{anchor}}$ to cluster the anchors.
-        \State Assign original points $v_i$ to the cluster of their nearest anchor based on $Z^*$.
+\State Fuse the view-specific matrices $\{\mathbf{Z}^{(1)}, \dots, \mathbf{Z}^{(p)}\}$ into a unified representation. This often involves solving an optimization problem to find a consensus matrix $\mathbf{Z}^*$ or graph structure that integrates information across views. 
+    \Comment{E.g., Minimize $\sum_{v=1}^{p} \| \mathbf{Z}^{(v)} - \text{f}(\mathbf{Z}^*, \dots) \|_F^2 + \lambda \cdot \text{Regularization}(\mathbf{Z}^*)$}
+\State Perform clustering based on the fused representation $\mathbf{Z}^*$.
+    \If{$\mathbf{Z}^*$ represents point-to-anchor assignments}
+        \State Apply k-means or spectral clustering on the rows of $\mathbf{Z}^*$ (representing points in the anchor space).
+    \ElsIf{$\mathbf{Z}^*$ is used to derive a consensus anchor graph $\mathbf{A}_{\text{anchor}} \in \R^{m \times m}$}
+        \State Apply spectral clustering on $\mathbf{A}_{\text{anchor}}$ to cluster the anchors.
+        \State Assign original points $v_i$ to the cluster of their nearest anchor based on $\mathbf{Z}^*$.
     \EndIf
 \State Assign final cluster labels $C_1, \dots, C_k$ to the original data points $V$.
 
