@@ -12,31 +12,31 @@ A graph $G$ is formally defined as an ordered pair $G = \{V, E, \mathbf{W}\}$ co
 
 Graph construction methods determine how nodes in a network are connected, playing a crucial role in creating accurate transportation network representations by balancing connectivity with computational efficiency.
 
-A graph is considered complete if every distinct pair of vertices is connected by an edge. In terms of edge weights \(w_{i,j}\), this means a connection exists for all \(i \neq j\). While this represents the maximum possible connectivity, constructing a complete graph for a transportation network is often impractical. It implies direct travel is possible between any two locations, ignoring real-world constraints like geographical barriers or infrastructure costs. Such dense connectivity is computationally expensive to analyze and does not accurately reflect most transportation systems. Therefore, sparsity, where only essential or feasible connections are represented, becomes crucial for creating realistic and manageable network models.
+A graph is considered complete if every distinct pair of vertices is connected by an edge. In terms of edge weights \(w_{i,j}\), this means a connection exists for all \(i \neq j\). While it covers all connections between the vertices, constructing a complete graph for a transportation network is often impractical. It implies direct travel is possible between any two locations, ignoring real-world constraints like geographical barriers or infrastructure costs. Such a dense graph is computationally expensive to analyze and does not accurately reflect most transportation systems. Therefore, sparsity, where only essential or feasible connections are represented, becomes crucial for creating realistic and manageable network models.
 
-\subsubsection{K-Nearest Neighbors Graph}
-In this approach, each vertex is connected to its $k$ nearest neighbors according to some distance metric . This method creates a sparse graph where each location is connected only to its closest locations.
+\subsubsection{$K$-Nearest Neighbors Graph}
+Considering a transportation network, $K$-nearest graph construction creates a sparse graph in which every vertex corresponding to a location is connected to its $K$-nearest locations based on a determined distance metric\footnote{In this project, the Euclidean distance is determined as the distance metric for KNN graph.}, i.e.
 
 \begin{equation}
-    E = \{(u, v) \mid v \in \text{kNN}(u) \text{ or } u \in \text{kNN}(v)\}
+    E = \{(u, v) \mid v \in \text{KNN}(u) \text{ or } u \in \text{KNN}(v)\}
 \end{equation}
-where $\text{kNN}(u)$ represents the $k$ nearest neighbors of vertex $u$.
+where $\text{KNN}(u)$ represents the $K$ nearest neighbors of vertex $u$.
 
 \subsubsection{Delaunay Triangulation}
-Delaunay triangulation creates a graph by connecting vertices such that no vertex lies inside the circumcircle of any triangle formed by three connected vertices . This method preserves local connectivity while avoiding crossing edges, making it useful for geographic applications.
+Delaunay triangulation creates a graph by connecting vertices such that no vertex lies inside the circumcircle of any triangle formed by three connected vertices, i.e.  
 
 \begin{equation}
     E = \{(u, v) \mid \forall w \in V \setminus \{u, v\}, \|p_w - c_{uv}\| > r_{uv} \}
 \end{equation}
-where $c_{uv}$ is the center of the circumcircle through vertices $u$ and $v$, $r_{uv}$ is its radius, and $p_w$ is the position of vertex $w$.
+where $c_{uv}$ is the center of the circumcircle through vertices $u$ and $v$, $r_{uv}$ is its radius, and $p_w$ is the position of vertex $w$. This method preserves local connectivity while avoiding crossing edges, making it useful for geographic applications.
 
 \subsubsection{Gabriel Graph}
-The Gabriel Graph is a subgraph of the Delaunay triangulation . An edge connects two vertices $u$ and $v$ if and only if the circle with diameter $uv$ contains no other vertices.
+The Gabriel Graph is a subgraph of the Delaunay triangulation. An edge connects two vertices $u$ and $v$ if and only if the circle with diameter $uv$ contains no other vertices, i.e.
 
 \begin{equation}
     E = \{(u, v) \mid d^2(u, v) < d^2(u, w) + d^2(v, w) \text{ for all } w \in V, w \neq u, w \neq v\}
 \end{equation}
-where $d(u, v)$ is the distance between vertices $u$ and $v$.
+where $d(u, v)$ is the Euclidean distance between vertices $u$ and $v$.
 
 \section{Graph-based Clustering}
 \label{se:GraphBasedClusterings}
