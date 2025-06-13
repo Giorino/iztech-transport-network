@@ -75,6 +75,27 @@ This thesis puts forth a solution focused on three primary contributions to opti
 
 The comprehensive methodology to realize these contributions integrates these specific techniques. It begins with constructing an appropriate graph model of the student network using one of the selected sparse graph methods (Section~\ref{subsec:sparse_graph}). This is followed by the KNN distance-based outlier detection for data refinement (Section~\ref{subsec:knn_outlier_application}). Subsequently, a comparative evaluation of diverse graph clustering algorithms (Spectral Clustering, Leiden Algorithm, and Multi-view Anchor Graph-based Clustering), detailed in Section~\ref{subsec:clustering_sparse}, is performed to partition the students into capacity-constrained routes. Finally, Dijkstra's algorithm (Section~\ref{sec:shortest_path}) determines the optimal path for each route. The interplay between these components—graph construction, outlier detection, and clustering—is analyzed in detail to identify the most effective combination for the IZTECH student transportation problem.
 
+\section{Design Constraints and Engineering Standards}
+\label{sec:design_constraints}
+In addition to the previously explained details, this section addresses a list of significant design constraints that are detailed in the sequel.
+
+\paragraph{Economical Impact} The project reduces operational costs by optimizing service usage and minimizing redundant operations.
+
+\paragraph{Environment} The project balances and optimizes routes, which significantly reduces unnecessary travel and thereby lowers CO\textsubscript{2} emissions. By minimizing inefficient paths and service redundancies, it not only conserves energy but also contributes to environmental sustainability.
+
+\paragraph{Society} The project plans to support inclusivity by being adaptable for individuals with disabilities in future iterations. Enhancing accessibility and usability is a key consideration, with the goal of ultimately improving the daily lives of users, especially in urban mobility and public service applications.
+
+\paragraph{Ethics} To preserve user privacy, the project exclusively uses synthetic datasets for testing and development purposes. Moreover, it only requires general address-level data rather than personal identifiers, ensuring compliance with ethical data usage principles and privacy laws.
+
+\paragraph{Health and Safety} Passenger safety is a key consideration. All seating arrangements are designed with the assumption that passengers are seated during transit, reducing the risk of injury and promoting a safe environment.
+
+\paragraph{Manufacturability} The codebase has been modularized and well-documented, allowing easy integration and reproduction. Developers can quickly deploy or extend the system with minimal setup, which facilitates real-world implementation and scalability.
+
+\paragraph{Sustainability} The software is modular and well-documented, letting new inputs—such as live GPS feeds—or alternative clustering and routing modules slot in without touching existing code, which secures straightforward future upgrades. By relying on sparse graph models and capacity-aware algorithms it runs with modest memory and CPU demands, cutting energy use and ensuring durable operation even as the dataset grows. This delivers a forward-compatible, resource-conscious design that remains reliable and easy to extend over its lifetime.
+
+\paragraph{Engineering Standards} While no specific transportation engineering standards were mandated for this academic project, the development process adhered to established software engineering best practices. This includes modular design for maintainability and extensibility, version control for tracking changes, and comprehensive documentation to ensure reproducibility and ease of future development. The algorithmic choices were guided by established literature and best practices in computational graph theory and operations research.
+
+
 \section{Thesis Overview}
 \label{sec:intro_overview}
 This thesis is structured to systematically present the research methodology, experimental evaluation, and findings.
